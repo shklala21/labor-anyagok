@@ -125,7 +125,7 @@ Az itt látható mappákat *Group*oknak nevezik és nem tükrözik, hogy a fájl
 
 Az `iOS` alkalmazások felépítésével részletesebben a következő hetekben fogunk foglalkozni. Most csak nagyon röviden végignézzük, hogy a generált fájlok közül melyik micsoda.
 
-| --------------------------- | --------------------------------------------------------------- |
+| --------------------------- | ------------------------------------------------------ |
 | `AppDelegate.swift`         | Az alkalmazáshoz tartozó `Application Delegate` osztály, melyben lekezelhetjük az alkalmazás életciklus fontosabb eseményeit (pl. elindult a program). Egyszerűbb alkalmazásoknál ez lehet a fő/gyökér osztály, ahol az alkalmazáslogikát megírjuk. |
 | `ViewController.swift`      | Az alkalmazás egy "view controller"e, mely tartalmazza az alkalmazás egy "képernyőjéhez" tartozó logikát/kódokat. |
 | `Main.storyboard`           | Az alkalmazás felhasználói felületét, "nézeteit" és azok kapcsolatát leíró XML fájl. |
@@ -137,8 +137,8 @@ A `Products` group egy speciális mappa, mely az alkalmazás fordításakor/tesz
 
 > Ellenőrizhetjük, hogy a fájlrendszerben nincsen ott a **Labor1.app**
 
-| Gyakori fájlkiterjesztések                                                                    ||
-| --------------------    | -------------------------------------------------------------------- |
+| Gyakori fájlkiterjesztések                                                          ||
+| ----------------------- | ---------------------------------------------------------- |
 | `.swift`                | `Swift` forráskód |
 | `.h`                    | Objective-C forráskód (header fájl) |
 | `.m`                    | Objective-C forráskód (implementáció) |
@@ -303,7 +303,7 @@ Az *Xcode* által generált projekt sémában alapból a `LaunchScreen.storyboar
 
 ### Hasznos Xcode billentyűkombinációk
 
-| ----------------------- | -------------------------------------------------------------------- |
+| ----------------------- | ---------------------------------------------------------- |
 | `Ctrl+Space`/`Esc`      | Kód kiegészítés ("intellisense", autocomplete) |
 | `Ctrl+Cmd+Fel`          | Vátlás header/implementáció között |
 | `Ctrl+Cmd+Bal/Jobb`     | Váltás vissza/előre a legutóbb szerkesztett fájlok között |
