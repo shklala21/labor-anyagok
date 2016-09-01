@@ -31,7 +31,7 @@ A legfontosabb különbség, hogy Mac-en `Command` (`cmd` &#8984;) gomb van Wind
 ![](img/01_keyboard.png)
 
 | A legfontosabb általános billentyűkombinációk                  ||
-| --------------- |---------------------------------------------- |
+| --- | --- |
 | `Cmd+C`         | Copy                                          |
 | `Cmd+V`         | Paste                                         |
 | `Cmd+X`         | Cut                                           |
@@ -64,7 +64,7 @@ Az *Activity Monitor* alkalmazást elindítva láthatjuk a futó alkalmazások p
 Alap fájlkezelő: *Finder*, hasonlóan működik mint Windows intéző.
 
 | Néhány hasznos *Finder* billentyűkombináció                                        ||
-| --------------- |------------------------------------------------------------------ |
+| --- | --- |
 | `Cmd+Le`        | Belépés egy könyvtárba                                            |
 | `Cmd+Fel`       | Kilépés egy könyvtárból                                           |
 | `Cmd+Backspace` | Fájl törlése                                                      |
@@ -125,7 +125,8 @@ Az itt látható mappákat *Group*oknak nevezik és nem tükrözik, hogy a fájl
 
 Az `iOS` alkalmazások felépítésével részletesebben a következő hetekben fogunk foglalkozni. Most csak nagyon röviden végignézzük, hogy a generált fájlok közül melyik micsoda.
 
-| --------------------------- | ------------------------------------------------------ |
+| Fájlnév | Leírás |
+| --- | --- |
 | `AppDelegate.swift`         | Az alkalmazáshoz tartozó `Application Delegate` osztály, melyben lekezelhetjük az alkalmazás életciklus fontosabb eseményeit (pl. elindult a program). Egyszerűbb alkalmazásoknál ez lehet a fő/gyökér osztály, ahol az alkalmazáslogikát megírjuk. |
 | `ViewController.swift`      | Az alkalmazás egy "view controller"e, mely tartalmazza az alkalmazás egy "képernyőjéhez" tartozó logikát/kódokat. |
 | `Main.storyboard`           | Az alkalmazás felhasználói felületét, "nézeteit" és azok kapcsolatát leíró XML fájl. |
@@ -137,8 +138,8 @@ A `Products` group egy speciális mappa, mely az alkalmazás fordításakor/tesz
 
 > Ellenőrizhetjük, hogy a fájlrendszerben nincsen ott a **Labor1.app**
 
-| Gyakori fájlkiterjesztések                                                          ||
-| ----------------------- | ---------------------------------------------------------- |
+| Gyakori fájlkiterjesztések ||
+| --- | --- |
 | `.swift`                | `Swift` forráskód |
 | `.h`                    | Objective-C forráskód (header fájl) |
 | `.m`                    | Objective-C forráskód (implementáció) |
@@ -303,7 +304,8 @@ Az *Xcode* által generált projekt sémában alapból a `LaunchScreen.storyboar
 
 ### Hasznos Xcode billentyűkombinációk
 
-| ----------------------- | ---------------------------------------------------------- |
+| Hasznos Xcode billentyűkombinációk ||
+| --- | --- |
 | `Ctrl+Space`/`Esc`      | Kód kiegészítés ("intellisense", autocomplete) |
 | `Ctrl+Cmd+Fel`          | Vátlás header/implementáció között |
 | `Ctrl+Cmd+Bal/Jobb`     | Váltás vissza/előre a legutóbb szerkesztett fájlok között |
