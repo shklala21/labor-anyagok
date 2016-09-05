@@ -1,4 +1,4 @@
-# `iOS` alapú szoftverfejlesztés - Labor 01
+# `iOS` alapú szoftverfejlesztés - Labor `01`
 
 ## A laborsegédletet összeállította
 
@@ -8,21 +8,38 @@
 
 ## A labor témája
 
-- Bemutatkozás
-- `macOS` felhasználói alapismeretek
-- *Xcode*, `iOS` fejlesztőkörnyezet bemutatása
-- HelloWorld
-- Extra feladatok
+- [Bemutatkozás](#bemutatkozas)
+- [`macOS` felhasználói alapismeretek](#macOS)
+    - [Billentyűzet](#billentyuzet)
+    - [Egér](#eger)
+    - [Unix gyökerek](#unix-gyokerek)
+    - [Fájlkezelés](#fajlkezeles)
+- [*Xcode*, `iOS` fejlesztőkörnyezet bemutatása, *HelloWorld*](#xcode)
+    - [Projektek](#projektek)
+    - [Toolbar](#toolbar)
+    - [Navigator](#navigator)
+    - [Projekt felépítése](#projekt-felepitese)
+    - [Projekt fordítása, futtatása](#projekt-forditasa-futtatasa)
+    - [Írás a konzolra](#iras-a-konzolra)
+    - [Írás a képernyőre](#iras-a-kepernyore)
+    - [Debugolás alapok](#debugolas-alapok)
+    - [Szöveg testreszabás](#szoveg-testreszabas)
+    - [Projektbeállítások áttekintése](#projektekbeallitasok-attekintese)
+    - [Alkalmazás ikon beállítása](#alkalmazas-ikon-beallitasa)
+    - [Kezdőképek (*Launch images)*](#kezdokepek)
+    - [`iPad` támogatás](#ipad)
+    - [Hasznos Xcode billentyűkombinációk](#hasznos-xcode-bill)
+- [Extra feladatok](#extra-feladatok)
 
-## Bemutatkozás
-* A laborok 60%-án kötelező a részvétel. (Idén ez 8 labort jelent.) A laborvezetők minden óra elején körbeadnak egy jelenléti ívet. Ezen túl minden labor végén fel kell tölteni a tanszéki portálra a kész laborfeladatot, egyetlen ZIP fájl formájában (aki ezt nem teszi meg, annak érvénytelen a laborja!). A laborvezetőknek lehetősége van a kimagasló/nagyon jó megoldásokért vagy órai munkáért plusszpontokat osztani a laborok után, ami beszámít a ZH-ba, az év végi jegybe vagy a házi feladat értékelésnél (+1 pont laboronként)
+## Bemutatkozás <a id="bemutatkozas"></a>
+* A laborok `60%`-án kötelező a részvétel. (Idén ez `8` labort jelent.) A laborvezetők minden óra elején körbeadnak egy jelenléti ívet. Ezen túl minden labor végén fel kell tölteni a tanszéki portálra a kész laborfeladatot, egyetlen ZIP fájl formájában (aki ezt nem teszi meg, annak érvénytelen a laborja!). A laborvezetőknek lehetősége van a kimagasló/nagyon jó megoldásokért vagy órai munkáért plusszpontokat osztani a laborok után, ami beszámít a ZH-ba, az év végi jegybe vagy a házi feladat értékelésnél (+1 pont laboronként)
 * Rendszeresen látogassátok a [tárgy honlapját](https://www.aut.bme.hu/Course/ios), ide kerül fel minden információ. Van RSS feed is.
 * A tárgyból a legkönnyebben házi feladat beadásával lehet megszerezni a félév végi jegyet. A beadott házikat a laborvezetők fogják értékelni. A házi feladat beadás rendjéről a tárgy honlapján fogunk a későbbiekben információkat közzétenni.
 * Sok laboranyag új és ebből következőleg tartalmazhat hibákat. Ezek miatt előre is elnézést kérünk mindenkitől és örömmel fogadunk hibajelentéseket vagy bármilyen egyéb kritikát.
 
-## `macOS` felhasználói alapismeretek
+## `macOS` felhasználói alapismeretek <a id="macOS"></a>
 
-### Billentyűzet
+### Billentyűzet <a id="billentyuzet"></a>
 Mac-ekhez külön Apple billentyűzetek léteznek, melyeken némiképp különbözőek a funkcióbillentyűk és található rajtuk néhány extra gomb. Ezeken túl azonban a billentyűkiosztás megegyezik a standard PC-s billentyűzetekkel. A laborokban PC-s billentyűzetek vannak rákötve a Mac-ekre, melyeken elérhető minden szükséges gomb, azonban van néhány eltérés a Windowsos használathoz képest.
 
 A legfontosabb különbség, hogy Mac-en `Command` (`cmd` &#8984;) gomb van Windows gomb helyett. Ez a PC-s billentyűzeten alapesetben pont a Windows gombra képződik le. A `Control`, `Alt` és `Alt Gr` (Right Alt), Mac-en is ugyanúgy használatos. Mac-en az `Alt` alternatív neve `Option`.
@@ -48,10 +65,10 @@ A legfontosabb különbség, hogy Mac-en `Command` (`cmd` &#8984;) gomb van Wind
 
 *A legtöbb Mac-es alkalmazásnál az alkalmazás ablakainak vagy ablakának bezárása után is tovább fut a program. A teljes kilépéshez a `Cmd+Q`-t használhatjuk.*
 
-### Egér
+### Egér <a id="eger"></a>
 Korábban a Mac-es egerek egygombosak voltak, a `Ctrl+klikkel` lehetett az alternatív funkciókat elérni (ma is használható: `Ctrl+balklikk`). Kétgombos egereknél a jobb gomb funkciója megegyezik a `Ctrl+balklikkel`.
 
-### Unix gyökerek
+### Unix gyökerek <a id="unix-gyokerek"></a>
 A `macOS` (korábban `OS X`, `Mac OS`) egy Unix (BSD) alapú operációs rendszer. A Unix-os alapokat teljesen elfedi a GUI és az Apple saját alkalmazásai.
 
 Minden felhasználónak (esetünkben a `labor` nevű user-nek) van egy home könyvtára (`/Users/labor`), itt fogjuk a labor során a projekteket és egyéb fájljainkat tárolni.
@@ -60,7 +77,7 @@ Minden felhasználónak (esetünkben a `labor` nevű user-nek) van egy home kön
 
 Az *Activity Monitor* alkalmazást elindítva láthatjuk a futó alkalmazások process-eit. Itt van lehetőség egy esetleg lefagyott alkalmazás kilövésére is. Alkalmazások bezárásához használhatjuk még a `Cmd+Option+Esc` billentyűkombinációra megnyíló ablakot is.
 
-### Fájlkezelés
+### Fájlkezelés <a id="fajlkezeles"></a>
 Alap fájlkezelő: *Finder*, hasonlóan működik mint Windows intéző.
 
 | Néhány hasznos *Finder* billentyűkombináció                                        ||
@@ -76,12 +93,12 @@ A törlés a *Trash*-be történik, amit jobb klikk után kiüríthetünk.
 
 Külső USB eszköz csatlakoztatás után a `/Volumes/` mappába mountolódik automatikusan. A *Finder*ben és bárhol a standard fájlkezelő dialógusoknál a bal szélső gyorsmenüből a `Devices` részben érhetők el, de a `Desktop`on is megjelenik hozzájuk egy-egy ikon. Az USB-s eszközöket a kihúzás előtt unmountolni kell. (*Finder*ben a bal szélső menüben, az USB eszköz előtti kis "eject" ikon, vagy pedig jobb klikk után "Unmount". További lehetőség még az asztalon az USB-s eszközt a `Trash`-be húzni.)
 
-## *Xcode*, `iOS` fejlesztőkörnyezet bemutatása, *HelloWorld*
+## *Xcode*, `iOS` fejlesztőkörnyezet bemutatása, *HelloWorld* <a id="xcode"></a>
 *Xcode*, "all in one" `iOS`, `macOS`, `watchOS`, `tvOS` fejlesztőkörnyezet, tartalmazza az a platform SDK-kat és minden egyéb eszközt ami ahhoz szükséges, hogy alkalmazásokat fejlesszünk. Saját gépre egyszerűen az `macOS` *App Store*-ból lehet ingyenesen letölteni mint egy standard Mac-es alkalmazást.
 
 A továbbiakban megismerkedünk az *Xcode* legfontosabb funkcióval és bemutatásra kerül az `iOS`-es alkalmazások projektjeinek felépítése.
 
-### Projektek
+### Projektek <a id="projektek"></a>
 Az alkalmazások és egyéb komponensek forráskódját és egyéb fájljaikat projektek fogják össze. Új projekt létrehozásakor (`Cmd+Shift+N`) kiválaszthatjuk a projekt sémáját. A megadott template-ek csak az automatikusan legenerált kezdeti fájlokat határozzák meg, további megkötéseket nem jelentenek a projektre.
 
 > Hozzunk létre egy új projektet (`Cmd+Shift+N`) és válasszuk a Single Application template-et!
@@ -106,11 +123,11 @@ Az *Xcode* automatikusan létre tud hozni egy lokális `git` repository-t a proj
 
 A laborgépeken célszerű a projekteket a `/Users/labor/Developer` mappában tárolni.
 
-### Toolbar
+### Toolbar <a id="toolbar"></a>
 A képernyő tetején található sáv.
 ![](img/05_xcode_toolbar.png)
 
-### Navigator
+### Navigator <a id="navigator"></a>
 Bal szélső panel. Több tabból áll, a projekt fájljait az 1. tabon, a `Project Navigator`ban láthatjuk (`Cmd+1`).
 ![](img/06_xcode_navigator.png)
 
@@ -120,7 +137,7 @@ Az itt látható mappákat *Group*oknak nevezik és nem tükrözik, hogy a fájl
 
 > Hasonlítsuk össze a `Project Navigator`ban és a fájlrendszerben lévő fájlokat és a könyvtárszerkezetet (*Finder* segítségével).
 
-### Projekt felépítése
+### Projekt felépítése <a id="projekt-felepitese"></a>
 *Az `iOS`-re írt alkalmazások alapvetően az **MVC** (Model View Controller) architektúrára épülnek.*
 
 Az `iOS` alkalmazások felépítésével részletesebben a következő hetekben fogunk foglalkozni. Most csak nagyon röviden végignézzük, hogy a generált fájlok közül melyik micsoda.
@@ -147,7 +164,7 @@ A `Products` group egy speciális mappa, mely az alkalmazás fordításakor/tesz
 | `.framework`            | Framework (~DLL + headerök) |
 | `.plist`                | Property list: hierarchikus adatstruktúra (listák, dictionary-k és alaptípusok tetszőleges elrendezésben), a lemezre mentve, Xcode-ban grafikusan szerkeszthető (valójában általában egy XML, bár van bináris változata is) |
 
-### Projekt fordítása, futtatása
+### Projekt fordítása, futtatása <a id="projekt-forditasa-futtatasa"></a>
 > Fordítsuk le és futtassuk az alkalmazást (`Cmd+R`) és gyönyörködjünk a megjelenő fehér ablakban! Ismerkedjünk meg az *iOS Simulator* alapfunkcióival!
 
 <!-- -->
@@ -158,7 +175,7 @@ A fordítási folyamat eredménye egy **Labor1.app** nevű bundle. A bundle nem 
 *Sajnos Xcode 6-tól elég nehéz megtalálni a szimulátor és azon belül az alkalmazások könyvtárát. A `~/Library/Developer/CoreSimulator/Devices/UID/data/Container/Data/Application/` körül lehet keresgélni, de a `UID` egy hosszú, kvázi-véletlen azonosító, ami ráadásul fordítások között is változhat...*
 *Több 3rd party megoldás született már a mappa könnyebb megtalálásához, pl. [SimPholders](http://simpholders.com)*
 
-### Írás a konzolra
+### Írás a konzolra <a id="iras-a-konzolra"></a>
 A konzolra való log üzenetek megjelenítéséhez a `print(_:separator:terminator:)` függvényt használhatjuk. A konzol ablak alapból rejtve van, kapcsoljuk be a *Toolbar*on.
 ![](img/07_xcode_debug_area.png)
 
@@ -179,7 +196,7 @@ for i in 1...5 {
 }
 ```
 
-### Írás a képernyőre
+### Írás a képernyőre <a id="iras-a-kepernyore"></a>
 Váltsunk át a `Main.storyboard` fájlra. Itt az alkalmazás jeleneteit (*scene*-eit, *View Controller*eit) láthatjuk. Kezdéskor egyetlen jelenet található a *storyboard*ban, amely teljesen üres. A későbbiekben részletesen fogunk foglalkozni a felhasználói felület felépítésével, most azonban elégedjünk meg annyival, hogy itt tudjuk definiálni, hogy milyen nézetekből épüljön fel a felhasználói felület és ezekhez milyen beállítások tartozzanak.
 
 > Módosítsuk a `ViewController.swift` fájlban a `viewDidLoad` metódust, hogy az létrehozzon egy új `UILabel`t és kiírja a **Hello World**-öt a képernyőre.
@@ -210,7 +227,7 @@ Röviden beszéljük meg a következő fogalmakat (fontos, ezekről mind lesz sz
 
 > Nézzük meg a `UILabel` osztály rövid leírását (`Option+klikk` a kódban `UILabel`re), majd a [teljes leírást](https://developer.apple.com/library/ios/documentation/UIKit/Reference/UILabel_Class/) az Apple Developer Library-ban!
 
-### Debugolás alapok
+### Debugolás alapok <a id="debugolas-alapok"></a>
 Debug breakpointok a kódsorok elé klikkelve hozhatók létre, illetve itt kapcsolhatók ki/be.
 ![](img/09_vc_viewdidload.png)
 
@@ -242,7 +259,7 @@ Bal alsó sarokban a + gomb.
 Próbáljuk ki a projektet és most már láthatjuk, hogy hol is keletkezett a hiba. Azonban érdemes azt is látni, hogy ilyenkor még nem jelenik meg a konzolon az exception leírása. Ahhoz, hogy azt megkapjuk "tovább kell engedni" a debuggert a `Continue Program Execution` gomb néhányszori megnyomásával (itt gyakran nem elég egyszer megnyomni).
 ![](img/13_xcode_continue_program_execution.png)
 
-### Szöveg testreszabás
+### Szöveg testreszabás <a id="szoveg-testreszabas"></a>
 A következő kódrészlettel kicsit csinosíthatunk a megjelenítésen.
 
 ```swift
@@ -252,7 +269,7 @@ helloWorldLabel.backgroundColor = UIColor(red: 0.9, green: 0.9, blue: 1.0, alpha
 helloWorldLabel.font = UIFont.systemFont(ofSize: 32)
 ```
 
-### Projektbeállítások áttekintése
+### Projektbeállítások áttekintése <a id="projektekbeallitasok-attekintese"></a>
 A projekt szintű beállításokat a `Project Navigator`ban, a projekt nevére/fejlécére klikkelve hozhatjuk elő.
 ![](img/14_xcode_project_settings.png)
 
@@ -262,8 +279,8 @@ A jobb oldalt megjelenő listában láthatjuk, hogy a **Labor1** projekt és az 
 
 A bonyolultabb beállításokat későbbi laborokon részletezzük.
 
-### Alkalmazás ikon beállítása
-> Töltsünk le [egy](res/Icon-120.png) 120x120 pixeles PNG fájlt az internetről és mentsük el a projekt mappájába `Icon-120.png` néven.
+### Alkalmazás ikon beállítása <a id="alkalmazas-ikon-beallitasa"></a>
+> Töltsünk le [egy](res/Icon-120.png) `120x120` pixeles PNG fájlt az internetről és mentsük el a projekt mappájába `Icon-120.png` néven.
 
 <!-- -->
 > Válasszuk ki a projekt fájlai közül az `Assets.xcassets` nevű asset katalógust.
@@ -274,14 +291,14 @@ A bonyolultabb beállításokat későbbi laborokon részletezzük.
 ![](img/16_assets_appicon.png)
 
 *Az asset katalógusok az alkalmazás képfájljainak csoportosítására szolgálnak. Egy `iOS` alkalmazásban egy képfájlból (ikonból) gyakran több különféle felbontású verzió is kell, ezeket az összetartozó képeket tudjuk hatékonyan együtt kezelni az asset katalógusok segítségével. 
-Pl. az `AppIcon` azonosítóhoz hozzárendelhetjük a menüben *(Springboard) *megjelenő 120x120 pixeles változatot, illetve a keresésnél *(Spotlight) *megjelenő kisebb változatokat is.
+Pl. az `AppIcon` azonosítóhoz hozzárendelhetjük a menüben *(Springboard) *megjelenő `120x120` pixeles változatot, illetve a keresésnél *(Spotlight) *megjelenő kisebb változatokat is.
 Ha nem adunk meg az egyik típushoz ikont, akkor a rendszer megpróbálja azt a megadott ikonból legenerálni (átméretezéssel), de ez a legtöbb esetben nem fog hibátlan eredménnyel járni.*
 
 *Érdemes megjegyezni, hogy `iPhone`-on és `iPad`en eltérő méretű az alkalmazások ikonja.*
 
 > A szimulátorban ellenőrizzük, hogy megjelenik-e az új alkalmazás ikon!
 
-### Kezdőképek (Launch images)
+### Kezdőképek (*Launch images*) <a id="kezdokepek"></a>
 Miközben betöltődik egy `iOS` alkalmazás, egy ún. *Launch Screen* látható. Ezt kétféleképpen lehet megadni.
 
 * Statikus képként az `Assets` katalógusban (hasonlóan az alkalmazás ikonhoz)
@@ -293,7 +310,7 @@ Az *Xcode* által generált projekt sémában alapból a `LaunchScreen.storyboar
 
 > Nyissuk meg és módosítsuk háttérszínét, pl. zöldre.
 
-### `iPad` támogatás
+### `iPad` támogatás <a id="ipad"></a>
 > Először indítsuk el a jelenlegi `iPhone` alkalmazást egy `iPad` szimulátorral és nézzük meg hogy néz ki.
 
 <!-- -->
@@ -302,7 +319,7 @@ Az *Xcode* által generált projekt sémában alapból a `LaunchScreen.storyboar
 <!-- -->
 > Ne felejtsük el óra végén feltölteni a kész alkalmazást az AUT portálra! Válasszuk ki Finder-ben a teljes projekt könyvtárat, jobb klikk, majd `Compress`, és az így kapott ZIP-et töltsük fel.
 
-### Hasznos Xcode billentyűkombinációk
+### Hasznos Xcode billentyűkombinációk <a id="hasznos-xcode-bill"></a>
 
 | Hasznos Xcode billentyűkombinációk ||
 | --- | --- |
@@ -324,7 +341,7 @@ Az *Xcode* által generált projekt sémában alapból a `LaunchScreen.storyboar
 
 > Kicsit gyakoroljuk a kódban különféle billentyűkombinációkat (`Cmd+Ctrl+Fel`, `Cmd+Ctr+Bal/Jobb`, `Cmd+B`, stb.)
 
-## Extra feladatok (idő függvényében)
+## Extra feladatok (idő függvényében) <a id="extra-feladatok"></a>
 > Vizsgáljuk meg az *Interface Builder*t és helyezzünk el pár nézetet a `Main.storyboard`on. Ez az alternatívája annak, hogy kódból hozzuk létre a nézeteket. 
 > Nézzük meg a `storyboard`ot XML formátumban is!
 
