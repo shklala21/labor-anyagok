@@ -44,7 +44,12 @@ Mac-ekhez külön Apple billentyűzetek léteznek, melyeken némiképp különb�
 
 A legfontosabb különbség, hogy Mac-en `Command` (`cmd` &#8984;) gomb van Windows gomb helyett. Ez a PC-s billentyűzeten alapesetben pont a Windows gombra képződik le. A `Control`, `Alt` és `Alt Gr` (Right Alt), Mac-en is ugyanúgy használatos. Mac-en az `Alt` alternatív neve `Option`.
 
+---
+
 *Mac-en a billentyűparancsok jelentős része nem a `Control`, hanem a `Command` billentyűvel válthatók ki, tehát `Ctrl+C` helyett `Cmd+C`-t használunk!*
+
+---
+
 ![](img/01_keyboard.png)
 
 | A legfontosabb általános billentyűkombinációk                  ||
@@ -63,7 +68,11 @@ A legfontosabb különbség, hogy Mac-en `Command` (`cmd` &#8984;) gomb van Wind
 | `Cmd+Bal`       | Uggrás a sor elejére (`Home` helyett)         |
 | `Cmd+Tab`       | Futó alkalmazások közötti váltás              |
 
+---
+
 *A legtöbb Mac-es alkalmazásnál az alkalmazás ablakainak vagy ablakának bezárása után is tovább fut a program. A teljes kilépéshez a `Cmd+Q`-t használhatjuk.*
+
+---
 
 ### Egér <a id="eger"></a>
 Korábban a Mac-es egerek egygombosak voltak, a `Ctrl+klikkel` lehetett az alternatív funkciókat elérni (ma is használható: `Ctrl+balklikk`). Kétgombos egereknél a jobb gomb funkciója megegyezik a `Ctrl+balklikkel`.
@@ -133,12 +142,21 @@ Bal szélső panel. Több tabból áll, a projekt fájljait az 1. tabon, a `Proj
 
 Az itt látható mappákat *Group*oknak nevezik és nem tükrözik, hogy a fájlrendszerben hol is helyezkednek el a fájlok. Tetszőlegesen csoportosíthatjuk a fájlokat új *Group*okba, vagy átnevezhetjük a már meglévő *Group*okat, a fájlrendszerben nem változik a fájlok helye.
 
+---
+
 *A `Project Navigator`ban lévő mappák (groupok) segítségével logikailag csoportosíthatjuk a projekt fájljait.*
+
+---
 
 > Hasonlítsuk össze a `Project Navigator`ban és a fájlrendszerben lévő fájlokat és a könyvtárszerkezetet (*Finder* segítségével).
 
 ### Projekt felépítése <a id="projekt-felepitese"></a>
+
+---
+
 *Az `iOS`-re írt alkalmazások alapvetően az **MVC** (Model View Controller) architektúrára épülnek.*
+
+---
 
 Az `iOS` alkalmazások felépítésével részletesebben a következő hetekben fogunk foglalkozni. Most csak nagyon röviden végignézzük, hogy a generált fájlok közül melyik micsoda.
 
@@ -172,8 +190,12 @@ A `Products` group egy speciális mappa, mely az alkalmazás fordításakor/tesz
 
 A fordítási folyamat eredménye egy **Labor1.app** nevű bundle. A bundle nem más mint egy könyvtár, fix belső szerkezettel. Ezen belül található az alkalmazás futtatható indítófájlja és az egyéb erőforrások (képek, adatfájlok, stb.). Szimulátorra való fordítás esetén a **Labor1.app** megtalálható a Mac fájlrendszerében.
 
+---
+
 *Sajnos Xcode 6-tól elég nehéz megtalálni a szimulátor és azon belül az alkalmazások könyvtárát. A `~/Library/Developer/CoreSimulator/Devices/UID/data/Container/Data/Application/` körül lehet keresgélni, de a `UID` egy hosszú, kvázi-véletlen azonosító, ami ráadásul fordítások között is változhat...*
 *Több 3rd party megoldás született már a mappa könnyebb megtalálásához, pl. [SimPholders](http://simpholders.com)*
+
+---
 
 ### Írás a konzolra <a id="iras-a-konzolra"></a>
 A konzolra való log üzenetek megjelenítéséhez a `print(_:separator:terminator:)` függvényt használhatjuk. A konzol ablak alapból rejtve van, kapcsoljuk be a *Toolbar*on.
@@ -275,7 +297,11 @@ A projekt szintű beállításokat a `Project Navigator`ban, a projekt nevére/f
 
 A jobb oldalt megjelenő listában láthatjuk, hogy a **Labor1** projekt és az ahhoz tartozó **Labor1** targettel dolgozunk. Több beállítást redundáns módon mind a *Project* mind a *Target* szinten megadhatunk. A *Target* alapból örökli az összes *Project* szintű beállítást, de ha bármit átállítunk *Target* szinten, akkor az fog érvénybe lépni, és felüldefiniálja a *Project* szintű beállításokat.
 
+---
+
 *Egy projekthez több* Target *is tartozhat. A különféle* Target*ekhez különböző fordítási és projektbeállításokat rendelhetünk, így például készíthetünk egy külön* Target*et az alkalmazás ingyenes (Free) változatához és a fizetőshöz (Paid).*
+
+---
 
 A bonyolultabb beállításokat későbbi laborokon részletezzük.
 
@@ -290,11 +316,19 @@ A bonyolultabb beállításokat későbbi laborokon részletezzük.
 > A megjelenő listából válasszuk ki az `AppIcon` elemet, majd húzzuk rá a letöltött PNG fájlt az `iPhone App iOS 7-10 60pt` `2x` rublikára.
 ![](img/16_assets_appicon.png)
 
+---
+
 *Az asset katalógusok az alkalmazás képfájljainak csoportosítására szolgálnak. Egy `iOS` alkalmazásban egy képfájlból (ikonból) gyakran több különféle felbontású verzió is kell, ezeket az összetartozó képeket tudjuk hatékonyan együtt kezelni az asset katalógusok segítségével. 
 Pl. az `AppIcon` azonosítóhoz hozzárendelhetjük a menüben *(Springboard) *megjelenő `120x120` pixeles változatot, illetve a keresésnél *(Spotlight) *megjelenő kisebb változatokat is.
 Ha nem adunk meg az egyik típushoz ikont, akkor a rendszer megpróbálja azt a megadott ikonból legenerálni (átméretezéssel), de ez a legtöbb esetben nem fog hibátlan eredménnyel járni.*
 
+---
+
+---
+
 *Érdemes megjegyezni, hogy `iPhone`-on és `iPad`en eltérő méretű az alkalmazások ikonja.*
+
+---
 
 > A szimulátorban ellenőrizzük, hogy megjelenik-e az új alkalmazás ikon!
 
