@@ -217,9 +217,7 @@ Esetünkben lényegében referencia szerinti azonosságot szeretnénk vizsgálni
 class GameCharacter: NSObject {...}
 ```
 
-Ekkor azonban az inicializálóban kapunk hibát, mert nem hívjuk meg az ősosztály (`NSObject`) konstruktorát.
-
-> Javítsuk!
+Továbbá az inicializálóban a saját property-k beállítása után hívjuk meg az ősosztály (`NSObject`) konstruktorát is (`two-phase initialization`).
 
 ```swift
 init?(name: String, level: Int) {
