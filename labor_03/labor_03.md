@@ -30,8 +30,10 @@ A labor során egy egyszerű számológép alkalmazást készítünk el, melyen 
 
 ---
 
+
 > Első lépésként válasszuk ki a `Main.storyboard`ot, majd a `File Inspector`ban kapcsoljuk ki a `Use Trait Variations` beállítást!
 ![](img/01_trait_variations.png)
+
 
 ---
 
@@ -43,11 +45,13 @@ A labor során egy egyszerű számológép alkalmazást készítünk el, melyen 
 
 ---
 
+
 <a id="alap-nezetek-hasznalata"></a>
 > Hozzunk létre `Main.storyboard`ban, a `ViewController`en belül lévő `View`-ban **2 db** `UITextField`et, **2 db** `UILabel`t és **1 db** `UIButton`t.
 ![](img/02_starter_ui.png)
 
 ---
+
 
 *A nézetek elrendezéséhez most még abszolút koordinátákat használunk, ami miatt elforgatott, vagy eltérő méretű kijelzőn a felület "rosszul" fog megjelenni (nem középen lesz amit középre rakunk).  Ezt a problémát oldja meg az `Auto Layout`, melyről később fogunk tanulni.*
 
