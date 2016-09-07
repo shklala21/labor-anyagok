@@ -59,6 +59,7 @@ Lehetőség van rá, hogy értelmes neveket adjunk az egyes felületelemeknek. A
 > Rendezzük középre a két `UILabel` *`Alignment`* property-jét!
 ![](img/04_alignment.png)
 
+<!--  -->
 > Teszteljük a felületet a szimulátorral!
 
 <!-- -->
