@@ -31,6 +31,7 @@ A labor során egy egyszerű számológép alkalmazást készítünk el, melyen 
 ---
 
 > Első lépésként válasszuk ki a `Main.storyboard`ot, majd a `File Inspector`ban kapcsoljuk ki a `Use Trait Variations` beállítást!
+
 > ![](img/01_trait_variations.png)
 
 ---
@@ -46,7 +47,8 @@ A labor során egy egyszerű számológép alkalmazást készítünk el, melyen 
 
 <a id="alap-nezetek-hasznalata"></a>
 > Hozzunk létre `Main.storyboard`ban, a `ViewController`en belül lévő `View`-ban **2 db** `UITextField`et, **2 db** `UILabel`t és **1 db** `UIButton`t.
-![](img/02_starter_ui.png)
+
+> ![](img/02_starter_ui.png)
 
 ---
 
@@ -56,10 +58,12 @@ A labor során egy egyszerű számológép alkalmazást készítünk el, melyen 
 ---
 
 Lehetőség van rá, hogy értelmes neveket adjunk az egyes felületelemeknek. Az átnevezéshez válasszunk ki egy elemet a bal szélső listából, majd az `Enter` megnyomása után átnevezhetjük. 
+
 ![](img/03_named_views.png)
 
 > Rendezzük középre a két `UILabel` *`Alignment`* property-jét!
-![](img/04_alignment.png)
+
+> ![](img/04_alignment.png)
 
 <!--  -->
 > Teszteljük a felületet a szimulátorral!
@@ -83,8 +87,10 @@ Lehetőség van rá, hogy értelmes neveket adjunk az egyes felületelemeknek. A
 ---
 
 > Kössük be a `Text Field`et az `outlet`re, a `storyboard`ból a `Connections Inspector`t használva!
-![](img/05_outlet_selected_vc.png)
-![](img/06_outlet_connection_inspector.png)
+
+> ![](img/05_outlet_selected_vc.png)
+
+> ![](img/06_outlet_connection_inspector.png)
 
 > Módosítsuk kódból, a `viewDidLoad` metódusból a `Text Field` értékét!
 
@@ -98,7 +104,8 @@ override func viewDidLoad() {
 
 <!-- Mutogassuk meg, hogy milyen szépen mutatja a kódban és a UI editorban, hogy melyik outlethez melyik UI elem tartozik. Mind a sorok elején lévő kis jellel, mint a Connection inspectorban. -->
 > Váltsunk `Assistant Editor` nézetbe (`Cmd+Alt+Enter`), majd hozzunk létre `outletek`et az egyes nézetekhez `Jobbklikk-Drag&Drop`-al (kivéve a `+` jeles `UILabel`hez)!
-![](img/07_create_outlet.png)
+
+> ![](img/07_create_outlet.png)
 
 ```swift
 @IBOutlet weak var inputTextFieldA: UITextField!
@@ -161,8 +168,10 @@ A probléma most már csak az, hogy a feljövő virtuális billentyűzetet csak 
 
 Ahhoz, hogy a gyökér nézet megérintését le tudjuk kezelni, le kell cserélnünk az osztályát `UIView`-ról, `UIControl`ra (hiszen csak `UIControl` és belőle származó osztályok tudnak eseményeket generálni). 
 > A `storyboard` szerkesztőben kiválasztva a gyökér nézetet, a `Identity Inspector`ban választhatjuk ki hozzá a konkrét osztályt, itt váltsunk `UIControl`ra!
-![](img/09_selected_view.png)
-![](img/10_identity_inspector.png)
+
+> ![](img/09_selected_view.png)
+
+> ![](img/10_identity_inspector.png)
 
 <!--  -->
 > Ezek után a `Connections inspector`ban a `Touch Up Inside` eseményhez rendeljünk hozzá egy `onBackgroundTouchUpInside` nevű metódust!
@@ -186,26 +195,30 @@ Ha most kipróbáljuk az alkalmazást egy, a grafikus tervezőfelülettel nem me
 
 A legegyszerűbb megoldás az elemek dinamikus elrendezéséhez az `iOS 9`-ben debütáló `Stack View`. 
 
-> Válasszuk ki az összes nézetet, majd nyomjuk meg a `Stack` gombot a szerkesztő nézet jobb alsó sarkában!
-![](img/12_stack_button.png)
+> Válasszuk ki az összes nézetet, majd nyomjuk meg a `Stack` gombot a szerkesztő nézet jobb alsó sarkában! ![](img/12_stack_button.png)
 
 Először valami hasonló, nem túl jól kinéző felületet fogunk látni.
 ![](img/13_initial_stack_view.png)
 
 > Ahhoz, hogy a nézetek egyenletesen helyezkedjenek el, válasszuk ki a `Stack View`-t és állítsuk be a *`Distribution`* paraméterét **`Equal Spacing`**re az `Attributes Inspector`ban!
-![](img/14_stack_view_distibution.png)
+
+> ![](img/14_stack_view_distibution.png)
 
 > Továbbra is a `Stack View` beállításai között állítsuk az *`Alignment`* paramétert **`Fill`**re! Ezzel azt érjük el, hogy a `Stack View`-ban lévő nézetek kitőltik a rendelkezésre álló szélességet.
-![](img/15_stack_view_alignment.png)
+
+> ![](img/15_stack_view_alignment.png)
 
 Utolsó lépésként még be kell állítanunk, hogy maga a `Stack View` dinamikusan legyen elrendezve a képernyőn. Ehhez az `Auto Layout`ot fogjuk használni, amiről a következő laboron még bőven lesz szó.
 > Most egyelőre csak válasszuk ki a `Stack View`-t és a `Pin` opciót, majd csatoljuk hozzá a szülő nézetéhez és magasságát állítsuk fixen `300`-ra!
-![](img/16_auto_layout.png)
+
+> ![](img/16_auto_layout.png)
 
 Vegyük észre, hogy a `Document Outline`-ban a "jelenetünk" neve mellett továbbra is ott van egy piros nyíl. Ez `Auto Layout` hibát jelent. Később erről részletesen beszélünk.
+
 ![](img/17_auto_layout_issue.png)
 
 A hibát most egész egyszerűen oldjuk meg úgy, hogy a `Stack View` `height` constraintjét `Equal` helyett állítsuk `Greater Than or Equal`ra.
+
 ![](img/18_stack_view_height_constraint.png) ![](img/19_auto_layout_issue_fix.png)
 
 ---
@@ -218,11 +231,13 @@ A hibát most egész egyszerűen oldjuk meg úgy, hogy a `Stack View` `height` c
 
 ## Több számológép művelet támogatása <a id="tobb-szamologep-muvelet"></a>
 > Töröljük ki a `+` jelet megjelenítő `UILabel`t és a helyére húzzunk be egy `Segmented Control`t (`UISegmentedControl`)!
-![](img/20_segmented_control.png)
+
+> ![](img/20_segmented_control.png)
 
 <!--  -->
 > Módosítsuk a `Segmented Control`t, hogy **`3`** szegmensből álljon (`Attributes Inspector`ban a *`Segments`* attribútum), majd írjuk át ezek szövegét (dupla klikk a szerkesztőben) a szorzás, osztás és összeadás müveletknek megfelelő jelekre!
-![](img/21_segmented_control_operators.png)
+
+> ![](img/21_segmented_control_operators.png)
 
 <!--  -->
 > Az `Assistant Editor` nézetre váltva, kössük be a `Segmented Control` `Value Changed` eseményét egy új `operationSelectorValueChanged:` nevű akció metódusra a `ViewController` osztályban!
@@ -276,8 +291,10 @@ Ezek után már csak annyi dolgunk van, hogy a kiszámítást elindító gomb me
 ## Korábbi számítások (*`History` nézet*) <a id="korabbi-szamitasok"></a>
 
 > Adjunk hozzá egy `Text View`-t a `Stack View` aljához, majd hozzunk létre hozzá egy `IBOutlet`et a `View Controller` interfészében (pl. `historyView` névvel)!
-![](img/22_text_view.png)
-![](img/23_history_view.png)
+
+> ![](img/22_text_view.png)
+
+> ![](img/23_history_view.png)
 
 <!--  -->
 > A már korábban látott módon állítsuk be a `Text View` minimum magasságát `100`-ra!
@@ -292,7 +309,8 @@ Ezek után már csak annyi dolgunk van, hogy a kiszámítást elindító gomb me
 
 <!--  -->
 > Módosítsuk az eredményeket kiszámító kódot oly módon, hogy az aktuális számításról bekerüljön egy sor a `Text View`-ba, pl. `13.00 + 13.00 = 26.00`!
-![](img/24_history_view.png)
+
+> ![](img/24_history_view.png)
 
 Tippek:
 
