@@ -64,8 +64,8 @@ A legfontosabb különbség, hogy Mac-en `Command` (`cmd` &#8984;) gomb van Wind
 | `Cmd+W`         | Ablak bezárása                                |
 | `Cmd+Q`         | Kilépés az alkalmazásból                      |
 | `Cmd+Space`     | *Spotlight* (gyorskereső, alkalmazásindtás)   |
-| `Cmd+Jobb`      | Uggrás a sor végére (`End` helyett)           |
-| `Cmd+Bal`       | Uggrás a sor elejére (`Home` helyett)         |
+| `Cmd+Jobb`      | Ugrás a sor végére (`End` helyett)           |
+| `Cmd+Bal`       | Ugrás a sor elejére (`Home` helyett)         |
 | `Cmd+Tab`       | Futó alkalmazások közötti váltás              |
 
 ---
