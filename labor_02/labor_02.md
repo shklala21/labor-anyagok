@@ -234,7 +234,7 @@ init?(name: String, level: Int) {
 
 ---
 
-***`NSObject`** a `Foundation` framework alaposztálya. `Objective-C`-ben minden osztálynak `NSObject`ből kell származnia (legalább közvetett módon). `Swift`ben ez már opcionális, de később látni fogjuk, hogy sok `API`-nál elvárás, hogy valamilyen `NSObject` leszármazott osztályú objektummal dolgozzon, ezért viszonylag ritkán fogunk olyan osztályokat látni, melyeknek nem szerepel az öröklési hierarchiájában.*
+* **`NSObject`** a `Foundation` framework alaposztálya. `Objective-C`-ben minden osztálynak `NSObject`ből kell származnia (legalább közvetett módon). `Swift`ben ez már opcionális, de később látni fogjuk, hogy sok `API`-nál elvárás, hogy valamilyen `NSObject` leszármazott osztályú objektummal dolgozzon, ezért viszonylag ritkán fogunk olyan osztályokat látni, melyeknek nem szerepel az öröklési hierarchiájában.*
 
 ---
 
