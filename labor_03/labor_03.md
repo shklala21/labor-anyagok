@@ -30,10 +30,8 @@ A labor során egy egyszerű számológép alkalmazást készítünk el, melyen 
 
 ---
 
-
 > Első lépésként válasszuk ki a `Main.storyboard`ot, majd a `File Inspector`ban kapcsoljuk ki a `Use Trait Variations` beállítást!
-![](img/01_trait_variations.png)
-
+> ![](img/01_trait_variations.png)
 
 ---
 
