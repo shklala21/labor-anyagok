@@ -154,7 +154,7 @@ Az itt látható mappákat *Group*oknak nevezik és nem tükrözik, hogy a fájl
 
 ---
 
-*Az `iOS`-re írt alkalmazások alapvetően az **MVC** (Model View Controller) architektúrára épülnek.*
+*Az `iOS`-re írt alkalmazások alapvetően az `MVC` (Model View Controller) architektúrára épülnek.*
 
 ---
 
@@ -163,7 +163,7 @@ Az `iOS` alkalmazások felépítésével részletesebben a következő hetekben 
 | Fájlnév | Leírás |
 | --- | --- |
 | `AppDelegate.swift`         | Az alkalmazáshoz tartozó `Application Delegate` osztály, melyben lekezelhetjük az alkalmazás életciklus fontosabb eseményeit (pl. elindult a program). Egyszerűbb alkalmazásoknál ez lehet a fő/gyökér osztály, ahol az alkalmazáslogikát megírjuk. |
-| `ViewController.swift`      | Az alkalmazás egy "view controller"e, mely tartalmazza az alkalmazás egy "képernyőjéhez" tartozó logikát/kódokat. |
+| `ViewController.swift`      | Az alkalmazás egy `View controller`e, mely tartalmazza az alkalmazás egy "képernyőjéhez" tartozó logikát/kódokat. |
 | `Main.storyboard`           | Az alkalmazás felhasználói felületét, "nézeteit" és azok kapcsolatát leíró XML fájl. |
 | `Assets.xcassets`            | A projektben használt képi erőforrásokat (képfájlokat) tartalmazó "asset katalógus". Valójában egy könyvtár. |
 | `LaunchScreen.storyboard`   | Az alkalmazás indításakor, töltés közben megjelenő *Launch Screen* (~"Splash Screen", de csak addig látszódik, míg töltődik az alkalmazás). |
@@ -186,7 +186,7 @@ A `Products` group egy speciális mappa, mely az alkalmazás fordításakor/tesz
 > Fordítsuk le és futtassuk az alkalmazást (`Cmd+R`) és gyönyörködjünk a megjelenő fehér ablakban! Ismerkedjünk meg az *iOS Simulator* alapfunkcióival!
 
 <!-- -->
-> Próbáljuk ki az *iOS Simulator* alapfunkcióit (Multitasking Bar behozása (2x `Cmd+Shift+H`), futó alkalmazás leállítása, alkalmazás törlése, minden alkalmazás törlése *Reset Content and Settings* paranccsal)!
+> Próbáljuk ki az *iOS Simulator* alapfunkcióit (`Multitasking Bar` behozása (`2x` `Cmd+Shift+H`), futó alkalmazás leállítása, alkalmazás törlése, minden alkalmazás törlése *Reset Content and Settings* paranccsal)!
 
 A fordítási folyamat eredménye egy **Labor1.app** nevű bundle. A bundle nem más mint egy könyvtár, fix belső szerkezettel. Ezen belül található az alkalmazás futtatható indítófájlja és az egyéb erőforrások (képek, adatfájlok, stb.). Szimulátorra való fordítás esetén a **Labor1.app** megtalálható a Mac fájlrendszerében.
 
@@ -219,7 +219,7 @@ for i in 1...5 {
 ```
 
 ### Írás a képernyőre <a id="iras-a-kepernyore"></a>
-Váltsunk át a `Main.storyboard` fájlra. Itt az alkalmazás jeleneteit (*scene*-eit, *View Controller*eit) láthatjuk. Kezdéskor egyetlen jelenet található a *storyboard*ban, amely teljesen üres. A későbbiekben részletesen fogunk foglalkozni a felhasználói felület felépítésével, most azonban elégedjünk meg annyival, hogy itt tudjuk definiálni, hogy milyen nézetekből épüljön fel a felhasználói felület és ezekhez milyen beállítások tartozzanak.
+Váltsunk át a `Main.storyboard` fájlra. Itt az alkalmazás jeleneteit (*scene*-eit, *View Controller*eit) láthatjuk. Kezdéskor egyetlen jelenet található a `storyboard`ban, amely teljesen üres. A későbbiekben részletesen fogunk foglalkozni a felhasználói felület felépítésével, most azonban elégedjünk meg annyival, hogy itt tudjuk definiálni, hogy milyen nézetekből épüljön fel a felhasználói felület és ezekhez milyen beállítások tartozzanak.
 
 > Módosítsuk a `ViewController.swift` fájlban a `viewDidLoad` metódust, hogy az létrehozzon egy új `UILabel`t és kiírja a **Hello World**-öt a képernyőre.
 
@@ -263,9 +263,10 @@ Debug breakpointok a kódsorok elé klikkelve hozhatók létre, illetve itt kapc
 helloWorldLabel.addSubview(helloWorldLabel)
 ```
 
-Indítsuk el az alkalmazást és figyeljük meg milyen, amikor egy `Exception` keletkezik.
+> Indítsuk el az alkalmazást és figyeljük meg milyen, amikor egy `Exception` keletkezik.
 
 Először a konzolt keressük meg és ezen belül görgessünk oda, ahol az exception leírása olvasható (ez mindig a stack trace előtt található, a konzol log vége felé).
+
 `2016-08-31 15:58:13.553 Labor1[83758:2390032] *** Terminating app due to uncaught exception 'NSInvalidArgumentException', reason: 'Can't add self as subview'`
 
 A leírás itt elég jó, de azért próbáljuk megnézni pontosan melyik kódsor is dobta hibát. Nyissuk meg a `Debug Navigator`t, ha nem lenne nyitva (`Cmd+6`). A probléma, hogy az `AppDelegate` van megjelölve mint az utolsó lefutó kódot tartalmazó osztály. Ez azért van, mert alapesetben, kivételek keletkezése után, ha azt a kivételt nem kapja el semmilyen köztes kód, végül itt, az `AppDelegate` egy (általunk nem látható) kódrészlete lövi ki a szálat.
@@ -314,6 +315,7 @@ A bonyolultabb beállításokat későbbi laborokon részletezzük.
 
 <!-- -->
 > A megjelenő listából válasszuk ki az `AppIcon` elemet, majd húzzuk rá a letöltött PNG fájlt az `iPhone App iOS 7-10 60pt` `2x` rublikára.
+
 ![](img/16_assets_appicon.png)
 
 ---
