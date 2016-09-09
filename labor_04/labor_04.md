@@ -62,6 +62,7 @@ override func viewDidLoad() {
 ---
 
 *Ha kódból hozunk étre nézeteket a következő három lépésre figyeljünk.*
+
 1. *a nézet példányosítása*
 2. *a nézet pozíciójának és méretének megadása (`frame`, esetleg `bounds` + `center` beállításával) a leendő szülőnézetének koordinátarendszerében*
 3. *a nézet hozzáadása egy szülőnézethez (itt kerül be a nézet hierarchiába)*
@@ -380,7 +381,9 @@ ellipse.contentMode = .redraw
 > Adjunk hozzá egy `Swipe Gesture Recognizer` gesztusfelismerőt a `canvas`-hez és a gesztus bekövetkeztekor töröljük a `canvas` tartalmát, az összes alnézet eltávolításával!
 
 *  A `Swipe Gesture Recognizer`nél meg kell adnunk, hogy milyen irányú `swipe` ot detektáljon (pl. balról-jobbra). Ennek megfelelően, ha tetszőleges irányú `swipe`-ot észlelni szeretnénk, akkor `4` külön gesztusfelismerőt kellene létrehozni.
+
 ![](img/14_swipe_gesture_recognizer.png)
+
 * Nézetek eltávolításához a `removeFromSuperView` metódust kell meghívni az eltávolítandó gyerek nézeteken. Ehhez végig kell iterálni `canvas` `subviews` property-jén (ami a gyerek nézeteket tartalmazó tömb).
 
 ```swift
