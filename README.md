@@ -6,6 +6,8 @@
 
 ## Laborok
 
+* [GitHub Classroom tutorial](#github_classroom/github_classroom.md)
+
 * [1. labor](labor_01/labor_01.md)
 * [2. labor](labor_02/labor_02.md)
 * [3. labor](labor_03/labor_03.md)
