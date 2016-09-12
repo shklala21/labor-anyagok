@@ -4,9 +4,9 @@
 
 [A tárgy hivatalos **adatlapja**](http://www.vik.bme.hu/kepzes/targyak/VIAUAV15)
 
-## Laborok
+[GitHub Classroom tutorial](github_classroom/github_classroom.md)
 
-* [GitHub Classroom tutorial](github_classroom/github_classroom.md)
+## Laborok
 
 * [1. labor](labor_01/labor_01.md)
 * [2. labor](labor_02/labor_02.md)
