@@ -30,7 +30,7 @@ A `playground` egy interaktív fejlesztőkörnyezet, melyben minden sor/kifejez�
 
 ---
 
-*Bár úgy tűnhet mintha egy interpretált nyelvvel dolgoznánk, valójában a minden módosítás után újrafordul a teljes playground.*
+*Bár úgy tűnhet mintha egy interpretált nyelvvel dolgoznánk, valójában minden módosítás után újrafordul a teljes `playground`.*
 
 ---
 
@@ -47,7 +47,7 @@ class GameCharacter {
 }
 ```
 
-Hibát kapunk, mert az osztálynak nincs minden property-je inicializálva. A `Swift` fordító kötelezően előírja, hogy az osztály példányosításakor minden property inicializálva legyen.
+Hibát kapunk, mert az osztálynak nincs minden property-je inicializálva. A `Swift` fordító kötelezően előírja, hogy az osztály példányosításakor minden property inicializálva legyen. (`struct`-ok esetén nem kapnánk hibát a *memberwise initializer* miatt.)
 
 > Hozzunk létre egy új inicializálót, mely bekéri a karakter nevét és szintjét.
 
@@ -69,7 +69,7 @@ let hero1 = GameCharacter(name: "Harcos Huba", level: 1)
 > Figyeljük meg a következőket.
 
 * inicializálók és függvények hívásánál alapesetben minden paraméter nevét ki kell írni
-* mivel `hero1`-et `let`tel definiáltuk, ez egy konstans és nem változtatható az értéke (azonban a hivatkozott objektumnak ettől még módosíthatjuk a property-jeit)
+* mivel `hero1`-et `let`tel definiáltuk, ez egy _konstans_ és nem változtatható az értéke (azonban a hivatkozott objektumnak ettől még módosíthatjuk a property-jeit)
 * `Option+Click`kel vizsgáljuk meg `hero1` típusát, láthatjuk, hogy hála a `type inference`-nek, egy `GameCharacter` típusú változót kaptunk
 
 ---
@@ -151,7 +151,7 @@ if let unwrappedHero = hero2 {
 ---
 
 ### Generikus tárolók, metódusok és osztályhierarchiák <a id="gen"></a>
-> Hozzunk létre egy `Party` nevű osztályt, mely egy csapatnyi játékos-karaktert gyűjt egybe!
+> Hozzunk létre egy `Party` nevű osztályt, mely egy _csapatnyi játékos-karaktert_ gyűjt egybe!
 
 ```swift
 class Party {
@@ -164,11 +164,14 @@ class Party {
 ```
 
 * A csapatba tartozó karaktereket a `members` property tárolja, melynek típusa `[GameCharacter]` vagyis egy tömb, mely `GameCharacter` példányokat tartalmaz. Ennek a propertynek kezdeti értéket adunk: egy üres tömböt.
-* Az `addMember:` metódus felvesz egy új karaktert a csapatba
+* Az `addMember:` metódus felvesz egy új karaktert a csapatba.
+* Ha egy osztály minden változójának adunk egy kezdeti értéket és emellett egyetlen `init` függvényt sem írunk, a `Swift` _default initializer_ t hoz létre.
+
+Private access restricts the use of an entity to the enclosing declaration. Use private access to hide the implementation details of a specific piece of functionality when those details are used only within a single declaration.
 
 ---
 
-*A `private` láthatóság `Swift`ben azt jelenti, hogy csak az adott forráskódfájlban érhető el az így megjelölt elem. Ez `playground`ok esetén nem sokat jelent, hisz minden kódot "egy forrásfájlba írunk". Ha az osztályaink külön fájlokban lennének definiálva (pl. `GameCharacter.swift` és `Party.swift`), akkor már nem tudnák elérni egymás privát mezőit.*
+*A `private` láthatóság `Swift 3`-ban azt jelenti, hogy csak az adott __scope-on belül__ (enclosing declaration) érhető el az így megjelölt elem. `Swift 2`-ben még az  adott __forrásfájlban__ volt érhető. A `Swift 2`-es jelentésre `Swift 3`-ban az új, `fileprivate` kulcsszó szolgál.*
 
 ---
 
@@ -192,7 +195,7 @@ func printMembers() {
 heroes.printMembers()
 ```
 
-> Hozzunk létre `Party`-ban egy új metódus, mely megmondja, hogy egy adott karakter tagja-e a csapatnak!
+> Hozzunk létre a `Party`-ban egy új metódus, mely megmondja, hogy egy adott karakter tagja-e a csapatnak!
 
 ```swift
 func isMember(member: GameCharacter) -> Bool {
@@ -204,8 +207,8 @@ Fordítási hibát fogunk kapni. A probléma az, hogy a `contains:` függvény m
 
 ---
 
-*`Swift`ben az `==` az egyenlőség (*equal to*) operátor, ezt használják a `Swift` Standard Library függvényei (pl. `contains()`, `find()`, stb.). Az `==` operátort egy megfelelő szintaktikájú globális függvény megvalósításával lehet definiálni, ezt írja elő az `Equatable` protokoll is.
-`func ==(left: GameCharacter, right: GameCharacter) -> Bool`*
+*`Swift`ben az `==` az egyenlőség (*equal to*) operátor, ezt használják a `Swift Standard Library` függvényei (pl. `contains()`, `find()`, stb.). Az `==` operátort egy megfelelő szintaktikájú globális függvény megvalósításával lehet definiálni, ezt írja elő az `Equatable` protokoll is.
+`func ==(lhs: GameCharacter, rhs: GameCharacter) -> Bool`*
 
 *A `===` operátor az azonosság (*identity*) operátor, mely akkor tér vissza igaz értékkel, ha az összehasonlított két érték ténylegesen ugyanaz az objektum.*
 
@@ -279,7 +282,7 @@ var power: Int {
 ```
 
 ### Öröklés és Castolás <a id="orokles-es-castolas"></a>
-> Hozzunk létre egy `Hero` nevű osztályt, mely `GameCharacter`ből származik. `Hero` egy olyan karakter, melynél lehet egy fegyver (de nem minden esetben van fegyvere). A fegyvert egy `enum`mal jelképezzük!
+> Hozzunk létre egy `Hero` nevű osztályt, mely `GameCharacter`ből származik. `Hero` egy olyan *karakter*, akinél __lehet__ egy fegyver (de nem minden esetben van). A fegyvert egy `enum`mal jelképezzük!
 
 ```swift
 class Hero: GameCharacter {
@@ -328,7 +331,7 @@ protocol Fightable {
 }
 ```
 
-> Írjunk egy függvényt, mely lejátszik egy ütközetet két "harcoló fél" között. A két fél addig támadja egymást felváltva, míg az egyik fél el nem esik (`isDead` property `true`-val tér vissza). A metódus térjen vissza a győztessel, vagy `nil`lel, ha mindkét fél elesik az utolsó körben!
+> Írjunk egy függvényt, mely lejátszik egy ütközetet két "harcoló fél" között. A két fél addig támadja egymást felváltva, míg az egyik fél el nem esik (`isDead` property `true`-val tér vissza). A metódus térjen vissza a győztessel, vagy `nil`lel, ha mindkét fél elesett az utolsó körben!
 
 ```swift
 func fight(fighter1: Fightable, fighter2: Fightable) -> Fightable? {
