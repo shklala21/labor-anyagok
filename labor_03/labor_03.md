@@ -7,9 +7,9 @@
 
 ## A labor témája
 * [iCalculator](#icalculator)
-* [Stack View](#stack-view)
     * [Alap nézetek használata](#alap-nezetek-hasznalata)
     * [`Outlet`ek és akció metódusok](#outletek-es-akcio-metodusok)
+* [Stack View](#stack-view)
 * [Önálló feladatok](#onallo)
     * [Több számológép művelet támogatása](#tobb-szamologep-muvelet)
     * [Korábbi számítások (*`History` nézet*)](#korabbi-szamitasok)
@@ -18,7 +18,7 @@
 A labor során egy egyszerű számológép alkalmazást készítünk el, melyen keresztül megismerkedünk az `iOS`-es felhasználói felület készítésének alapjaival.
 
 # iCalculator <a id="icalculator"></a>
-> Hozzunk lére egy új `Single View` applicationt, `iCalculator` névvel `iPhone`-ra!
+> Hozzunk lére egy új `Single View Application`t, `iCalculator` névvel `iPhone`-ra!
 
 ---
 
@@ -78,15 +78,15 @@ Lehetőség van rá, hogy értelmes neveket adjunk az egyes felületelemeknek. A
 ---
 
 <a id="outletek-es-akcio-metodusok"></a>
-**Mi az `outlet`?**
+**Mi az `Outlet`?**
 *Property, amin keresztül hivatkozhatunk egy, a grafikus szerkesztőben létrehozott, felületi elemre.*
 
 **Miért van itt `weak` property?**
-*Mert az `outlet`ekhez tartozó nézeteket a szülő nézeteik vagy a gyökérnézet esetén a `View Controller` birtokolja. Ha egy nézet kidobja a gyerekeit, akkor azt várjuk, hogy azok törlődjenek, és ha `strong` referencia lenne rájuk az `outlet`ek miatt, akkor ez nem történne meg.*
+*Mert az `Outlet`ekhez tartozó nézeteket a szülő nézeteik vagy a gyökérnézet esetén a `View Controller` birtokolja. Ha egy nézet kidobja a gyerekeit, akkor azt várjuk, hogy azok törlődjenek, és ha `strong` referencia lenne rájuk az `Outlet`ek miatt, akkor ez nem történne meg.*
 
 ---
 
-> Kössük be a `Text Field`et az `outlet`re, a `storyboard`ból a `Connections Inspector`t használva!
+> Kössük be a `Text Field`et az `Outlet`re, a `storyboard`ból a `Connections Inspector`t használva!
 
 > ![](img/05_outlet_selected_vc.png)
 
@@ -102,8 +102,8 @@ override func viewDidLoad() {
 }
 ```
 
-<!-- Mutogassuk meg, hogy milyen szépen mutatja a kódban és a UI editorban, hogy melyik outlethez melyik UI elem tartozik. Mind a sorok elején lévő kis jellel, mint a Connection inspectorban. -->
-> Váltsunk `Assistant Editor` nézetbe (`Cmd+Alt+Enter`), majd hozzunk létre `outletek`et az egyes nézetekhez `Jobbklikk-Drag&Drop`-al (kivéve a `+` jeles `UILabel`hez)!
+<!-- Mutogassuk meg, hogy milyen szépen mutatja a kódban és a UI editorban, hogy melyik Outlethez melyik UI elem tartozik. Mind a sorok elején lévő kis jellel, mint a Connection inspectorban. -->
+> Váltsunk `Assistant Editor` nézetbe (`Cmd+Alt+Enter`), majd hozzunk létre `Outletek`et az egyes nézetekhez `Jobbklikk-Drag&Drop`-al (kivéve a `+` jeles `UILabel`hez)!
 
 > ![](img/07_create_outlet.png)
 
@@ -166,7 +166,7 @@ view.endEditing(true)
 
 A probléma most már csak az, hogy a feljövő virtuális billentyűzetet csak úgy tudjuk eltüntetni, ha megnyomjuk az számológép gombját. Az elegáns megoldás `Number Pad` billentyűzet eltüntetésére, hogy a gyökér nézet hátterét bárhol megérintve eltűnjön a billentyűzet.
 
-Ahhoz, hogy a gyökér nézet megérintését le tudjuk kezelni, le kell cserélnünk az osztályát `UIView`-ról, `UIControl`ra (hiszen csak `UIControl` és belőle származó osztályok tudnak eseményeket generálni). 
+Ahhoz, hogy a gyökér nézet megérintését le tudjuk kezelni, le kell cserélnünk az osztályát `UIView`-ról, `UIControl`ra (hiszen csak `UIControl` és belőle származó osztályok tudnak előre definiált eseményeket generálni). 
 > A `storyboard` szerkesztőben kiválasztva a gyökér nézetet, a `Identity Inspector`ban választhatjuk ki hozzá a konkrét osztályt, itt váltsunk `UIControl`ra!
 
 > ![](img/09_selected_view.png)
@@ -297,11 +297,11 @@ Ezek után már csak annyi dolgunk van, hogy a kiszámítást elindító gomb me
 > ![](img/23_history_view.png)
 
 <!--  -->
-> A már korábban látott módon állítsuk be a `Text View` minimum magasságát `100`-ra!
+> A már korábban látott módon állítsuk be a `Text View` minimum magasságát `100`-ra `Auto Layout` segítségével!
 
 ---
 
-*A `Text View` legfőbb különbségei `UILabel`hez képest, hogy szerkeszthető és a kilogó szöveg görgethető.*
+*A `Text View` legfőbb különbségei `UILabel`hez képest, hogy szerkeszthető és a kilógó szöveg görgethető.*
 
 ---
 
@@ -314,8 +314,8 @@ Ezek után már csak annyi dolgunk van, hogy a kiszámítást elindító gomb me
 
 Tippek:
 
-* Állítsunk össze egy `String`et az új bejegyzéshez
-* Állítsuk be a `Text View` `text` property-jének értékét oly módon, hogy az új bejegyzéshez hozzáillesztjük a `Text View` `text` property-jének korábbi értékét (`textView.text = újSzöveg + textView.text`).
+* Allítsunk össze egy `String`et az új bejegyzéshez.
+* Allítsuk be a `Text View` `text` property-jének értékét oly módon, hogy az új bejegyzéshez hozzáillesztjük a `Text View` `text` property-jének korábbi értékét (`textView.text = újSzöveg + textView.text`).
 * Egy `enum` származhat `String`ből és így rendelhetünk hozzá szöveges értéket.
 
 ## Extra: alkalmazás ikon <a id="extra"></a>
