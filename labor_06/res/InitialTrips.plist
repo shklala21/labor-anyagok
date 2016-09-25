@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>name</key>
+		<string>Tűz és jég</string>
+		<key>location</key>
+		<string>Izland</string>
+		<key>description</key>
+		<string>Izland az Észak-Atlanti-óceánban található. Az Északi-sarkkör a főszigettől kicsit északra lévő Grímsey-en áthalad (a szigeten található az ország legészakibb települése is). Grönlanddal ellentétben Izlandot Európa, és nem Észak-Amerika részeként kezeljük. Kulturális, gazdasági és nyelvi szempontból is Skandináviához tartozik. A Föld tizennyolcadik, Európa második legnagyobb szigete.</string>
+		<key>image-name</key>
+		<string>iceland.jpg</string>
+	</dict>
+	<dict>
+		<key>name</key>
+		<string>A medvés címerű város</string>
+		<key>location</key>
+		<string>Németország, Berlin</string>
+		<key>description</key>
+		<string>Berlin Németország fővárosa, egyben Németország egyik tartománya (szövetségi állama) és a Berlin/Brandenburg Régió centruma. 3,4 millió lakosával Németország legnépesebb és kiterjedésében is legnagyobb városa.
+            
+            Története során Berlin többször volt német államok fővárosa (Brandenburg, Poroszország). 1871–1918 között a Német Császárság, 1918–1933 között a Weimari Köztársaság, 1933–1945 között a Harmadik Birodalom, 1945–1989 között az NDK, majd 1990-től az egyesült Németország fővárosa.</string>
+		<key>image-name</key>
+		<string>berlin.jpg</string>
+	</dict>
+</array>
+</plist>
