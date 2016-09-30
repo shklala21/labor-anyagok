@@ -359,6 +359,13 @@ A `Connections inspector`ban ellenőrizni tudjuk, hogy a megfelelő nézethez ad
 
 > Kössünk be egy akciómetódust a gesztusfelismerőre, `handleCanvasPinch(_:)` névvel! (Figyeljünk arra, hogy a `sender` típusa `UIPinchGestureRecognizer` legyen!)
 
+```swift
+@IBAction func handleCanvasPinch(_ sender: UIPinchGestureRecognizer) {
+  let scaleSize = 60 * sender.scale
+  currentEllipse?.bounds.size = CGSize(width: scaleSize, height: scaleSize)
+}
+```
+
 A pinch gesztust a szimulátorban az `Option ` (&#8997;) billentyű nyomva tartásával tudjuk szimulálni (kapunk egy virtuális ujjpárt).
 
 Láthatjuk, hogy nagyításkor egy "maszatos" átskálázott képet kapunk. Ez azért van, mert nem rajzolódik ki újra a nézet, csak a cache-elt tartalmat (textúrát) nagyítja fel a rendszer. Ezen segíthetünk a `contentMode` property `.redraw` értékre állításával, ami azt idézi elő, hogy a nézet minden méretváltozáskor újra ki fogja rajzoltatni a tartalmát. 
