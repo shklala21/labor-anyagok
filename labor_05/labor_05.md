@@ -15,12 +15,15 @@
 * [Önálló feladat](#onallo-feladat)
     * [Játékstatisztika](#jatekstatisztika)
 
-A labor során egy több nézetes, *képkitaláló játékot* készítünk el. A játék véletlenül sorsol képeket és feliratokat a projektbe bedrótozott adatokból. A képekből egy véletlenül kivágott ("crop") részlet kerül megjelenítésre. A felhasználó feladata a képhez a helyes cím kiválasztása.
+A labor során egy többnézetes, *képkitaláló játékot* készítünk el. A játék véletlenül sorsol képeket és feliratokat a projektbe bedrótozott adatokból. A képekből egy véletlenül kivágott ("crop") részlet kerül megjelenítésre. A felhasználó feladata a képhez a helyes cím kiválasztása.
 
 # PictureGuess <a id="pictureguess"></a>
 
 ## Játékválasztó nézet <a id="jatekvalaszto-nezet"></a>
-> Hozzunk létre egy új `Single View` applicationt, `PictureGuess` névvel, `iPhone`-ra és töröljük ki a létrejött `ViewController.swift` fájlt.
+> Hozzunk létre egy új `Single View Application`t `PictureGuess` névvel `iPhone`-ra!
+
+<!--  -->
+> Töröljük ki a létrejött `ViewController.swift` fájlt, illetve a `Main.storyboard`ban lévő `View Controller`t.
 
 <!--  -->
 > A `Main.storyboard` tulajdonságainál (`File Inspector`) kapcsoljuk ki a `Use Trait Variations` beállítást.
@@ -43,11 +46,11 @@ A `Navigation Controller`hez az `Xcode` alapból létrehoz egy hozzácsatolt `Ta
 
 ![](img/02_initial_vc.png)
 
-> Hozzunk létre egy új osztályt `GameSelectorViewController` névvel, `UIViewController`ből leszármaztatva! állítsuk be a `storyboard`on belül a játékválasztó `view controller` osztályát `GameSelectorViewController`re! Ehhez jelöljük ki a teljes nézetvezérlőt, majd `Identity inspector`ban adjuk meg az osztály nevét!
+> Hozzunk létre egy új osztályt `GameSelectorViewController` névvel, `UIViewController`ből leszármaztatva! Állítsuk be a `storyboard`on belül a játékválasztó `View Controller` osztályát `GameSelectorViewController`re! Ehhez jelöljük ki a teljes nézetvezérlőt, majd `Identity inspector`ban adjuk meg az osztály nevét!
 
 ![](img/03_identity_inspector.png)
 
-> Hozzunk létre egy `Outlet`et `difficultySegmentedControl` néven a `Segmented Control`hoz!
+> Hozzunk létre egy `Outlet`et **`difficultySegmentedControl`** néven a `Segmented Control`hoz!
 
 ## Picture Manager <a id="picture-manager"></a>
 > A `Project Navigator`ban válasszuk ki az `Assets.xcassets` katalógust és importáljuk ide be a képeket a `res/` mappából. Ezt például a `Jobb klikk`+`Import` vagy _drag&drop_ segítségével tehetjük meg.
@@ -56,9 +59,9 @@ Az importált képeket hagyhatjuk `Universal 1x`-en.
 
 ---
 
-_Saját alkalmazás fejlesztésekor mindenképpen érdemes az összes "x"-es képet megadni, ugyanis enélkül a rendszernek futási időben kell átskáláznia a képeket, ami nem csak performancia veszteséggel de néha meglepő eredménnyel is jár._
+_Saját alkalmazás fejlesztésekor mindenképpen érdemes az összes "x"-es képet megadni (vagy [vektoros pdf](http://krakendev.io/blog/4-xcode-asset-catalog-secrets-you-need-to-know)-et használni), ugyanis enélkül a rendszernek futási időben kell átskáláznia a képeket, ami nem csak performancia veszteséggel de néha meglepő eredménnyel is jár._
 
-Összefoglaló kép emlékeztetőnek az `iPhone` kijelzők méretéről.
+_Összefoglaló kép emlékeztetőnek az `iPhone` kijelzők méretéről._
 
 ![ [Forrás](http://blog.reigndesign.com/wp-content/uploads/2014/09/iPhone-Screen-Sizes.001.jpg) ](img/04_iphone_screen_sizes.png)
 
@@ -98,7 +101,7 @@ override init() {
 
 ---
 
-_A `plist` egy Apple környezetben gyakran használt fájl formátum, amelyben tömböket, dictionary-ket és alap típusokat pl. `string` lehet egyszerű módon tárolni._
+_A `plist` egy Apple környezetben gyakran használt fájl formátum, amelyben tömböket, dictionary-ket és alap típusokat (pl. `string`) lehet egyszerű módon tárolni._
 
 ---
 
@@ -192,7 +195,7 @@ let shorterRangeArray = pictures.enumerated().map{ $0.offset }.filter{ $0 != sel
 
 ---
 
-> Vegyünk fel `PictureManager` típusú property-t az `AppDelegate`-be és inicializáljuk!
+> Vegyünk fel egy `PictureManager` típusú property-t az `AppDelegate`-be és inicializáljuk!
 
 ```swift
 var pictureManager = PictureManager()
@@ -209,11 +212,11 @@ var pictureManager = PictureManager()
 > Hozzunk létre egy `GameViewController` nevű osztályt (`UIViewController` ősosztállyal) és adjuk meg ezt az új `View Controller` osztályának az `Identity inspector`ban.
 
 <!--  -->
-> Adjunk a `storyboard`hoz egy `Image View`-t és `3 Button`t. Ügyeljünk rá, hogy a képernyő alján maradjon némi hely (később itt még el kell férnie majd egy `Tab Bar`nak)!
+> Adjunk a `storyboard`ban az új `GameViewController`ünkhöz egy `Image View`-t és `3 Button`t. Ügyeljünk rá, hogy a képernyő alján maradjon némi hely (később itt még el kell férnie majd egy `Tab Bar`nak)!
 
 ![](img/07_game_view_ui_1.png)
 
-> állítsuk be a gombok `Tag` attribútumát az `Attributes inspector`ban `1-3`-ig (minden gomb más `Tag`et kapjon)!
+> Állítsuk be a gombok `Tag` attribútumát az `Attributes inspector`ban `1-3`-ig (minden gomb más `Tag`et kapjon)!
 
 ![](img/08_tag.png)
 
@@ -268,7 +271,7 @@ override func viewDidLoad() {
 
 ![](img/09_result_view.png)
 
-> Hozzunk létre egy egy `ResultsViewController` nevű osztályt, melyet rendeljünk az imént létrehozott `ViewController`hez a `storyboard`on belül. Rendeljünk egy-egy `Outlet`et a `Label`hez és az `Image View`-hoz (pl. `resultsLabel`, `pictureView`)!
+> Hozzunk létre egy egy `ResultsViewController` nevű osztályt, melyet rendeljünk az imént létrehozott `ViewController`hez a `storyboard`on belül. Rendeljünk egy-egy `Outlet`et a `Label`hez és az `Image View`-hoz (**`resultsLabel`**, **`pictureView`**)!
 
 ```swift
 @IBOutlet weak var resultLabel: UILabel!
@@ -337,9 +340,11 @@ Azért a `GameSelectorViewController`be vesszük fel, mert rögtön ide szeretn�
 
 ---
 
-_Az `Unwind Segue`-ek olyan korábbi `View Controller`ekre tudnak visszatérni, melyekben található egy (`IBAction`el) visszatérő metódus, mely egy `UIStoryboardSegue` paramétert vár. Ez a metódus meghívódik az `Unwind Segue` bekövetkezte előtt és paraméterül kapott `segue`-ből kiolvasható a kiindulási `View Controller` (`segue.source`), amitől átvehetnénk az esetleg szükséges adatokat._
+_Az `Unwind Segue`-ek olyan korábbi `View Controller`ekre tudnak visszatérni, melyekben található egy olyan (`IBAction`nel) visszatérő metódus, mely egy `UIStoryboardSegue` paramétert vár. Ez a metódus meghívódik az `Unwind Segue` bekövetkezte előtt és paraméterül kapott `segue`-ből kiolvasható a kiindulási `View Controller` (`segue.source`), amitől átvehetnénk az esetleg szükséges adatokat._
 
 ---
+
+> Próbáljuk ki az alkalmazást!
 
 ## Nehézség választó <a id="nehezseg-valaszto"></a>
 > Vegyünk fel egy új property-t `GameViewController`be a nehézség meghatározásához!
