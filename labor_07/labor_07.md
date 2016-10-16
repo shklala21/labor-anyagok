@@ -307,7 +307,10 @@ override func viewDidLoad() {
 > Próbáljuk ki az alkalmazást! Ne felejtsünk el rányomni a gombra a mentéshez.
 
 # Scroll View használata <a id="scroll-view-hasznalata"></a>
-> Tegyünk be egy új `ViewController`-t amit állítsunk be kezdő `ViewController`nek (*Initial View Controller*)! A gyökérnézetbe helyezzünk el egy `UIScrollView`-t, úgy, hogy kitöltse a teljes rendelkezésre álló területet és állítsunk be olyan kényszereket, hogy minden oldala és a szülő nézet oldala közötti távolság **0** legyen!
+> Tegyünk be egy új `ViewController`t amit állítsunk be kezdő `ViewController`nek (*Initial View Controller*)! A `ViewController` tulajdonságainál kapcsoljuk ki az *Adjust Scroll View Insets* property-t!
+
+<!--  -->
+> A gyökérnézetbe helyezzünk el egy `UIScrollView`-t, úgy, hogy kitöltse a teljes rendelkezésre álló területet és állítsunk be olyan kényszereket, hogy minden oldala és a szülő nézet oldala közötti távolság **0** legyen!
 
 ![](img/25_scroll_view_constraints.png)
 
