@@ -167,9 +167,28 @@ Bár ha nem adunk meg a nézetben egyetlen `Auto Layout` kényszert sem, akkor i
 
 ![](img/13_table_view_cells_selection.png)
 
-> Hozzunk létre egy új, `UITableViewController`ből leszármazó osztályt, `TripDetailViewController` névvel, töröljük ki a generált kódot és állítsuk be ezt a `storyboard`ban létrehozott `Table View Controller` osztályául.
+> Hozzunk létre egy új, `UITableViewController`ből leszármazó osztályt, `TripDetailViewController` névvel, **töröljük ki a generált kódot** és állítsuk be ezt a `storyboard`ban létrehozott `Table View Controller` osztályául.
 
-<!--  -->
+---
+
+*Ezt a két függvényt különösen fontos kitörölni, ugyanis ezek felülírják a storyboardban nagy gonddal beállított táblázatunkat!*
+
+```swift
+// MARK: - Table view data source
+
+override func numberOfSections(in tableView: UITableView) -> Int {
+    // #warning Incomplete implementation, return the number of sections
+    return 0
+}
+
+override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    // #warning Incomplete implementation, return the number of rows
+    return 0
+}
+```
+
+---
+
 > Vegyünk fel `Outlet`eket a `4`, adatmegjelenítésre szolgálló nézethez (minden cellából azt a nézetet válasszuk ki, mely az egyedi adat megjelenítésére szolgál, és ezeket kössük be `Outlet`ekre)!
 
 ```swift
@@ -293,7 +312,7 @@ Az idő szűkössége miatt nem definiálunk `Auto Layout` kényszereket, de ne 
 
 ![](img/18_cancel_save.png)
 
-> Hozzunk létre egy új, `EditTripViewController` nevű, `UIViewController`ből származó osztályt és írjuk felül a fájl tartalmát a következő kóddal!
+> Hozzunk létre egy új, `EditTripViewController` nevű, `UIViewController`ből származó osztályt, állítsuk be az újonnan létrehozott nézetünk *Class* property-jének az `Identity inspector`ban, majd írjuk felül a fájl tartalmát a következő kóddal!
 
 ```swift
 import UIKit
@@ -363,7 +382,7 @@ class EditTripViewController: UIViewController, UITextViewDelegate, UIImagePicke
 
 > Végezzük el a következő módosításokat!
 
-* Kössük be a kódban definiált `Outlet`ekre az `Image View`-t, a `2` `Text Field`et és a `Text View`-t!
+* Kössük be a kódban definiált `Outlet`ekre az `Image View`-t, a `2` `Text Field`et és a `Text View`-t! Itt figyeljünk arra, hogy a bekötés során a *sender* attribútumot állítsuk át `AnyObject`ről az aktuális nézet típusára!
 * Kössük be az alsó `Text Field` *Editing Did Begin* és *Editing Did End* eseményeit a `textFieldEditingDidBegin(sender:)` és a `textFieldEditingDidEnd(sender:)` metódusokra, továbbá a `didEndOnExit(sender:)` metódusra is!
 
 > Adjunk hozzá a `TripsViewController` `Navigation Bar`jához egy `Bar Button Item`et, majd ennek *System Item* attribútumát állítsuk **Add**ra!
@@ -449,7 +468,7 @@ override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexP
 }
 ```
 
-> Hasonló módon `TripDetailViewController`ben is módosítani kell a `viewWillAppear(_:)` metódust!
+> Hasonló módon, a `TripDetailViewController`ben is adjuk hozzá a már létező kódhoz a `viewWillAppear(_:)` metódusban a következő `if let` szerkezetet (közvetlenül az `image-name`-es `if let` alá)!
 
 ```swift
 if let tripImage = trip["image"] as? UIImage {
