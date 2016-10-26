@@ -6,6 +6,10 @@
 
 [GitHub Classroom tutorial](github_classroom/github_classroom.md)
 
+## Házi feladat
+
+[Specifikáció](homework/specification.md)
+
 ## Laborok
 
 * [1. labor](labor_01/labor_01.md) :white_check_mark:
