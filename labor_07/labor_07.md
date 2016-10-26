@@ -33,11 +33,11 @@ A labor célja az `Auto Layout` használatának a gyakorlása egy alkalmazás ke
 
 > Futtassuk le az alkalmazást a szimulátorban és forgassuk el a kijelzőt!
 
-A szimulátor elforgatásához nyomjuk le a `Cmd` gombot és valamelyik horizontális nyilat attól függően, hogy milyen irányba szeretnénk fordítani a szimulátort.
+A szimulátor elforgatásához nyomjuk le a `Cmd` + &#8594; vagy a `Cmd` + &#8592; billentyűkombinációt, attól függően, hogy milyen irányba szeretnénk fordítani a szimulátort.
 
-A `UITextField` sajnos nem maradt középen fekvő módban. Ha szeretnénk, hogy középen maradjon, akkor ehhez szükség van kényszerekre.
+A `UITextField` sajnos nem maradt középen fekvő módban. Ha szeretnénk, hogy középen maradjon, akkor szükség lesz kényszerekre.
 
-> Ahhoz, hogy horizontálisan középen maradjon adjunk hozzá egy kényszert, ami ezt biztosítja. Ehhez jelöljük ki a `UITextField`et és az `Align` menüből válasszuk ki a *Horizontal Center In Container*t!
+> Ahhoz, hogy horizontálisan középen maradjon a nézetünk, adjunk hozzá egy kényszert, ami ezt biztosítja. Ehhez jelöljük ki a `UITextField`et és az `Align` menüből válasszuk ki a *Horizontal Center In Container*t!
 
 ![](img/03_horizontal_center_constraint.png)
 
@@ -55,9 +55,9 @@ A piros vonalakkal az `Xcode` kényszerek hiányát jelzi. Amíg nem adtunk hozz
 
 ![](img/06_which_constraint_is_missing.png)
 
-A hiba tehát az, hogy függőlegesen nem tudja meghatározni a `UITextField` pozícióját.
+A hiba tehát az, hogy az `Auto Layout` motor függőlegesen nem tudja meghatározni a `UITextField` pozícióját.
 
-> Ehhez a `Pin` menüből állítsunk be, hogy a szülő nézet tetejétől mért távolsága *Standard* legyen!
+> Ehhez a `Pin` menüből állítsunk be, hogy a szülő nézet tetejétől mért távolsága *Standard* legyen! (`Constrain to margins` legyen kikapcsolva!)
 
 ![](img/07_text_field_top_pin.png)
 
@@ -68,7 +68,7 @@ A hiba tehát az, hogy függőlegesen nem tudja meghatározni a `UITextField` po
 > Futtassuk az alkalmazást és forgassuk el a szimulátort! 
 
 <!--  -->
-> Állítsuk be a `UITextField` tulajdonságainál *placeholder*nek a **login** feliratot, majd tegyük lejjebb. Jelöljük ki, majd módosítsuk a *Top Layout Guide*-hoz rögzített kényszert a `Size inspector`ban, *konstansnak* állítsunk be **160**-at!
+> Állítsuk be a `UITextField` tulajdonságainál *placeholder*nek a **login** feliratot, majd tegyük lejjebb. Ehhez jelöljük ki, majd módosítsuk a *Top Layout Guide*-hoz rögzített kényszert a `Size inspector`ban, *konstansnak* állítsunk be **160**-at!
 
 ![](img/09_text_field_top_layout_160.png)
 
@@ -86,7 +86,7 @@ Az előnézetet a képernyő alatti ikonnal tudjuk elforgatni.
 
 ![](img/12_preview_rotate.png)
 
-A bal alsó sarokban található `+` gombbal adjunk hozzá egy másik `iPhone 6s``Preview`-t, így mindkét tájolásban látjuk, hogy fog kinézni az alkalmazás.
+A bal alsó sarokban található `+` gombbal adjunk hozzá egy másik `iPhone 6s` `Preview`-t, így mindkét tájolásban látjuk, hogy fog kinézni az alkalmazás. (Ez a funkció `Xcode` 8-al elképzelhető, hogy némileg hibásan fog működni, remélhetőleg az újabb verziókban javítják a hibát.)
 
 Amennyiben az `Xcode` helyesen működik, látjuk, hogy hiába növeltük meg a méretet a `storyboard`ban, a kényszerek determinálják majd futási időben a méretet.
 
@@ -126,9 +126,9 @@ Az `Assistant Editor` `Preview`-jában látjuk, hogy jó helyre fog kerülni a k
 
 ![](img/17_save_username_label.png)
 
-> Ezek után rakjunk be a `UILabel` mellé egy `UISwitch`-et és állítsuk be a következőket: 
+> Ezek után rakjunk be a `UILabel` mellé egy `UISwitch`-et és állítsuk be a következőket.
 1.  A két elem közepe, mindig egy vonalban legyen (`Align` / *Vertical Centers*) 
-2.  Közöttük mindig **168** egységnyi távolság legyen! Ehhez a UILabelről indulva a Ctrl gomb lenyomása mellett húzzunk át a UISwitchre és válasszuk a *Horizontal Spacing* gombot, majd jelöljük ki az újonnan létrejött kényszert és a tulajdonságainál a konstansát állítsuk át **168**-ra!
+2.  Közöttük mindig **168** egységnyi távolság legyen! Ehhez a `UILabel`ről indulva a `Ctrl` gomb lenyomása mellett húzzunk át a `UISwitch`-re és válasszuk a *Horizontal Spacing* gombot, majd jelöljük ki az újonnan létrejött kényszert és a tulajdonságainál a konstansát állítsuk át **168**-ra!
 
 ![](img/18_save_username_switch.png)
 
@@ -157,7 +157,7 @@ Az `Assistant Editor` `Preview`-jában látjuk, hogy jó helyre fog kerülni a k
 
 > Futtassuk le az alkalmazást! Láthatjuk, hogy nagyjából elforgatva is jól néz ki! Azonban ha rákattintunk a *Switch Language* gombra, akkor a `UISwitch` álló módban "eltűnik", pedig nem történt más, mint kipróbáltuk az alkalmazást francia szöveggel.
 
-Szerencsére az `Auto Layout` segítségével könnyedén tudjuk kezelni a dinamikus változásokat is a kényszerek prioritásai segítségével. Itt olyan kényszerekre van szükségünk, hogy “ha lehetőség van rá, akkor a label és a switch közti távolság legyen **168**, de a `UISwitch` és a képernyő széle között mindig legyen legalább **20** egységnyi távolság”. Az első kényszernek kisebb lesz a prioritása, mert a második kényszer fontosabb.
+Szerencsére az `Auto Layout` segítségével könnyedén tudjuk kezelni a dinamikus változásokat is a kényszerek prioritásai segítségével. Itt olyan kényszerekre van szükségünk, hogy “ha lehetőség van rá, akkor a `UIlabel` és a `UISwitch` közti távolság legyen **168**, de a `UISwitch` és a képernyő széle között mindig legyen legalább **20** egységnyi távolság”. Az első kényszernek kisebb lesz a prioritása, mert a második kényszer fontosabb.
 
 > Ehhez jelöljük ki a `UISwitch`-et és rögzítsük a `View` jobb széle és a közte lévő távolságot (`Pin` / *Trailing Space To Superview*), állítsuk be, hogy az érték legalább ekkora legyen (*Relation*: **Greater Than Or Equal**) illetve, állítsuk be a *konstanst* **0**-ra!
 > A kettő közti távolság kényszerének a *prioritását* vegyünk le **900**-ra, a *konstansát pedig egy kisebb értékre, **50**-re!
@@ -184,7 +184,7 @@ Ha futtatjuk az alkalmazást, akkor hiba nélkül fut, ugyanakkor a konzolban l�
 
 > Töröljük hát a *Top Layout Guide* és a `UITextField` teteje közti távolság kényszert!
 
-Mivel minden elem a felső `UITextField`-hez igazodik, így rossz helyen vannak, ahogy azt a Document Outline is mutatja. 
+Mivel minden elem a felső `UITextField`-hez igazodik, így rossz helyen vannak, ahogy azt a `Document Outline` is mutatja. 
 
 > Ahhoz, hogy minden elem a helyére kerüljön, jelöljük ki a teljes `View Controller`-t és a `Resolve Auto Layout Issues` menüből válasszuk az `Update frames`-et!
 
@@ -196,7 +196,7 @@ Mivel minden elem a felső `UITextField`-hez igazodik, így rossz helyen vannak,
 
 Azt látjuk, hogy `landscape` módban mindkét `UITextField`et kitakarja a billentyűzet.
 
-Erre a legegyszerűbb megoldás, ha billentyűzet megjelenésekor minden elemet feltolunk. Függőlegesen minden elem valójában a `UIImageView`-hoz igazodik, így ennek a pozícióját kell megváltoztatni annak megfelelően, hogy megjelenik a billentyűzet.
+Erre a legegyszerűbb megoldás, ha billentyűzet megjelenésekor minden elemet feltolunk. Függőlegesen minden elem valójában a `UIImageView`-hoz igazodik, így ennek a pozícióját kell változtatni a billentyűzet láthatóságának függvényében.
 
 > Vegyünk fel egy `Outlet`et a kép *Top Layout Guide* kényszeréhez! Ehhez jelöljük ki a kényszert, majd a szokásos módon húzzuk át a fájlba az `Assistant Editor`ban. Az `Outlet` neve legyen *imageViewTopConstraint*.
 
@@ -235,12 +235,18 @@ func keyboardWillHide(notification: Notification) {
 }
 ```
 
-> Végül pedig vegyük fel a `UITextField` eltűntetésért felelő *DidEndOnExit* esemény metódusát és kössük be mindkét `UITextField`hez!
+> Végül pedig vegyük fel a `UITextField` eltűntetésért felelős *DidEndOnExit* esemény metódusát és kössük be mindkét `UITextField`hez!
+
+```swift
+@IBAction func editingDidEndOnExit(_ sender: UITextField) {
+  sender.resignFirstResponder()
+}
+```
 
 <!--  -->
 > Próbáljuk ki az alkalmazást!
 
-Sokat javít a felhasználói élményen, ha a konstans beállítás nem azonnal, hanem animálva történik.
+Sokat javít a felhasználói élményen, ha a konstans beállítása nem azonnal, hanem *animálva* történik.
 
 ```swift
 func keyboardWillShow(notification: Notification) {
@@ -270,7 +276,7 @@ func keyboardWillHide(notification: Notification) {
 Elképzelhető, hogy az animációk nem jelennek meg szépen a szimulátorban, aki teheti érdemes eszközön tesztelnie!
 
 # Adatok elmentése <a id="adatok-elmentese"></a>
-Az `Auto Layout`tól való pihenésképpen valósítsuk meg, hogy a felhasználónév mentése valóban működjön! Ehhez a `NSUserDefaults`ot fogjuk használni az adatok tárolására. 
+Az `Auto Layout`tól való pihenésképpen valósítsuk meg, hogy a felhasználónév mentése valóban működjön! Az adatok tárolására az `NSUserDefaults`ot fogjuk használni. 
 
 > Először változtassuk meg a gomb címkéjét **Login**ra.
 
@@ -333,7 +339,7 @@ override func viewDidLoad() {
 2. A `UILabel` és a szülő nézet szélei között legyen **10** egység
 
 <!--  -->
-> A `UILabel` szövegének állítsuk be a `AUT` portálon lévő [*Rólunk*](https://www.aut.bme.hu/Pages/AboutUs) szövegét 2x!
+> A `UILabel` szövegének állítsuk be a `AUT` portálon lévő [*Rólunk*](https://www.aut.bme.hu/Pages/AboutUs) szövegét `2x`!
 
 Ha futtatjuk az alkalmazást, akkor a nézet nem görgethető... Erre az `Interface Builder` is felhívja a figyelmet.
 
@@ -351,6 +357,8 @@ Ahhoz, hogy a `Scroll View` ki tudja számolni, hogy görgethetővé kell-e tenn
 
 # Önálló feladat: kezdő képernyő elkészítése <a id="onallo-feladat"></a>
 > Készítsük el a következő képernyőt `Auto Layout` kényszerek segítségével és valósítsuk meg a gombok működését!
+
+![](img/27_desired_ui.png)
 
 Segítség a képernyő felépítéséhez:
 
