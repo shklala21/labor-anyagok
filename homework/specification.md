@@ -37,7 +37,7 @@ Az első lépés a házi feladat specifikáció feltöltése és elfoga
 **A specifikáció feltöltésének határideje a 8. oktatási hét vége, vasárnap éjfél: 2016.** A feltöltés az `GitHub`ra történik a `homework-username` reposityory `README.md` fájljába a sablonnak megfelelően.
 
 <p align="center">
-**A specifikációt [Markdown](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet) formátumban várjuk!**
+<b>A specifikációt <a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet">Markdown</a> formátumban várjuk!</b>
 </p>
 
 ### Házi feladat beadása
