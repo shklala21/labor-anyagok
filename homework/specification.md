@@ -34,11 +34,11 @@ Minden, házi feladattal kapcsolatos interakció a `GitHub`on történik, a `lab
 ### Házi feladat specifikáció
 Az első lépés a házi feladat specifikáció feltöltése és elfogadtatása. A specifikáció egy rövid, néhány mondatos leírás vagy felsorolás (maximum `1` A4-es oldal), mely tartalmazza a program célját és megvalósítandó funkciókat, valamint a felhasználandó technológiákat. A házi specifikációkat minden esetben átnézzük és egyenként elfogadjuk/visszautasítjuk. Ha valakinek nem fogadjuk el a specifikációját, arról issue-t fogunk kiírni a GitHub repository-jába. Elfogadás esetén a tényt rögzítjük a `README.md` fájlban.
 
-**A specifikáció feltöltésének határideje a 8. oktatási hét vége, vasárnap éjfél: 2016.** A feltöltés az `GitHub`ra történik a `homework-username` reposityory `README.md` fájljába a sablonnak megfelelően.
+**A specifikáció feltöltésének határideje a 9. oktatási hét vége, vasárnap éjfél: 2016.** A feltöltés az `GitHub`ra történik a `homework-username` reposityory `README.md` fájljába a sablonnak megfelelően.
 
 <p align="center">
 <b>A specifikációt <a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet">Markdown</a> formátumban várjuk!</b>
 </p>
 
 ### Házi feladat beadása
-A kész házi feladatot a szorgalmi időszak utolsó hetében kell beadni, szintén a `homework-username` `GitHub` repository-ba. A beadás menetéről és a beadandó anyagokra vonatkozó követelményekről egy külön leírást fogunk feltölteni, mikor ennek eljön az ideje.
+A kész házi feladatot a pótlási héten kell beadni, szintén a `homework-username` `GitHub` repository-ba. A beadás menetéről és a beadandó anyagokra vonatkozó követelményekről egy külön leírást fogunk feltölteni, mikor ennek eljön az ideje.
