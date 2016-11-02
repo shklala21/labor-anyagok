@@ -80,7 +80,7 @@ Ha piros vonalakat kapnánk, akkor az azt jelenti, hogy a kényszer rossz válto
 
 Az `iPhone` kijelzőn *landscape* módban a `UIImageView` indokolatlanul sok helyet foglal a kép méretéhez viszonyítva.
 
-> Válasszuk ki a lenti sávból az egyik, *landscape* módban levő `iPhone`-t majd kattintsunk a `Vary Traits` gombra és ott jelöljük ki a **Height**-ot. Ezzel lényegében az *any width compact height* méretosztályt fogjuk tesztreszabni. (Ami lefedi az összes, *landscape* módban lévő `iPhone` méretosztályát.)
+> Válasszuk ki a lenti sávból az egyik, *landscape* módban levő `iPhone`-t majd kattintsunk a `Vary for Traits` gombra és ott jelöljük ki a **Height**-ot. Ezzel lényegében az *any width compact height* (**hC**) méretosztályt fogjuk tesztreszabni. (Ami lefedi az összes, *landscape* módban lévő `iPhone` méretosztályát.)
 
 ![](img/09_vary_for_compact_height.png)
 
@@ -113,31 +113,34 @@ Egy `Update Frames` hívása után a következőt kell látnunk.
 
 ![](img/15_label_desired_ui.png)
 
-Láthatjuk, hogy a legtöbb `iPhone` *portait*ban ez túl nagy betűtípus, míg az `iPad` esetében túl kicsi.
+Láthatjuk, hogy a legtöbb *portait* orientációjú `iPhone`-nál ez túl nagy betűtípus, míg `iPad` esetében túl kicsi.
 
 > Kattintsunk a betűtípus melletti plusz ikonra és adjunk hozzá az `iPad` (**wR hR**) és a kompakt szélességű `iPhone`-ok (**wC**) esetében két hasonló stílusú, de eltérő méretű fontot (**90** és **35**).
 
 ![](img/16_adaptive_font.png)
 
-> Láthatóan az `iPad` kijelzőn van még hely, tegyünk be egy képet szöveg fölé!
+Láthatóan az `iPad` kijelzőn van még hely, tegyünk be egy képet szöveg fölé!
 
 <!--  -->
-> Váltsunk át *regular width regular height* méretosztályba és tegyünk be egy `UIImageView`-t a szöveg fölé. Állítsuk be képnek a **Flower**t a *Content Mode*-ot pedig **Aspect Fit**nek.
+> Váltsunk át *regular width regular height* (**wR hR**) méretosztályba és tegyünk be egy `UIImageView`-t a szöveg fölé. Állítsuk be képnek a **Flower**t a *Content Mode*-ot pedig **Aspect Fit**nek.
 > Rendezzük középre, a *méretét* pedig rögzítsük **90x90**-esre. A kép és a szöveg közötti távolság legyen **0**.
 
 ![](img/17_regular_regular.png)
 
 ![](img/18_desired_ui_with_flower.png)
 
-> Ellenőrizzük le, hogy az `iPad`en valóban megjelenik majd a kép, de a többi eszközön nem! Ha minden helyesen működik, akkor kattintsunk a `Done Varying` gombra!
+> Kattintsunk a `Done Varying` gombra!
 
-Az `iPhone`-ok *landscape* módjában célszerűbb lenne egy magasabb képet használni.
+ <!--  -->
+> Ellenőrizzük le, hogy az `iPad`en valóban megjelenik majd a kép, de a többi eszközön nem!
 
-> Váltsunk át a `Assets.xcassets` mappába és a `TransparentWoman` kép tulajdonságainál állítsuk be, hogy külön képet akarunk megadni a *Any x Compact* méretosztályhoz!
+Az `iPhone`-ok *landscape* orientációjában célszerűbb lenne egy magasabb képet használni.
+
+> Váltsunk át a `Assets.xcassets` mappába és a `TransparentWoman` kép tulajdonságainál állítsuk be, hogy külön képet akarunk megadni a *Any x Compact* méretosztályhoz! (*Height Class*-nál)
 
 ![](img/19_any_width_compact_height_asset.png)
 
-> A létrejövő *Compact Height* méreosztályhoz tartozó `2x` helyekre húzzuk be a `GirlWithHat` képet és ellenőrizzük szimulátorban(!) az eredményt!
+> A létrejövő *Compact Height* méreosztályhoz tartozó `2x` helyekre húzzuk be a `GirlWithHat` képet és ellenőrizzük szimulátorban az eredményt!
 
 ![](img/20_landscape_different_image.png)
 
@@ -169,10 +172,10 @@ class NameHandler: NSObject {
 }
 ```
 
-> Térjünk vissza a `Main.storyboard`hoz és ágyazzuk be a nézetvezérlőt egy `Navigation Controller`-be!
+> Térjünk vissza a `Main.storyboard`hoz és ágyazzuk be a nézetvezérlőt egy `Navigation Controller`be!
 
 <!--  -->
-> Tegyünk be egy `UISplitViewController`t a `storyboard`ba, a létrejött `Detail View Controller`t töröljük ki, és a `SplitViewController` *details view controller* `segue`-hez állítsuk be az az imént létrehozott `Navigation Controller`t!
+> Tegyünk be egy `UISplitViewController`t a `storyboard`ba, a létrejött `Detail View Controller`t töröljük ki, és a `SplitViewController` *details view controller* `segue`-hez pedig állítsuk be az az imént létrehozott `Navigation Controller`t!
 
 ![](img/22_show_details_segue.png)
 
@@ -212,7 +215,7 @@ extension AppDelegate: UISplitViewControllerDelegate {
 }
 ```
 
-> Próbáljuk ki az alkalmazást, forgassuk el!
+> Próbáljuk ki az alkalmazást és forgassuk is el!
 
 <!--  -->
 > Hozzunk létre egy új `UIViewController` leszármazottat `NameViewController` néven és állítsuk be a rózsaszín hátterű jelenetünk identitásának. (Az eddigi `ViewController` feleslegessé vált, töröljük ki!)
@@ -245,6 +248,60 @@ class NameViewController: UIViewController {
 > Adjunk hozzá egy új `UITableViewController`ből leszármaztatott osztályt `NamesViewController` névvel. Állítsuk be a `storyboard` `MasterViewController` identitásának az újonnan létrehozott osztályt, a *cella azonosítója* pedig **NameCell** legyen!
 
 <!--  -->
+> Cseréljük le az implementációt!
+
+```swift
+import UIKit
+
+class NamesViewController: UITableViewController {
+  
+  var names = [AnyObject]()
+
+  // MARK: View Lifecycle
+
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    
+    names = NameHandler.sharedInstance().names!
+    title = "Mai névnapok"
+  }
+
+  // MARK: TableView Data Source
+
+  override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    return names.count
+  }
+  
+  override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    let cell = tableView.dequeueReusableCell(withIdentifier: "NameCell", for: indexPath)
+    let name = names[indexPath.row] as! [NSString: NSString]
+    
+    cell.textLabel?.text = name["name"] as? String
+    cell.imageView?.contentMode = .scaleAspectFill
+    cell.imageView?.image = UIImage(named: "Flower")
+    
+    return cell
+  }
+
+  // MARK: Navigation
+
+  override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    if segue.identifier == "ShowDetailSegue" {
+      if let indexPath = tableView.indexPathForSelectedRow {
+        let object = names[indexPath.row] as! [NSString: NSString]
+        
+        let nameViewController = (segue.destination as! UINavigationController).topViewController as! NameViewController
+        nameViewController.nameToDisplay = object
+        nameViewController.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
+        nameViewController.navigationItem.leftItemsSupplementBackButton = true
+      }
+    }
+  }
+  
+}
+```
+
+<!--  -->
 > Próbáljuk ki az alkalmazást több különböző szimulátorral: `iPhone 7`, `iPhone 7 Plus` és bármilyen `iPad`. Figyeljük meg, hogyan alkalmazkodik a `UISplitViewController` a különböző környezetekhez.
 
 Az alapbeállítás szerint `iPad`en eltűnik a `MasterViewController` *portait* módban. Ezen a legegyszerűbben úgy javíthatunk, ha beállítjuk, hogy mi az előnyben részesített megjelenése a `Split View Controller`nek.
@@ -259,7 +316,7 @@ Ezután a változtatás után észrevehetjük, hogy a `MasterViewController`en k
 
 ![](img/24_two_display_mode_buttons.png)
 
-> Az `AppDelegate.swift`-ből töröljük ezt a két sort a megoldáshoz. (Erre a beállításra már nincs szükség, mert már külön kitesszük a *display mode* gombot a `NameViewController`re, ahol ennek van értelme.)
+> Ennek megoldásához töröljük ki az `AppDelegate.swift`-ből a következő két sort. (Erre a beállításra már nincs szükség, mert már külön kitesszük a *display mode* gombot a `NameViewController`re, ahol ennek van értelme.)
 
 ```swift
 let navigationController = splitViewController.viewControllers.last as! UINavigationController
@@ -267,7 +324,7 @@ let navigationController = splitViewController.viewControllers.last as! UINaviga
 navigationController.topViewController?.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem
 ```
 
-Sokat javíthatunk az alkalmazás kinézetén, ha a gombokat nem az alapértelmezett kéken jelenítjük meg (ugyanakkor ezek rendszerszintű gombok, amelyek folytonos átszínezgetése kicsit körülményes volna). Be lehet azonban állítani a `Main.storyboard`ra egy *GlobalTint* színt, amit az egyes vezérlők alapértelmezett színként felvesznek. 
+Sokat javíthatunk az alkalmazás kinézetén, ha a gombokat nem az alapértelmezett kéken jelenítjük meg. Ugyanakkor ezek rendszerszintű gombok, amelyek folytonos átszínezgetése kissé körülményes volna. Be lehet azonban állítani a `Main.storyboard`on egy *GlobalTint* színt, amit az egyes vezérlők alapértelmezett színként felvesznek. 
 
 > Tegyük ezt meg a `Main.storyboard` fájl tulajdonságainál (`File inspector`). Állítsunk be valamilyen sötétebb rózsaszín színt!
 
@@ -346,9 +403,9 @@ func displayFacts(sender: UIBarButtonItem) {
 
 > Futtassuk az alkalmazást `iPad` és `iPhone` szimulátorokon is! 
 
-`iPhone` kijelzőn sajnos nem tudjuk bezárni a modálisan megjelenített nézetvezérlőt. Ha olyan működést szeretnénk, mint `iPad`en, akkor meg kell valósítani a `UIPopoverPresentationControllerDelegate` interfészt. 
+`iPhone` kijelzőn sajnos nem tudjuk bezárni a modálisan megjelenített nézetvezérlőt. Ha olyan működést szeretnénk, mint `iPad`en, akkor meg kell valósítani a `UIPopoverPresentationControllerDelegate` interfészt. (Természetesen ezt máshogyan is megoldhatnánk, például kirakhatnánk `iPhone`-ok esetében egy gombot, amivel vissza lehet térni az előző képernyőre.)
 
-> Tegyük is ezt meg a `NameViewController`ben, majd állítsuk be a `PopoverPresentationController` létrehozásánál!
+> Tegyük is meg ezt a `NameViewController`ben, majd állítsuk be a `PopoverPresentationController` létrehozásánál!
 
 ```swift
 extension NameViewController: UIPopoverPresentationControllerDelegate {
@@ -370,6 +427,8 @@ func adaptivePresentationStyle(for controller: UIPresentationController) -> UIMo
   return .none
 }
 ```
+
+> Teszteljük az alkalmazást ismét `iPhone`-on!
 
 # Önálló feladatok pluszpontért <a id="onallo-feladatok-pluszpontert"></a>
 
