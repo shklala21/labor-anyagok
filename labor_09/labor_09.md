@@ -10,12 +10,12 @@
     * [Alkalmazás váz, Core Data alapok](#core-data-alapok)
     * [Adatmodell definiálása](#adatmodell-definialasa)
     * [Adatmodell osztályok](#adatmodell-osztalyok)
-    * [`Notebook`-ok megjelenítése](#notebookok-megjelenitese)
+    * [`Notebook`ok megjelenítése](#notebookok-megjelenitese)
     * [Jegyzetek, `NSFetchedResultsController`](#jegyzetek-nsfetchedresultcontroller)
     * [Jegyzetek felvétele](#jegyzetek-felvetele)
     * [Jegyzetek törlése](#jegyzetek-torlese)
     * [További műveletek](#tovabbi-muveletek)
-    * [Managed Object Context mentése](#moc-mentese)
+    * [`Managed Object Context` mentése](#moc-mentese)
 * [Önálló feladatok](#onallo-feladatok)
 
 ## UberNotebook <a id="ubernotebook"></a>
@@ -43,17 +43,17 @@ _A `saveContext()` metódust használjuk a kontextus mentéséhez. Egyrészt rö
 
 > Nyissuk meg a `UberNotebook.xcdatamodeld` fájlt és vegyünk fel:
 
->* új entitást a **`Notebook`** névvel:
-    * **title** (*String*) attribútummal
+>* új entitást **`Notebook`** névvel:
+    * **title** (*String*) *attribútum*mal
 * új entitást **`Note`** névvel
-    * **content** (*String*) attribútummal
-    * **creationDate** (*Date*) attribútummal
+    * **content** (*String*) *attribútum*mal
+    * **creationDate** (*Date*) *attribútum*mal
 
 <!--  -->
-> Vegyünk fel a `Notebook`ba egy **notes** *relationship*et, mely `Note`-ra hivatkozik!
+> Vegyünk fel a `Notebook`ba egy **notes** *relationship*et, mely a `Note`-ra hivatkozik!
 
 <!--  -->
-> Vegyünk fel `Note`-ba egy **notebook** *relationship*et, mely `Notebook`ra hivatkozik!
+> Vegyünk fel a `Note`-ba egy **notebook** *relationship*et, mely a `Notebook`ra hivatkozik!
 
 <!--  -->
 > Mindkét *relationship*nél állítsuk be az inverz relációt a másikra!
@@ -64,7 +64,7 @@ _A `Core Data`-ban relációknál mindig meg kell adnunk egy inverz relációt i
 
 ---
 
-> Állítsuk be a **notes** relációt `To-Many`-re és `Cascade` törlési szabályra (így ha törlődik a `Notebook`, a bejegyzései is törlődnek vele együtt).
+> Állítsuk be a **notes** reláció *típusát* **`To Many`**-re és a *törlési szabályát* **`Cascade`**-re! (Így ha törlődik a `Notebook`, a bejegyzései is törlődnek vele együtt).
 
 ![](img/02_notes_relationshop.png)
 
@@ -106,7 +106,7 @@ Mivel az alkalmazás indításakor mindig létrehozunk egy új `Notebook`ot és 
 
 ---
 
-_Figyeljük meg a `do-catch` párost, mely a `Swift` 2.0-ban bevezetett új hibakezelés. Bármilyen metódus, mely hibával térhet vissza, csak egy `do` blokkon belül hívható továbbá ezen metódusok hívását külön meg kell jelölni a `try` kulcsszóval. A hibát a `catch` blokkban tudjuk feldolgozni._
+_Figyeljük meg a `do-catch` párost, mely a `Swift` 2.0-ban bevezetett hibakezelés. Bármilyen metódus, mely hibával térhet vissza, csak egy `do` blokkon belül hívható továbbá ezen metódusok hívását külön meg kell jelölni a `try` kulcsszóval. A hibát a `catch` blokkban tudjuk feldolgozni._
 
 ---
 
@@ -124,9 +124,9 @@ print(notebook.value(forKey: "title") as! String)
 Miután kipróbáltuk az alkalmazást érdemes kikapcsolni az `SQL` loggolást.
 
 ### Adatmodell osztályok <a id="adatmodell-osztalyok"></a>
-A `Core Data` programozás során mindenre használhatunk `NSManagedObject` típusú objektumokat, de ennél sokkal kényelmesebb és biztonságosabb, ha az entitásoknak definiált külön osztályokat használjuk.
+`Core Data` programozás során mindenre használhatunk `NSManagedObject` típusú objektumokat, de ennél sokkal kényelmesebb és biztonságosabb, ha az entitásoknak definiált külön osztályokat használjuk.
 
-`Xcode 8`-tól az adatmodellhez definiált összes entitáshoz alapértelmezésként automatikusan legenerálódnak az `NSManagedObject` leszármazottak. (Amennyiben az entitás *Codegen* propery-je **Class Definition** értékű.)
+`Xcode 8`-tól az adatmodellhez definiált összes entitáshoz alapértelmezésként automatikusan legenerálódnak az `NSManagedObject` leszármazottak. (Az entitás *Codegen* propery-je **Class Definition** értékű.)
 
 ![](img/05_codegen.png)
 
@@ -137,23 +137,24 @@ A `Core Data` programozás során mindenre használhatunk `NSManagedObject` típ
 
 > Fordítsuk újra a projektet (`Cmd+B`)!
 
-Minden `NSManagedObject` alosztályhoz két külön `Swift` fájl jön létre. Az `Entity+CoreDataProperties.swift`ben egy külön `extension`be kerülnek a generált property-k, míg magát a entitás osztály az `Entity+CoreDataClass.swift` fájlba generálja.
+Minden `NSManagedObject` alosztályhoz két külön `Swift` fájl jön létre. Az `Entity+CoreDataProperties.swift`ben egy külön `extension`be kerülnek a generált property-k, míg magát a entitás osztály az `Entity+CoreDataClass.swift` fájlba generálódik.
 
 ![](img/08_derived_data.png)
 
---- 
-
-_A_ Codegen _további beállításait is érdemes ismerni._
-
-* _**Manual/None**: régi módszer, kézzel kell megírni, vagy legenerálni a szükséges fájlokat. Ehhez az `Xcode` segítséget nyújt, az adatmodellben az entitást kiválasztva, az `Editor/Create NSManagedObject Subclass...` opcióval legenerálja az osztályokat az entitásokhoz._
-* _**Category/Extension**: "félautomata" módba kapcsolja a generátort. Ilyenkor automatikusan legenerálódik az `Entity+CoreDataGeneratedProperties.swift` fájl, azonban magáról az osztály 
-deklarálásáról nekünk kell gondoskodnunk._
-`
 ---
 
-### `Notebook`-ok megjelenítése <a id="notebookok-megjelenitese"></a>
+*A* Codegen *további beállításait is érdemes ismerni.*
 
-> Hogy megkönnyítsük a `NSManagedObjectContext` elérését, vegyünk fel egy osztálymetódust az `AppDelegate.swift`be!
+* __Manual/None__: *régi módszer, kézzel kell megírni, vagy legenerálni a szükséges fájlokat. Ehhez az `Xcode` segítséget nyújt, az adatmodellben az entitást kiválasztva, az `Editor/Create NSManagedObject Subclass...` opcióval legenerálja az osztályokat az entitásokhoz.*
+
+* __Category/Extension__: *"félautomata" módba kapcsolja a generátort. Ilyenkor automatikusan legenerálódik az `Entity+CoreDataGeneratedProperties.swift` fájl, azonban magáról az osztály 
+deklarálásáról nekünk kell gondoskodnunk.*
+
+---
+
+### `Notebook`ok megjelenítése <a id="notebookok-megjelenitese"></a>
+
+> Hogy megkönnyítsük a `NSManagedObjectContext` elérését, vegyünk fel egy *computed type property*-t az `AppDelegate.swift`be!
 
 ```swift
 class var managedContext: NSManagedObjectContext {
@@ -163,17 +164,17 @@ class var managedContext: NSManagedObjectContext {
 
 > Hozzunk létre egy új `UITableViewController`ből származó osztályt **`NotebookViewController`** névvel!
 
-> A `Main.storyboard`ban vegyünk fel egy új `Table View Controller`t és ágyazzuk be egy `Navigation Controller`be, amit jelöljünk ki a kezdeti view controllernek!
+> A `Main.storyboard`ban vegyünk fel egy új `Table View Controller`t és ágyazzuk be egy `Navigation Controller`be, amit jelöljünk ki a kezdeti `View Controller`nek!
 
 ![](img/09_desired_ui.png)
 
 > Továbbra is az `Interface Builder`ben válasszuk ki a `Table View Controller`t és
 
-> 1.  A `Navigation Bar` fejlécére klikkelve nevezzük át **Notebooks**-r.
+> 1.  A `Navigation Bar` fejlécére klikkelve nevezzük át **Notebooks**-ra.
 2.  Az `Identity inspector`ban változtassuk át az osztályát **NotebookViewController**re.
 
 <!--  -->
-> Állítsuk be a cella prototípus azonosítóját **NotebookCell**re, a *típusát* **Basic**re:
+> Állítsuk be a cella prototípus *azonosítóját* **NotebookCell**re, a *típusát* **Basic**re:
 
 ![](img/10_table_view_cell.png)
 
@@ -240,11 +241,11 @@ override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexP
 
 ![](img/11_desired_ui.png)
 
-> Válasszuk ki a `segue`-t és adjuk meg azonosítóul: **ShowNotesSegue**.
+> Válasszuk ki a `segue`-t és *azonosítónak* adjuk meg a **ShowNotesSegue**-t.
 
 ![](img/12_show_notes_segue.png)
 
-> Hozzunk létre egy új osztály, `NoteViewController` névvel, mely `UITableViewController`ből származik, majd a `storyboard`ban állítsuk be ezt az osztályt az új jelenethez!
+> Hozzunk létre egy új osztály, `NoteViewController` névvel, mely a `UITableViewController`ből származik, majd a `storyboard`ban állítsuk be ezt az osztályt az új jelenethez!
 
 <!--  -->
 > A cella *prototípus stílusát* állítsuk **Subtitle**-re, az *Identifier* attribútumot pedig **NoteCell**re!
@@ -317,9 +318,9 @@ override func viewDidLoad() {
 }
 ```
 
-Most még nem látszik miért jobb az `NSFetchedResultsController` egy sima `array`-be történő lekérdezéshez képest, később viszont jelezni fogja ha bármi megváltozik a lekérdezésben érintett objektumokban, ha pl. létrehozunk vagy törlünk egy új `Note`-ot.
+Most még nem látszik miért jobb az `NSFetchedResultsController` egy sima `array`-be történő lekérdezéshez képest, később viszont látni fogjuk, hogy jelzi ha bármi megváltozik a lekérdezésben érintett objektumokban, ha pl. létrehozunk vagy törlünk egy új `Note`-ot.
 
-> A `UITableViewDataSource` metódusoknál töröljük ki a szekciók számát megadót, a sorok számánál pedig térjünk vissza a `Fetched Results Controller`től elkért értékkel!
+> A `UITableViewDataSource` metódusoknál töröljük ki a szekciók számát megadót, a sorok számánál pedig térjünk vissza a `NSFetchedResultsController`től elkért értékkel!
 
 ```swift
 override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -331,7 +332,7 @@ override func tableView(_ tableView: UITableView, numberOfRowsInSection section:
 }
 ```
 
-> A `tableView(_:cellForRowAt:)` metódusban szintén a `Controller`től kérjük el a megfelelő indexű `Note`-ot és ez alapján konfiguráljuk a cellát. Vegyünk fel egy külön metódust a cella adatainak beállításához (később még ennek hasznát vehetjük, ha már egy létező cellát akarunk frissíteni)!
+> A `tableView(_:cellForRowAt:)` metódusban szintén a `NSFetchedResultsController`től kérjük el a megfelelő indexű `Note`-ot és ez alapján konfiguráljuk a cellát. Vegyünk fel egy külön metódust a cella adatainak beállításához (később még ennek hasznát vehetjük, ha már egy létező cellát akarunk frissíteni)!
 
 ```swift
 func configure(cell: UITableViewCell, at indexPath: IndexPath) {
@@ -405,7 +406,7 @@ func createNoteWith(content: String) {
 }
 ```
 
-Ha kipróbáljuk az alkalmazást, azt láthatjuk, hogy nem jelenik meg az új jegyzet a mentés után. Ez azért van mert a `Table View` még nem értesül a kontextus módosításáról. Ekkor tűnik fel a képben az `NSFetchedResultsController`, mely képes értesítéseket küldeni, ha megváltozik az általa figyelt lekérdezés, esetünkben azok a `Note` objektumok, amik az éppen kiválasztott `Notebook`hoz tartoznak.
+Ha kipróbáljuk az alkalmazást, azt láthatjuk, hogy nem jelenik meg az új jegyzet a mentés után. Ez azért van mert a `Table View` még nem értesül a kontextus módosításáról. Ekkor tűnik fel a képben újra az `NSFetchedResultsController`, mely képes értesítéseket küldeni, ha megváltozik az általa figyelt lekérdezés, esetünkben azok a `Note` objektumok, amik az éppen kiválasztott `Notebook`hoz tartoznak.
 
 > Adjuk hozzá `NoteViewController`hez az `NSFetchedResultsControllerDelegate` protokolt!
 
@@ -442,7 +443,7 @@ func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetch
 }
 ```
 
-Ezek a metódusok szinte minden alkalmazásban ugyanígy néznek ki (a .delete, .update, .move megadásával, később azokat is felvesszük).
+Ezek a metódusok szinte minden alkalmazásban ugyanígy néznek ki (a `.delete`, `.update`, `.move` megadásával kiegészítve, később mi is felvesszük ezeket).
 
 ### Jegyzetek törlése <a id="jegyzetek-torlese"></a>
 
@@ -454,7 +455,7 @@ override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexP
 }
 ```
 
-> Majd végezzük el a törlést a `UITableViewDataSource`-ból adoptált `tableView(_:commit:forRowAt:) metódusban!
+> Majd végezzük el a törlést a `UITableViewDataSource`-ból adoptált `tableView(_:commit:forRowAt:)` metódusban!
 
 ```swift
 override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
@@ -466,7 +467,9 @@ override func tableView(_ tableView: UITableView, commit editingStyle: UITableVi
 }
 ```
 
-> A törlésről értesül a `Fetched Results Controller` és meghívja az előbb bemutatott `delegate` metódust, ebben vegyük fel a törlés eseményhez, hogy a `Table View` kitörölje a megfelelő elemet!
+A törlésről értesül a `NSFetchedResultsController` és meghívja az előbb bemutatott `delegate` metódust.
+
+> Egészítsük ki ezt, vegyük fel a törlés eseményhez, hogy a `Table View` kitörölje a megfelelő elemet!
 
 ```swift
 case .delete:
@@ -477,7 +480,7 @@ case .delete:
 
 ### További műveletek <a id="tovabbi-muveletek"></a>
 
-A `Fetched Results Controller` jelez ha bármelyik objektum módosításra kerül (pl. átírták egy attribútumát) vagy ha megváltozik a pozíciója a lekérdezésen belül. Bár ezeket a laboron nem használjuk, érdemes a standard implementációt ezekhez is felvenni.
+Az `NSFetchedResultsController` jelez ha bármelyik objektum módosításra kerül (pl. átírták egy attribútumát) vagy ha megváltozik a pozíciója a lekérdezésen belül. Bár ezeket a laboron nem használjuk, érdemes a standard implementációt ezekhez is felvenni.
 
 ```swift
 func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
@@ -496,11 +499,11 @@ func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, 
 }
 ```
 
-### Managed Object Context mentése <a id="moc-mentese"></a>
+### `Managed Object Context` mentése <a id="moc-mentese"></a>
 
 A jelenlegi implementáció rögtön elmenti a változásokat a perzisztens tárolóba. Sok módosítás esetén (vagy ha esetleg szeretnénk érvényteleníteni a legutóbbi változtatásokat), érdemes lehet a módosításokat csak akkor menteni, mikor az alkalmazás a háttérbe kerül.
 
-> Ehhez módosítsuk az applicationDidEnterBackground() metódust az AppDelegate-ben!
+> Ehhez módosítsuk az `applicationDidEnterBackground(_:)` metódust az `AppDelegate.swift`ben!
 
 ```swift
 func applicationDidEnterBackground(_ application: UIApplication) {
@@ -510,4 +513,4 @@ func applicationDidEnterBackground(_ application: UIApplication) {
 
 ## Önálló feladatok <a id="onallo-feladatok"></a>
 
-> Építsük be `NotebookViewController`be is új `Notebook`ok felvételének és törlésének lehetőségét!
+> Építsük be `NotebookViewController`be is új `Notebook`ok felvételének és törlésének lehetőségét! (Használjuk az `NSFetchedResultController`t!)
