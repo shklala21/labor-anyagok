@@ -140,7 +140,7 @@ Az `iPhone`-ok *landscape* orientációjában célszerűbb lenne egy magasabb k�
 
 ![](img/19_any_width_compact_height_asset.png)
 
-> A létrejövő *Compact Height* méreosztályhoz tartozó `2x` helyekre húzzuk be a `GirlWithHat` képet és ellenőrizzük szimulátorban az eredményt!
+> A létrejövő *Compact Height* méreosztályhoz tartozó `2x` és `3x` helyekre húzzuk be a `GirlWithHat` képet és ellenőrizzük szimulátorban az eredményt!
 
 ![](img/20_landscape_different_image.png)
 
@@ -179,7 +179,7 @@ class NameHandler: NSObject {
 
 ![](img/22_show_details_segue.png)
 
-> A `Master View Controller` cellájából hozzunk létre a nemrég létrehozott `Navigation Controller`re mutató *Show Detail* `segue`-t, aminek az *Identifier*ét nevezzünk el **ShowDetailSegue**-nek.
+> A `Master View Controller` cellájából hozzunk létre a nemrég létrehozott `Navigation Controller`re mutató *Show Detail* **Selection** típusú `segue`-t, aminek az *Identifier*ét nevezzünk el **ShowDetailSegue**-nek.
 
 <!--  -->
 > Végül pedig állítsuk be kezdő `View Controller`nek a `SplitViewController`t! A következő elrendezést kellett kapnunk.
@@ -423,7 +423,7 @@ detailPopover.delegate = self
 > Végül írjuk meg a callbacket az *extension*ben!
 
 ```swift
-func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+func adaptivePresentationStyle(for controller: UIPresentationController, traitCollection: UITraitCollection) -> UIModalPresentationStyle {
   return .none
 }
 ```
