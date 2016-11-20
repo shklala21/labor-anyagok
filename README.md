@@ -20,4 +20,5 @@
 * [6. labor](labor_06/labor_06.md) :white_check_mark:
 * [7. labor](labor_07/labor_07.md) :white_check_mark:
 * [8. labor](labor_08/labor_08.md) :white_check_mark:
-* [9. labor](labor_09/labor_09.md) :large_blue_circle:
+* [9. labor](labor_09/labor_09.md) :white_check_mark:
+* [10. labor](labor_10/labor_10.md) :large_blue_circle:
