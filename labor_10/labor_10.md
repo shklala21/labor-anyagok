@@ -26,7 +26,7 @@
 
 Az alkalmazás tartalmaz egy `Table View Controller`t (`MessagesViewController.swift`), illetve egy új üzenetek írására szolgáló `ComposeMessageViewController`t.
 
-## Üzenetek letöltése <a id="uzenetek-letoltese"></a>
+### Üzenetek letöltése <a id="uzenetek-letoltese"></a>
 
 > A `MessagesViewController.swift`-be vegyünk fel egy új property-t, mely az `URLSession` példányt tárolja! Helyben inicializáljuk is!
 
@@ -37,7 +37,7 @@ var urlSession: URLSession = {
 }()
 ```
 
-> Valósítsuk meg a *Refresh* gomb megnyomásakor meghívódó metódust, mely elindítja az üzenetek letöltését (az üres metódus már ott van a kódban és be is van kötve a gomb megfelelő eseményéhez).
+> Valósítsuk meg a *Refresh* gomb megnyomásakor meghívódó metódust, mely elindítja az üzenetek letöltését! (Az üres metódus `refreshButtonTap(_:)` néven már ott van a kódban és be is van kötve a gomb megfelelő eseményéhez.)
 
 ```swift
 // MARK: - Actions
@@ -55,7 +55,7 @@ var urlSession: URLSession = {
 
 > Teszteljük az alkalmazást és ellenőrizzük, hogy a konzolon megjelenik a letöltött `JSON` formátumú válasz!
 
-A konzolon azonban csak a következő üzenet fog megjelenni.
+A konzolon csak a következő üzenet fog megjelenni.
 
 `App Transport Security has blocked a cleartext HTTP (http://) resource load since it is insecure. Temporary exceptions can be configured via your app's Info.plist file.`
 
@@ -67,17 +67,17 @@ _Természetesen egy ilyen változtatásnál időt kell adni a fejlesztőknek, ho
 
 _A `2016`-os `WWDC`-n az `Apple` bejelentette, hogy `2017` januárjától az `App Store`-ba felöltött alkalmazásoknak (és az őket kiszolgáló szervereknek) adaptálniuk kell az *ATS*-t. Ez alól csak nagyon indokolt esetben adnak felmentést._
 
-_A fejlesztés idejére azonban továbbra is ki lehet kapcsolni nyugodt szívvel ezt a biztonsági funkciót._
+_A fejlesztés idejére azonban továbbra is ki lehet kapcsolni ezt a biztonsági funkciót._
 
 ---
 
-> Az ATS kikapcsolásához az `Info.plist`-ben vegyük fel az `App Transport Security Settings` kulcsot, majd azon belül az *`Allow Arbitrary Loads`* kulcsot **`YES`** értékkel!
+> Az *ATS* kikapcsolásához az `Info.plist`-ben vegyük fel az *`App Transport Security Settings`* kulcsot, majd azon belül az *`Allow Arbitrary Loads`* kulcsot **`YES`** értékkel!
 
 ![](img/02_ats.png)
 
 Ezen változtatás után már meg kell jelennie a konzolon a `JSON` válasznak.
 
-## `JSON` feldolgozás <a id="json-feldolgozas"></a>
+### `JSON` feldolgozás <a id="json-feldolgozas"></a>
 
 A szervertől kapott válasz `JSON` formátumú. Egy külső tömbben `JSON` objektumok írják le a megjelenítendő üzeneteket. A szerver válaszát egy böngészőben is megvizsgálhatjuk az URL megnyitásával.
 
@@ -94,7 +94,8 @@ A szervertől kapott válasz `JSON` formátumú. Egy külső tömbben `JSON` obj
     "longitude": 0,
     "to_user": "László",
     "topic": "film"
-  }
+  },
+  ...
 ]
 ```
 
@@ -104,7 +105,7 @@ A szervertől kapott válasz `JSON` formátumú. Egy külső tömbben `JSON` obj
 var messages = [Any]()
 ```
 
-> A data task befejeztekor meghívódó blokkban dolgozzuk fel a kapott `JSON`-t és rendeljük az eredményt a `messages` változóhoz!
+> A data taszk befejeztekor meghívódó blokkban dolgozzuk fel a kapott `JSON`-t és rendeljük az eredményt a `messages` változóhoz!
 
 ```swift
 // MARK: - Actions
@@ -158,7 +159,9 @@ override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexP
 
 Az üzenetek megjelenítéséhez egy egyedi cella osztályt használunk (`MessageCell`).
 
-## Üzenetek feltöltése <a id="uzenetek-feltoltese"></a>
+> Próbáljuk ki az alkalmazást!
+
+### Üzenetek feltöltése <a id="uzenetek-feltoltese"></a>
 
 Új üzenet küldéséhez a `URL`-re egy `HTTP` `POST` kérést kell küldenünk, a következő formátumú tartalommal.
 
@@ -174,7 +177,7 @@ Az üzenetek megjelenítéséhez egy egyedi cella osztályt használunk (`Messag
 
 Az üzenet összeállítását a `composeViewControllerDidSend()` metódusban végezhetjük, mely be van kötve az új üzenet írásához készített `View Controller`hez.
 
-> Első lépésként állítsuk össze az adathierarchiát, majd alakítsuk `JSON`-ná (az esetleg megadott kép feltöltését későbbre hagyjuk). **A _`YOUR NAME`_ helyett mindenki válasszon egy egyedi nevet!**
+> Első lépésként állítsuk össze az adathierarchiát, majd alakítsuk `JSON`-ná (az opcionálisan megadható kép feltöltését későbbre hagyjuk). **A _`YOUR NAME`_ helyett mindenki válasszon egy egyedi nevet!**
 
 ```swift
 func composeMessageViewControllerDidSend(_ viewController: ComposeMessageViewController) {
@@ -231,7 +234,7 @@ urlSession.uploadTask(with: request, from: jsonData) { data, response, error in
 
 Ha újra letöltjük az üzeneteket, meg kell jelennie az új küldeménynek.
 
-## Képek feltöltése <a id="kepek-feltoltese"></a>
+### Képek feltöltése <a id="kepek-feltoltese"></a>
 
 > A szervernek elküldendő `JSON` üzenetbe illesszük be a kiválasztott képet. Ehhez először lekicsinyítjük, majd a `JPEG` reprezentációját `base64` kódolással alakítjuk sztringgé!
 
@@ -244,7 +247,7 @@ if let image = viewController.imageView.image {
 }
 ```
 
-## Képek letöltése <a id="kepek-letoltese"></a>
+### Képek letöltése <a id="kepek-letoltese"></a>
 
 A szerveren minden feltöltött kép eltárolódik, majd az üzenetek lekérdezésekor az `imageurl` kulcshoz tartozó érték alapján tudjuk letölteni őket. Hogy ne töltsünk le feleslegesen egy képet többször, hozzunk létre egy kis „cache”-t, mely `URL – kép` párokat tartalmaz. 
 
@@ -254,7 +257,7 @@ A szerveren minden feltöltött kép eltárolódik, majd az üzenetek lekérdez�
 var imageCache = [URL: UIImage]()
 ```
 
-> Definiáljunk egy új metódust, mely az `URL`-je alapján beállít egy képet a cacheből egy cellához, vagy letölti, ha még nincs meg és azután állítja be.
+> Definiáljunk egy új metódust, mely az `URL`-je alapján beállít egy képet a cache-ből egy cellához, vagy letölti, ha még nincs meg és azután állítja be.
 
 ```swift
 // MARK: - Helper methods
@@ -276,7 +279,7 @@ func downloadImage(with url: URL, for cell: MessageCell) {
 }
 ```
 
-> A cellák létrehozásakor (`tableView(:_cellForRowAt:)`) indítsuk el a cellához tartozó kép letöltését!
+> A cellák létrehozásakor (`tableView(_:cellForRowAt:)`) indítsuk el a cellához tartozó kép letöltését!
 
 ```swift
 if let imageURLString = message["imageurl"] as? String {
@@ -284,7 +287,7 @@ if let imageURLString = message["imageurl"] as? String {
 }
 ```
 
-## Network Activity Indicator <a id="network-activity-indicator"></a>
+### Network Activity Indicator <a id="network-activity-indicator"></a>
 
 > Jelenítsük meg, ill. rejtsük el a hálózati aktivitást jelző „pörgettyűt”, üzenet küldésekor és üzenetek letöltésekor, illetve mikor a műveletek véget érnek!
 
@@ -300,13 +303,15 @@ UIApplication.shared.isNetworkActivityIndicatorVisible = false
 
 > Készítsünk egy egyszerű valutaváltó alkalmazást, a [http://fixer.io](http://fixer.io) `API`-t használva!
 >
+> ![](img/03_example_ui.png)
+>
 * Hozzunk létre egy új `Single View` alkalmazást **iValuta** néven!
 * Készítsünk egy egyszerű felhasználói felületet! (Szükség lesz két `UITextField`re a valutanemek és az átváltandó összeg bekérése, `UIlabel`re az eredmény kiírásához, valamint egy `UIButton`re a folyamat indításához.)
 * Az átváltás gomb megnyomásakor indítsunk egy `HTTP` `GET` kérést (egy data taszkot), mely letölti az aktuális árfolyamot. Az `URL` formátuma a következő:
   [http://api.fixer.io/latest?base=**USD**&symbols=**HUF**](http://api.fixer.io/latest?base=USD&symbols=HUF)
 * Dolgozzuk fel a `JSON` választ és jelenítsük meg a váltás eredményét!
-    * A számértékek `NSNumber`-ökre képződnek le, amiket lehet castolni pl. `Double`-re
-    * A válaszban a váltási valutanem lesz az egyik kulcs érték
+    * A számértékek `NSNumber`ökre képződnek le, amiket lehet castolni pl. `Double`-re.
+    * A válaszban a váltási valutanem lesz az egyik kulcs érték.
 
 ```json
 {
