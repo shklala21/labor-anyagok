@@ -25,16 +25,16 @@ A főbb változások az előző verzióhoz képest, hogy a `MessagesViewControll
 > Próbáljuk ki az alkalmazást és nézzük át a forráskódját! 
 
 ### Pozíció lekérdezése <a id="pozicio-lekerdezese"></a>
-> Készítsünk el egy osztályt, mely segítségével le tudjuk kérdezni az aktuális pozíciónkat. Ehhez hozzuk létre a `LocationManager` nevű `NSObject`ből származó osztályunkat.
+> Készítsünk el egy osztályt, mely segítségével le tudjuk kérdezni az aktuális pozíciónkat. Ehhez hozzuk létre a `LocationManager` nevű, `NSObject`ből származó osztályunkat!
 
-Ahhoz, hogy az osztály értesítéseket kapjon a pozícióval kapcsolatban, implementálni kell a `CLLocationManagerDelegate` protokolt! Ahogy az a kódban is látható, az osztálynak ehhez importálnia kell a `CoreLocation` modult.
+Ahhoz, hogy az osztály értesítéseket kapjon a pozícióval kapcsolatban, implementálni kell a `CLLocationManagerDelegate` protokolt. Ahogy az a kódban is látható, az osztálynak ehhez importálnia kell a `CoreLocation` modult.
 
 > Hozzunk létre 
 >
-> * egy `CLLocation` típusú, **lastLocation** nevű property-t, ami a legutolsó ismert pozíciót foja tárolni 
-> * egy `NSTimer` típusú, **timeoutTimer** nevű property-t
-> * egy closure-t, **locationUpdated** névvel, hogy értesíteni tudjuk a pozícióra várakozó objektumainkat a pozíció változására (ennek értéket a hívó fél ad a `startLocationManager` meghívásakor)
-> * egy `CLLocationManager` típusú, **locationManager** nevű property-t
+> * egy `CLLocation` típusú, **lastLocation** nevű property-t, ami a legutolsó ismert pozíciót fogja tárolni,
+> * egy `NSTimer` típusú, **timeoutTimer** nevű property-t,
+> * egy closure-t, **locationUpdated** névvel, hogy értesíteni tudjuk a pozícióra várakozó objektumainkat a pozíció változásáról (ennek értéket a hívó fél ad a `startLocationManager` meghívásakor),
+> * egy `CLLocationManager` típusú, **locationManager** nevű property-t!
 
 ```swift
 import CoreLocation
@@ -100,7 +100,7 @@ func locationManager(_ manager: CLLocationManager, didUpdateLocations locations:
 }
 ```
 
-> Ezután írjuk meg a hibakezelő delegate-et. Ha nem tudta meghatározni a pozíciónkat, akkor állítsuk meg a frissítést.
+> Ezután írjuk meg a hibakezelő delegate metódust. Ha nem tudta meghatározni a pozíciónkat, akkor állítsuk meg a frissítést!
 
 ```swift
 func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
@@ -109,7 +109,7 @@ func locationManager(_ manager: CLLocationManager, didFailWithError error: Error
 }
 ```
 
-> Majd implementáljuk azokat a metódust, mely ténylegesen leállítja a frissítési folyamatot.
+> Majd implementáljuk azt a metódust, mely ténylegesen leállítja a frissítési folyamatot!
 
 ```swift
 func stopLocationManager() {
@@ -130,7 +130,7 @@ func stopLocationManager() {
 
 ### Pozíció csatolása az üzenethez <a id="pozicio-csatolasa-az-uzenethez"></a>
 
-> Térjünk rá a `ComposeMessageViewController` kiegészítésére! Először vegyünk fel egy `LocationManager` típusú property-t az osztályban és inicializáljuk is.
+> Térjünk rá a `ComposeMessageViewController` kiegészítésére! Először vegyünk fel egy `LocationManager` típusú property-t az osztályban és inicializáljuk is!
 
 ```swift
 var locationManager = LocationManager()
@@ -175,7 +175,7 @@ if let location = viewController.location {
 > Hogy meg is tudjuk nézni az egyes, helyhez kötött üzeneteket, hozzunk létre egy `MapViewController` nevű osztályt, ami a `UIViewController`ből származik.
 
 <!--  -->
-> A `Main.storyboard`ban tegyünk a `MapViewController` `view`-ja fölé egy teljes nézetet betöltő `MKMapView`-t, majd kössük be egy `Outlet`tel a `MapViewController`be **mapView** néven.
+> A `Main.storyboard`ban tegyünk a `MapViewController` `view`-jába egy teljes nézetet betöltő `MKMapView`-t, majd kössük be egy `Outlet`tel a `MapViewController`be **mapView** néven.
 
 ![](img/03_mapview_vc.png) ![](img/04_mapview_object.png)
 
@@ -183,7 +183,7 @@ if let location = viewController.location {
 
 ![](img/05_mapview_delegate.png)
 
-> Miután ez megvan, térjünk vissza az osztály forrásához, importáljuk a `MapKit` modult! Adjunk továbbá hozzá egy property-t, ami majd a megjelenítendő üzeneteinket fogja tartalmazni,  illetve jelezzük, hogy meg fogjuk valósítani az `MKMapViewDelegate`-et (extension)!
+> Miután ez megvan, térjünk vissza az osztály forrásához, importáljuk a `MapKit` modult! Adjunk továbbá hozzá egy property-t, ami majd a megjelenítendő üzeneteinket fogja tartalmazni,  illetve jelezzük, hogy meg fogjuk valósítani az `MKMapViewDelegate`-et (`extension`)!
 
 ```swift
 import MapKit
@@ -270,6 +270,7 @@ override func viewDidLoad() {
 
 > Futtassuk az alkalmazást!
 
+<!--  -->
 > Az annotációk mellett adjunk hozzá egy törtvonalat (`MKPolyLine`) is a térképhez úgy, hogy minden üzenet legyen egymás után sorban összekötve. Ehhez először hozzunk létre egy koordinátákat tartalmazó tömböt, amivel létrehozzuk a törtvonalat, majd adjuk hozzá a törtvonalat a `mapView`-hoz, mint *overlay*!
 
 ```swift
@@ -389,6 +390,8 @@ func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, callou
   }
 }
 ```
+
+> Futtassuk az alkalmazást!
 
 ## Önálló feladatok <a id="onallo-feladatok"></a>
 
