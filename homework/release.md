@@ -1,7 +1,7 @@
 #2016. Házi feladat beadása
 
 ## Házi feladat feltöltés
-A házi feladatot 2016. december 15. 24:00-ig kell feltölteni a saját github repository-ba. A feltöltött projekt mellett mindenkitől várunk egy nagyjából oldalas projekt leírást is markdown formátumban ami a readme.md fájlban szereplhet. Ennek az alkalmazás rövid leíárását kell tartalmaznia 3db jellemző képernyőkép mellett.
+A házi feladatot 2016. december 15. 24:00-ig kell feltölteni a saját github repository-ba. A feltöltött projekt mellett mindenkitől várunk egy nagyjából egy oldalas projekt leírást is markdown formátumban ami a projekt readme.md fájljában szereplhet. Ennek az alkalmazás rövid leíárását kell tartalmaznia 3 db jellemző képernyőkép mellett.
 
 ## Házi feladat bemutatás
 A házi feladatot a pótlási héten a labor idejében (december 15. 12-14 vagy 14-16) a laborvezetőnek kell bemutatni személyesen. Ez feltétele a házi feladat elfogadásának.
