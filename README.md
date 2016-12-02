@@ -10,6 +10,8 @@
 
 [Specifikáció](homework/specification.md)
 
+[Beadás](homework/release.md)
+
 ## Laborok
 
 * [1. labor](labor_01/labor_01.md) :white_check_mark:
