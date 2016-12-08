@@ -9,7 +9,7 @@
 ## A labor témája
 
 * [PictureDownload](#picture-download)
-    * [ViewController inicializálása kódból](#viewcontroller-inicializalasa-kodbol)
+    * [`ViewController` inicializálása kódból](#viewcontroller-inicializalasa-kodbol)
     * [Alamofire](#alamofire)
     * [ECSlidingViewController](#ecslidingviewcontroller)
     * [MBProgressHUD](#mbprogresshud)
@@ -20,18 +20,15 @@
 
 Alkalmazásunk a [fortepan.hu](fortepan.hu)-ról fog letölteni közepes, illetve nagy felbontású képeket. Utóbbi esetén azt is szeretnénk megmutatni a felhasználónak, hogy hogyan halad a letöltés. 
 
-> Kiindulásnak Hozzunk létre egy új `Single View Application`t, `PictureDownload` névvel `iPhone`-ra!
+> Kiindulásnak hozzunk létre egy új `Single View Application`t, __`PictureDownload`__ névvel `iPhone`-ra!
 
 <!--  -->
-> A létrehozott projektben töröljük ki a `Main.storyboard`ot (*Move to Trash*) és ezt vezessük át projekt beállításaiban is, nevezetesen töröljük ki a `Main` interface mező tartalmát a `Deployment Info` résznél.
+> A létrehozott projektben töröljük ki a `Main.storyboard`ot (*Move to Trash*) és ezt vezessük át projekt beállításaiban is, nevezetesen töröljük ki a `Main Interface` mező tartalmát a `Deployment Info` résznél.
 
 ![](img/01_deployment_info.png)
 
-### ViewController inicializálása kódból <a id="viewcontroller-inicializalasa-kodbol"></a>
-
-Egészítsük ki a `ViewController.swift`et!
-
-> Hozzunk létre egy **imageView** nevű *UIImageView* property-t, hogy szükség esetén le tudjuk cserélni a benne lévő képet, illetve egy **contentUrl** és egy **imageUrl** property-t *URL* típussal.
+### `ViewController` inicializálása kódból <a id="viewcontroller-inicializalasa-kodbol"></a>
+> Egészítsük ki a `ViewController.swift`et! Hozzunk létre egy **imageView** nevű *UIImageView* property-t, hogy szükség esetén le tudjuk cserélni a benne lévő képet, illetve egy **contentUrl** és egy **imageUrl** property-t *URL* típussal.
 
 ```swift
 // MARK: - Properties
@@ -103,7 +100,7 @@ Látható, hogy minden UI elem megjelenik, de a kép nem töltődik be, és a le
 ![](img/02_alamofire_group.png)
 
 <!--  -->
-> Ezután adjuk hozzá `Embedded Binary`-ként a megfelelő Alamofire.framework-öt! Ehhez menjünk el a projektbeállításokhoz és a megfelelő helyen nyomjuk meg a + gombot, majd válasszük ki az `iOS`-re generált frameworköt.
+> Ezután adjuk hozzá `Embedded Binary`-ként a megfelelő `Alamofire.framework`öt! Ehhez menjünk el a projektbeállításokhoz és a megfelelő helyen nyomjuk meg a `+` gombot, majd válasszuk ki az `iOS`-re generált frameworköt.
 
 ![](img/03_alamofire_embedded_binary.png)
 
@@ -137,7 +134,7 @@ override func viewWillAppear(_ animated: Bool) {
 }
 ```
 
-Ahogy már a korábbi laboroknál is előjött, engedélyezni kell az projekthez tartozó `Info.plist` fájlban a `HTTP` felett történő kommunikációt a következő két kulcs felvételével: `NSAppTransportSecurity` (Dictionary) és ezen belül az `NSAllowsArbitraryLoads` (BOOL). (Vagy használhatjuk a képen látható, könnyebben megjegyezhető neveket, amire az Xcode automatikus kiegészítési lehetőségeket is ajánl.)
+Ahogy már a korábbi laboroknál is előjött, engedélyezni kell az projekthez tartozó `Info.plist` fájlban a `HTTP` felett történő kommunikációt a következő két kulcs felvételével: `NSAppTransportSecurity` (`Dictionary`) és ezen belül az `NSAllowsArbitraryLoads` (`BOOL`). (Vagy használhatjuk a képen látható, könnyebben megjegyezhető neveket, amire az Xcode automatikus kiegészítési lehetőségeket is ajánl.)
 
 ![](img/04_ats.png)
 
@@ -189,7 +186,7 @@ Most, hogy van már rendes tartalmunk adjuk hozzá az alkalmazáshoz egy menüt!
 
 ![](img/06_sliding_view.png)
 
-> Először hozzunk létre egy `MenuTableViewController` nevű `UITableViewController`ből leszármazott osztályt egy `showMenu(_:)` metódussal. Erre majd a navigáció során lesz szükségünk, hogy az unwind `segue`-t be tudjuk kötni.
+> Először hozzunk létre egy `MenuTableViewController` nevű `UITableViewController`ből leszármazott osztályt egy `showMenu(_:)` metódussal. Erre majd a navigáció során lesz szükségünk, hogy az `unwind segue`-t be tudjuk kötni.
 
 ```swift
 class MenuTableViewController: UITableViewController {
@@ -294,7 +291,7 @@ override func viewDidLoad() {
 
 ### MBProgressHUD <a id="mbprogresshud"></a>
 
-Most, hogy már van mit letölteni, adjuk hozzá a projekthez az MBProgressHUD third-party plugint, amivel különböző progress bar-okat tudunk megjeleníteni.
+Most, hogy már van mit letölteni, adjuk hozzá a projekthez az `MBProgressHUD` third-party plugint, amivel különböző progress bar-okat tudunk megjeleníteni.
 
 > Ehhez először töltsük le a [forrást](https://github.com/jdg/MBProgressHUD/archive/master.zip
 ) majd csomagoljuk is ki!
@@ -304,8 +301,7 @@ Most, hogy már van mit letölteni, adjuk hozzá a projekthez az MBProgressHUD t
 
 Mivel ezek `Objective-C`-ben írt állományok a rendszer automatikusan felajánlja, hogy készít hozzájuk *bridging header*t.
 
-Ha ez nem történnne meg, akkor hozzunk létre egyet manuálisan!
-
+> Ha ez nem történnne meg, akkor hozzunk létre egyet manuálisan!
 > `File/New/File/Source/Header file`: `PictureDownloader-Bridging-Header.h` néven hozzunk létre egy fájlt, majd menjünk át a projektbeállításokhoz, azon belül is `Build Settings`-hez és állítsuk be az `Objective-C Brigding Header`t: **`$(SRCROOT)/$(PROJECT)/PictureDownloader-Bridging-Header.h`** 
 
 ![](img/14_bridging_header.png)
@@ -313,12 +309,7 @@ Ha ez nem történnne meg, akkor hozzunk létre egyet manuálisan!
 > Végül egészítsük ki a `PictureDownloader-Bridging-Header.h`-t az `#import “MBProgressHUD.h”` direktívával!
 
 ```smalltalk
-#ifndef PictureDownloader_Bridging_Header_h
-#define PictureDownloader_Bridging_Header_h
-
 #import "MBProgressHUD.h"
-
-#endif
 ```
 
 > Ezután egészítsük ki a `ViewController`-t, hogy letöltés közben megjelenjen a letöltés állapota. 
@@ -335,7 +326,7 @@ hud = MBProgressHUD(view: view)
 view.addSubview(hud)
 ```
 
-> Amikor elindul a letöltés jelenítsük meg, a egyes adatcsomagok beérkezésekor frissítsük, végül, ha minden letöltődött, rejtsük el a HUD-ot! Ehhez a `downloadFile()`-t kell kiegészíteni.
+> Amikor elindul a letöltés jelenítsük meg, az egyes adatcsomagok beérkezésekor frissítsük, végül, ha minden letöltődött, rejtsük el a HUD-ot! Ehhez a `downloadFile()`-t kell kiegészíteni.
 
 ```swift
 func downloadFile(){
@@ -376,7 +367,7 @@ Ehhez a `Kingfish` nevű third-party modult fogjuk használni, amit a CocoaPods 
 sudo gem install cocoapods
 ```
 
-> Majd adjunk hozzá egy üres fájt a projektünk gyökérkönyvtárába `Podfile` néven. Ez a legegyszerűbben úgy tudjuk megtenni, hogy a projekthez magához adunk hozzá egy üres fájlt.
+> Majd adjunk hozzá egy üres fájt a projektünk gyökérkönyvtárába `Podfile` néven. Ezt a legegyszerűbben úgy tudjuk megtenni, hogy a projekthez magához adunk hozzá egy üres fájlt.
 
 ![](img/15_empty_file.png)
 
@@ -403,6 +394,8 @@ pod install
 > Ha sikerült, zárjuk be a projektet és a `Finder`ben keressük meg a projekt mellett létrejött `PictureDownloader.xcworkspace` fájlt. Ezt nyissuk meg!
 
 Valami ilyesmit kell látnunk.
+
+![](img/17_workspace_structure.png)
 
 > Nyissuk meg a `ViewController.swift` állományunkat és töröljük/kommentezzük ki a korábban írt `viewWillAppear(_:)` metódust! Ezzel sajnos azt értük el, hogy már nem töltődnek be automatikusan a járművek képei, amikor a nézetet megjelenítjük. A  `Kingfisher`t használat előtt importáljuk.
 
