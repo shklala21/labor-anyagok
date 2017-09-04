@@ -204,7 +204,7 @@ A konzolra való log üzenetek megjelenítéséhez a `print(_:separator:terminat
 A képernyő jobb alsó sarkában megjelenő sávban is gondoskodjunk arról, hogy a *Console* nézet be legyen kapcsolva.
 ![](img/08_xcode_console.png)
 
-> Írjuk ki a konzolra az ominózus "Hello World" szöveget (szúrjuk be a kódot az `AppDelegate.swift` fájlba az `application(_:didFinishLaunchingWith⌥s:)` metódus végére, a `return true` elé)!
+> Írjuk ki a konzolra az ominózus "Hello World" szöveget (szúrjuk be a kódot az `AppDelegate.swift` fájlba az `application(_:didFinishLaunchingWithOptions:)` metódus végére, a `return true` elé)!
 
 ```swift
 print("Hello World!")
