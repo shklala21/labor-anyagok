@@ -4,8 +4,6 @@
 
 [A tárgy hivatalos **adatlapja**](http://www.vik.bme.hu/kepzes/targyak/VIAUAV15)
 
-[GitHub Classroom tutorial](github_classroom/github_classroom.md)
-
 ## Házi feladat
 
 [Specifikáció](homework/specification.md)
