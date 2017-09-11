@@ -16,7 +16,7 @@
 * [Önálló feladatok](#onallo)
 
 ### Cheat sheets
-- [https://github.com/iwasrobbed/Swift-CheatSheet](https://github.com/iwasrobbed/Swift-CheatSheet) (még nem frissül `Swift 4.0`-ra)
+- [https://github.com/iwasrobbed/Swift-CheatSheet](https://github.com/iwasrobbed/Swift-CheatSheet) (még nem frissült `Swift 4.0`-ra)
 - [https://www.raywenderlich.com/73967/swift-cheat-sheet-and-quick-reference](https://www.raywenderlich.com/73967/swift-cheat-sheet-and-quick-reference)
 
 ### *Style guide*
@@ -64,7 +64,7 @@ let hero1 = GameCharacter(name: "Harcos Huba", level: 1)
 
 * inicializálók és függvények hívásánál alapesetben minden paraméter nevét ki kell írni
 * mivel `hero1`-et `let`tel definiáltuk, ez egy _konstans_ és nem változtatható az értéke (azonban a hivatkozott objektumnak ettől még módosíthatjuk a property-jeit)
-* `⌥+Click`kel vizsgáljuk meg `hero1` típusát, láthatjuk, hogy hála a `type inference`-nek, egy `GameCharacter` típusú változót kaptunk
+* `⌥+Click`kel vizsgáljuk meg `hero1` típusát, láthatjuk, hogy a `type inference`-nek köszönhetően egy `GameCharacter` típusú változót kaptunk
 
 A `Swift` **statikusan típusos nyelv:** minden változónak van típusa és a definiálásuk után ez a típus nem is változhat. A változók típusát azonban a legtöbb esetben nem kötelező explicit megadni, mert a fordító kitalálja a változó/konstans kezdeti értékéből. Ezt a mechanizmust hívjuk **`type inference`**-nek.
 
@@ -89,7 +89,7 @@ let hero1 = GameCharacter(name: "Harcos Huba", level: -2)
 ```
 
 - `⌥+Click`el megnézve `hero1` típusa már nem `GameCharacter`, hanem `GameCharacter?` vagyis egy `GameCharacter` **Optional**
-- **`nil`**t kapunk vissza értékül
+- `nil`t kapunk vissza értékül
 
 > Állítsuk vissza `hero1`-nél az inicializálónál használt "szintet" egy érvényes értékre!
 
@@ -147,7 +147,7 @@ class Party {
 }
 ```
 
-* A csapatba tartozó karaktereket a `members` property tárolja, melynek típusa `[GameCharacter]` vagyis egy tömb, mely `GameCharacter` példányokat tartalmaz. Ennek a propertynek kezdeti értéket adunk: egy üres tömböt.
+* A csapatba tartozó karaktereket a `members` property tárolja, melynek típusa `[GameCharacter]` vagyis egy tömb, mely `GameCharacter` példányokat tartalmaz. Ennek a property-nek kezdeti értéket adunk: egy üres tömböt.
 * Az `add(member:)` metódus felvesz egy új karaktert a csapatba.
 * Ha egy osztály minden változójának adunk egy kezdeti értéket és emellett egyetlen `init` függvényt sem írunk, a `Swift` _default initializer_ t hoz létre.
 
@@ -282,8 +282,8 @@ Nyilván azok a hősök, melyeknél fegyver van, nagyobb támadóerővel rendelk
 ```swift
 override var power: Int {
   var extraPower = 0
-  if weapon != nil {
-    switch weapon! {
+  if let unwrappedWeapon = weapon {
+    switch unwrappedWeapon {
     case .laserCannon:
       extraPower = 100
     case .spoon:
@@ -335,7 +335,7 @@ func fight(fighter1: Fightable, fighter2: Fightable) -> Fightable? {
 extension GameCharacter: Fightable { }
 ```
 
-Hibát kapunk, mert még nem definiáltuk a protokollban felsorolt összes metódust vagy propertyt. Ténylegesen csak a `takeDamage(from:)` metódus hiányzik.
+Hibát kapunk, mert még nem definiáltuk a protokollban felsorolt összes metódust vagy property-t. Ténylegesen csak a `takeDamage(from:)` metódus hiányzik.
 
 > Implementáljuk a `takeDamage(from:)` metódust!
 
