@@ -4,6 +4,7 @@
 * Kelényi Imre - imre.kelenyi@aut.bme.hu
 * Kántor Tibor - tibor.kantor@autsoft.hu
 * Krassay Péter - peter.krassay@autsoft.hu
+* Szücs Zoltán - szucs.zoltan@autsoft.hu
 
 ## A labor témája
 * [iCalculator](#icalculator)
@@ -18,7 +19,7 @@
 A labor során egy egyszerű számológép alkalmazást készítünk el, melyen keresztül megismerkedünk az `iOS`-es felhasználói felület készítésének alapjaival.
 
 ## iCalculator <a id="icalculator"></a>
-> Hozzunk lére egy új `Single View Application`t, `iCalculator` névvel a `labor_03` könyvtárba!
+> Hozzunk lére egy új `Single View App`ot, `iCalculator` névvel a `labor_03` könyvtárba!
  
 > A `Target` beállítások alatt módosítsuk a `Devices` beállítást `iPhone`-ra.
  
@@ -33,7 +34,7 @@ A labor során egy egyszerű számológép alkalmazást készítünk el, melyen 
 
 > Első lépésként válasszuk ki a `Main.storyboard`ot, majd a `File Inspector`ban kapcsoljuk ki a `Use Trait Variations` és a `Use Safe Area Layout Guides` beállításokat!
 
-> <img src="img/02_trait_variations.png" alt="02" style="width: 50%;"/>
+> <img src="img/02_trait_variations_safe_area.png" alt="02" style="width: 40%;"/>
 
 *Egy `Trait` leír egy környezeti tulajdonságot, mint például, hogy támogatott-e a `Force Touch` vagy sem. A `Trait Collection` egy `Dictionary`, ami az alkalmazás aktuális környezeti tulajdonságait `Trait`ek és a hozzájuk tartozó értékek formájában tárolja.*
 
@@ -41,7 +42,7 @@ A labor során egy egyszerű számológép alkalmazást készítünk el, melyen 
 
 *Ez a `Trait Variations` felel meg *Xcode 9*-ben az `Adaptive Layout`nak, amivel később fogunk megismerkedni. Ha kikapcsoljuk, akkor a `Storyboard` azt feltételezi, hogy a felületet csak egyetlen "eszköz típusra" definiáljuk (pl. `iPhone`-ra).*
 
-*A `Safe Area Layout Guide`-ok a képernyő egy olyan területét határolják, melyet nem takar semmilyen rendszerhez tartozó elem, vagy egyéb tartalom. Az `iOS 11`-ben vezették be, a `top` illetve `bottom layout guide`-ok helyett.*
+*A `Safe Area Layout Guide`-ok a képernyő egy olyan területét határolják, melyet nem takar semmilyen rendszerhez tartozó elem, vagy egyéb tartalom. Az `iOS 11`-ben vezették be, a `Top` illetve `Bottom Layout Guide`-ok helyett.*
 
 <a id="alap-nezetek-hasznalata"></a>
 > Hozzunk létre a `Main.storyboard`ban, a `ViewController`en belül lévő `View`-ban **2 db** `UITextField`et, **2 db** `UILabel`t és **1 db** `UIButton`t.
@@ -53,11 +54,14 @@ A labor során egy egyszerű számológép alkalmazást készítünk el, melyen 
 Lehetőség van rá, hogy értelmes neveket adjunk az egyes felületelemeknek. Az átnevezéshez válasszunk ki egy elemet a bal szélső listából, majd az `Enter` megnyomása után átnevezhetjük. 
 
 > <img src="img/04_named_views.png" alt="04" style="width: 30%;"/>
->
 
 > Rendezzük középre a két `UILabel` szövegét az *`Alignment`* property módosításával!
 
 > ![](img/05_alignment.png)
+
+> Állítsuk át az alsó `UILabel` háttérszínét szürkére a *`Background`* property módosításával!
+
+> <img src="img/05b_label_background.png" alt="05b" style="width: 50%;"/>
 
 > Teszteljük a felületet a szimulátorral!
 
@@ -96,7 +100,6 @@ override func viewDidLoad() {
 ```swift
 @IBOutlet weak var inputTextFieldA: UITextField!
 @IBOutlet weak var inputTextFieldB: UITextField!
-@IBOutlet weak var calculateButton: UIButton!
 @IBOutlet weak var resultLabel: UILabel!
 ```
 
@@ -170,20 +173,21 @@ A legegyszerűbb megoldás az elemek dinamikus elrendezéséhez az `iOS 9`-ben d
 > Válasszuk ki az összes nézetet, majd nyomjuk meg a `Stack` gombot a szerkesztő nézet jobb alsó sarkában! ![](img/12_stack_button.png)
 
 Először valami hasonló, nem túl jól kinéző felületet fogunk látni.
+
 > <img src="img/13_initial_stack_view.png" alt="13" style="width: 75%;"/>
 
-> Ahhoz, hogy a nézetek egyenletesen helyezkedjenek el, válasszuk ki a `Stack View`-t és állítsuk be a *`Distribution`* paraméterét **`Equal Spacing`**re az `Attributes Inspector`ban!
+> Ahhoz, hogy a nézetek egyenletesen helyezkedjenek el, válasszuk ki a `Stack View`-t és állítsuk be a *`Distribution`* paraméterét __*`Equal Spacing`*__re az `Attributes Inspector`ban!
 
 > ![](img/14_stack_view_distibution.png)
 
-> Továbbra is a `Stack View` beállításai között állítsuk az *`Alignment`* paramétert **`Fill`**re! Ezzel azt érjük el, hogy a `Stack View`-ban lévő nézetek kitőltik a rendelkezésre álló szélességet.
+> Továbbra is a `Stack View` beállításai között állítsuk az *`Alignment`* paramétert __*`Fill`*__re! Ezzel azt érjük el, hogy a `Stack View`-ban lévő nézetek kitőltik a rendelkezésre álló szélességet.
 
 > ![](img/15_stack_view_alignment.png)
 
 Utolsó lépésként még be kell állítanunk, hogy maga a `Stack View` dinamikusan legyen elrendezve a képernyőn. Ehhez az `Auto Layout`ot fogjuk használni, amiről a következő laboron még bőven lesz szó.
-> Most egyelőre csak válasszuk ki a `Stack View`-t és a `Pin` opciót, majd csatoljuk hozzá a szülő nézetéhez és magasságát állítsuk fixen `300`-ra!
+> Most egyelőre csak válasszuk ki a `Stack View`-t és a `Pin` opciót, majd széleit csatoljuk hozzá a szülő nézetéhez, tetejét a `Top Layout Guide`-hoz és magasságát állítsuk fixen `300`-ra!
 
-> <img src="img/16_auto_layout.png" alt="16" style="width: 50%;"/>
+> <img src="img/16_auto_layout.png" alt="16" style="width: 40%;"/>
 
 # Önálló feladatok <a id="onallo"></a>
 
