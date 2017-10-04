@@ -23,7 +23,10 @@ A labor célja egy egyszerű "rajzprogram" megírása.
 # iPaint <a id="ipaint"></a>
 
 ## Egyedi nézet osztály és rajzolás <a id="egyedi-nezet-osztaly-es-rajzolas"></a>
-> Hozzunk létre egy új `Single View App`ot, `iPaint` névvel `iPhone`-ra a `labor_04` könyvtárba!
+> Hozzunk létre egy új `Single View App`ot, `iPaint` névvel a `labor_04` könyvtárba!
+
+<!--  -->
+> Állítsuk a `Devices` beállítást `iPhone`-ra (`Target` beállítások, `Deployment Info` szekció).
 
 <!--  -->
 > Hozzunk létre egy új, `UIView`-ból leszármazó osztályt `EllipseView` névvel (a fájl létrehozásakor használjuk a `Cocoa Touch Class` _template_-et!
@@ -43,7 +46,7 @@ override func draw(_ rect: CGRect) {
 }
 ```
 
-*A rajzoláskor a `Core Graphics` framework műveleteit használjuk. A rajzolás mindig egy grafikus kontextus segítségével történik (`CGContext`). Mivel a `Core Graphics` `C` -ben lett megírva, az `API` hívások függvényeken keresztül történnek (nem objektumorientáltan), ezt azonban a `Swift` (`Swift 3` óta) elfedi előlünk, kényelmes interfészt biztosítva.*
+A rajzoláskor a `Core Graphics` framework műveleteit használjuk. A rajzolás mindig egy grafikus kontextus segítségével történik (`CGContext`). Mivel a `Core Graphics` `C` -ben lett megírva, az `API` hívások függvényeken keresztül történnek (nem objektumorientáltan), ezt azonban a `Swift` (`Swift 3` óta) elfedi előlünk, kényelmes interfészt biztosítva.
 
 > Próbáljuk ki az új ellipszis osztályunkat! A `ViewController` osztály `viewDidLoad()` metódusában hozzunk létre egy új ellipszist és adjuk hozzá a gyökérnézetéhez!
 
@@ -58,15 +61,15 @@ override func viewDidLoad() {
 }
 ```
 
-*Ha kódból hozunk létre nézeteket a következő három lépésre figyeljünk:*
+Ha kódból hozunk létre nézeteket a következő három lépésre figyeljünk:
 
-1. *a nézet példányosítása*
-2. *a nézet pozíciójának és méretének megadása (`frame`, vagy `bounds` és `center` beállításával) a leendő szülőnézetének koordinátarendszerében*
-3. *a nézet hozzáadása egy szülőnézethez (itt kerül be a nézet hierarchiába)*
+1. a nézet példányosítása
+2. a nézet pozíciójának és méretének megadása (`frame`, vagy `bounds` és `center` beállításával) a leendő szülőnézetének koordinátarendszerében
+3. a nézet hozzáadása egy szülőnézethez (itt kerül be a nézet hierarchiába)
 
-*Ha bármelyik lépést kihagyjuk, a nézet nem fog megjelenni!*
+Ha bármelyik lépést kihagyjuk, a nézet nem fog megjelenni!
 
-*Az `isOpaque` property azt szabályozza, hogy a nézet "alatti" területet is ki kell-e rajzolnia a rendszernek. `isOpaque = true` esetén a nézetnek teljesen ki kell töltenie a keretét, mert ellenkező esetben a "lyukaknál" nem fognak látszódni az alatta levő egyéb nézetek vagy a szülőnézete.*
+Az `isOpaque` property azt szabályozza, hogy a nézet "alatti" területet is ki kell-e rajzolnia a rendszernek. `isOpaque = true` esetén a nézetnek teljesen ki kell töltenie a keretét, mert ellenkező esetben a "lyukaknál" nem fognak látszódni az alatta levő egyéb nézetek vagy a szülőnézete.
 
 > Kicsit tuningoljuk fel `EllipseView` rajzoló kódját és adjunk hozzá egy körvonalat!
 
@@ -101,7 +104,7 @@ Ezen a laboron is csak abszolút koordinátákkal és méretekkel dolgozunk, vag
 
 ![](img/06_two_blue_dots.png)
 
-_Egyedi nézetosztályok használatánál mindig a nézet egyik ősosztályának megfelelő elemet kell behúznunk az `Interface Builder`be. Ez legáltalánosabb esetben a `UIView`, de ha például egy `UITextField`ből leszármazott egyedi osztály egy példányát akarjuk létrehozni, akkor már egy `UITextField` elemet érdemes választani és ennek állítani át a_ Class _property-jét az egyedi osztályra nevére._
+Egyedi nézetosztályok használatánál mindig a nézet egyik ősosztályának megfelelő elemet kell behúznunk az `Interface Builder`be. Ez legáltalánosabb esetben a `UIView`, de ha például egy `UITextField`ből leszármazott egyedi osztály egy példányát akarjuk létrehozni, akkor már egy `UITextField` elemet érdemes választani és ennek állítani át a _Class_ property-jét az egyedi osztályra nevére.
 
 ## Interface Builder támogatás egyedi osztályokhoz <a id="IB-tamogatas-egyedi-osztalyhoz"></a>
 `Xcode 6` óta lehetőség van az `Interface Builder`rel is kirajzoltatni az egyedi osztályokat. Ehhez mindössze annyit kell tennünk, hogy az osztály forráskódjába, közvetlenül az osztály deklarációja elé felvesszük az `@IBDesignable` attribútumot.
@@ -111,7 +114,7 @@ _Egyedi nézetosztályok használatánál mindig a nézet egyik ősosztályának
 class EllipseView: UIView {
 ```
 
-Ha megnézzük a `storyboard`ot, meg fog jelenni a nézetünk.
+Ha megnézzük a `Storyboard`ot, meg fog jelenni a nézetünk.
 
 > Vegyünk fel egy új property-t az `EllipseView`-hoz, ami a kitöltés színét adja meg és írjuk át a rajzoló kódot, hogy ez alapján színezzen!
 
@@ -121,11 +124,11 @@ class EllipseView: UIView {
 
   var color: UIColor = .blue
 
-    override func draw(_ rect: CGRect) {
-      ...
-      context?.setFillColor(color.cgColor)      
-      ...
-    }
+  override func draw(_ rect: CGRect) {
+  	 ...
+    context?.setFillColor(color.cgColor)      
+    ...
+  }
 }
 ```
 
@@ -140,17 +143,17 @@ A színválasztás azonban így még csak kódból elérhető. Szerencsére ezen
 > Prefixáljuk a *color* property-t `@IBInspectable` attribútummal!
 
 ```swift
-@IBInspectable var color: UIColor = UIColor.blue
+@IBInspectable var color: UIColor = .blue
 ```
 
 Az `@IBInspectable`-ként megjelölt property-k az `Interface Builder`ben megjelennek az `Attributes inspector`ban, mint az adott osztály szerkeszthető beállításai.
 
 ![](img/07_ibinspectable.png)
 
-*A `type inference` valamiért nem mindig működik jól az `@IBInspectable` property-knél, ezért ezeknél mindig explicit adjuk meg a property típusát!*
+A `type inference` valamiért nem mindig működik jól az `@IBInspectable` property-knél, ezért ezeknél mindig explicit adjuk meg a property típusát!
 
 ## Gesztusfelismerés és rajzolás <a id="gesztusfelismeres-es-rajzolas"></a>
-> Töröljük ki a `storyboard`ba felvett nézetet és kommentezzük ki a `viewDidLoad()`-ban a példa `EllipseView`-t létrehozó kódot.
+> Töröljük ki a `Storyboard`ba felvett nézetet és kommentezzük ki a `viewDidLoad()`-ban a példa `EllipseView`-t létrehozó kódot.
 
 <!--  -->
 > Vegyünk fel egy **`canvas`** nevű `Outlet`et a "rajzlapunkhoz"!
@@ -159,7 +162,7 @@ Az `@IBInspectable`-ként megjelölt property-k az `Interface Builder`ben megjel
 @IBOutlet weak var canvas: UIView!
 ```
 
-> A `storyboard`ban adjunk hozzá egy `Tap Gesture Recognizer` gesztusfelismerőt a `canvas`-hez. Ehhez a `drag&drop` használatával húzzunk rá egy `Tap Gesture Recognizer` elemet, mely a művelet elvégzése után megjelenik a `View Controller` szerkesztő nézet felső részén található sávban, illetve a `Document Outline`-ban.
+> A `Storyboard`ban adjunk hozzá egy `Tap Gesture Recognizer` gesztusfelismerőt a `canvas`-hez. Ehhez a `drag&drop` használatával húzzunk rá egy `Tap Gesture Recognizer` elemet, mely a művelet elvégzése után megjelenik a `View Controller` szerkesztő nézet felső részén található sávban, illetve a `Document Outline`-ban.
 
 ![](img/08_tap_gesture_document_outline.png)
 
@@ -209,6 +212,8 @@ private var selectedColorIndex = 0
 private(set) var selectedColor = UIColor(hue: 0, saturation: 1.0, brightness: 1.0, alpha: 1.0)
 ```
 
+Alapértelmezetten egy *property getter*e és *setter*e is azonos láthatósági szinttel rendelkezik. Amennyiben a *setter*nek alacsonyabb szintű láthatósági szintet kívánunk megadni, úgy azt a választott láthatósági szint után írt `(set)` kóddal tudjuk megtenni. 
+
 > Vegyünk fel egy *computed property*-t (*colorWidth*), ami a nézet aktuális méretének függvényében megadja, hogy egy színhez "milyen széles" téglalap tartozik!
 
 ```swift
@@ -239,7 +244,7 @@ override func draw(_ rect: CGRect) {
 }
 ```
 
-> Próbáljuk ki a nézetet! Ehhez váltsunk a `storyboard`ra és a rajzfelület alá helyezzünk el egy új `UIView`-t (a `canvas` nézet magasságát előtte csökkentsük le, hogy alatta elférjen az új nézet)! Az új nézet osztályát az `Identity inspector`ban állítsuk át `ColorPicker`re!
+> Próbáljuk ki a nézetet! Ehhez váltsunk a `Storyboard`ra és a rajzfelület alá helyezzünk el egy új `UIView`-t (a `canvas` nézet magasságát előtte csökkentsük le, hogy alatta elférjen az új nézet)! Az új nézet osztályát az `Identity inspector`ban állítsuk át `ColorPicker`re!
 
 > <img src="img/11_ib_color_picker.png" alt="11" style="width: 50%;" />
 
@@ -262,9 +267,9 @@ required init?(coder aDecoder: NSCoder) {
 }
 ```
 
-*Ha `Storyboard`ból vagy `XIB`-ből töltődik be egy nézet, akkor az `init(coder:)` hívódik meg.*
+Ha `Storyboard`ból vagy `XIB`-ből töltődik be egy nézet, akkor az `init(coder:)` hívódik meg.*
 *Ha kódból hozzuk létre a nézetet, akkor pedig az `init(frame:)`-et használjuk.*
-*Ha egyedi nézetet készítünk, akkor célszerű mindkettőt feldefiniálni. Az `NSCoder` paraméterű inicializáló `required`, vagyis kötelező minden leszármazott osztályban felüldefiniálni (pont azért, hogy `IB`-ben használva az osztályt, helyes működést kapjunk).*
+*Ha egyedi nézetet készítünk, akkor célszerű mindkettőt feldefiniálni. Az `NSCoder` paraméterű inicializáló `required`, vagyis kötelező minden leszármazott osztályban felüldefiniálni (pont azért, hogy `IB`-ben használva az osztályt, helyes működést kapjunk).
 
 > `commonInit`ben hozzunk létre a kódból egy `Tap Gesture Recognizer`t és rendeljük hozzá a `handleTap` akció metódust!
 
@@ -275,13 +280,13 @@ private func commonInit() {
 }
 ```
 
-*Mikor kódból hozzárendelünk egy akció metódust egy elemhez (pl. itt a gesztusfelismerőhöz a `handleTap(gestureRecognizer:)` nevű metódust), a __`target-action`__ mintát használjuk. Ez `Objective-C`-ből ered, ahol a metódusok nevére egy speciális típussal, az úgynevezett* __*`selector`*__*ral hivatkozhatunk.*
+Mikor kódból hozzárendelünk egy akció metódust egy elemhez (pl. itt a gesztusfelismerőhöz a `handleTap(gestureRecognizer:)` nevű metódust), a __`target-action`__ mintát használjuk. Ez `Objective-C`-ből ered, ahol a metódusok nevére egy speciális típussal, az úgynevezett __`selector`__ segítségével hivatkozhatunk.
 
-*`Swift`ben a `Selector` struktúra reprezentálja ezt és a `#selector` kulcsszóval hivatkozhatunk egy metódusra, vagy egy property `getter` illetve `setter`-ére. A hivatkozott metódusoknak, illetve a property-knek létezniük kell az `Objectice-C` *runtime*-ban. Mivel a **selector** fordítási időben készül ezért a fordító ellenőrizni is tudja, hogy valóban létezik-e az adott metódus a megfelelő szignatúrával, amire hivatkozni akarunk.*
+`Swift`ben a `Selector` struktúra reprezentálja ezt és a `#selector` kulcsszóval hivatkozhatunk egy metódusra, vagy egy property `getter` illetve `setter`-ére. A hivatkozott metódusoknak, illetve a property-knek létezniük kell az `Objective-C` *runtime*-ban. Mivel a **selector** fordítási időben készül ezért a fordító ellenőrizni is tudja, hogy valóban létezik-e az adott metódus a megfelelő szignatúrával, amire hivatkozni akarunk.
 
-*`Swift 4` óta a `Selector` által hivatkozott metódust `@objc` attribútummal kell ellátni.*
+`Swift 4` óta a `Selector` által hivatkozott metódust `@objc` attribútummal kell ellátni.
 
-*A kettőspont a metódus nevének végén (`handleTap`**`:`**) arra utal, hogy a metódusnak egy paramétere van. Kettőspont nélkül (pl. `handleTap`) egy olyan metódusra hivatkoznánk aminek nincsenek paraméterei.*
+A kettőspont a metódus nevének végén (`handleTap`**`:`**) arra utal, hogy a metódusnak egy paramétere van. Kettőspont nélkül (pl. `handleTap`) egy olyan metódusra hivatkoznánk aminek nincsenek paraméterei.
 
 > Valósítsuk meg a `handleTap(gestureRecognizer:)` metódust, mely az érintéspont függvényében beállítja a kiválasztott színt és újrarajzoltatja a nézetet!
 
@@ -297,7 +302,7 @@ private func commonInit() {
 
 Ha kipróbáljuk az alkalmazást, színválasztón már váltakozni fog a kiválasztott szín.
 
-> Váltsunk át a `storyboard`ra és vegyünk fel egy `Outlet`et a színválasztóhoz *colorPicker* névvel!
+> Váltsunk át a `Storyboard`ra és vegyünk fel egy `Outlet`et a színválasztóhoz *colorPicker* névvel!
 
 ```swift
 @IBOutlet weak var colorPicker: ColorPicker!
@@ -322,7 +327,7 @@ private var currentEllipse: EllipseView?
 currentEllipse = ellipse
 ```
 
-> Nyissuk meg a `storyboard`ot és az `Object Library`-ből húzzunk be egy `Pinch Gesture Recognizer` gesztusfelismerőt a `canvas`-re (ügyeljünk rá, hogy nehogy a gyökér nézethez adjuk hozzá)!
+> Nyissuk meg a `Storyboard`ot és az `Object Library`-ből húzzunk be egy `Pinch Gesture Recognizer` gesztusfelismerőt a `Canvas`re (ügyeljünk rá, hogy nehogy a gyökér nézethez adjuk hozzá)!
 
 A `Connections inspector`ban ellenőrizni tudjuk, hogy a megfelelő nézethez adtuk-e hozzá.
 
