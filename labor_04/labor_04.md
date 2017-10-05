@@ -31,9 +31,8 @@ A labor célja egy egyszerű "rajzprogram" megírása.
 <!--  -->
 > Hozzunk létre egy új, `UIView`-ból leszármazó osztályt `EllipseView` névvel (a fájl létrehozásakor használjuk a `Cocoa Touch Class` _template_-et!
 
-> <img src="img/01_cocoa_touch_class_template.png" alt="01" style="width: 75%;"/>
+<img src="img/01_cocoa_touch_class_template.png" alt="01" style="width: 50%;"/>
 
-<!--  -->
 > Definiáljuk felül a `draw(_:)` metódust és rajzoljunk ki egy kék ellipszist, mely majdnem kitölti a nézet területét (`4` pontnyi "peremet" hagyva neki)!
 
 ```swift
@@ -88,21 +87,21 @@ Ezen a laboron is csak abszolút koordinátákkal és méretekkel dolgozunk, vag
 
 > Adjunk hozzá egy üres `View`-t a gyökérnézethez. Ez lesz a "rajzlapunk", ehhez a nézethez fogjuk majd hozzáadni a rajzolás során létrehozott gyereknézeteket. Érdemes a rajzlap nézet háttérszínét is megváltoztatni valami világos színre, hogy jobban elüssön a hátterétől.
 
-![](img/02_canvas.png)
+<img src="img/02_canvas.png" alt="02" style="width: 50%;"/>
 
 > Most próbáljuk ki, hogy hogyan tudunk felvenni egy példányt az egyedi `EllipseView` nézet osztályunkból! Ehhez ismét csak egy sima `View`-t kell először felvennünk a rajzlap nézet gyerekeként.
 
-![](img/03_custom_view.png)
+<img src="img/03_custom_view.png" alt="03" style="width: 50%;"/>
 
 > Majd ezek után át kell állítanunk a felvett nézet osztályát `EllipseView`-ra. Ehhez válasszuk ki a nézetet, majd az `Identity inspector`ban írjuk át a *Class* attribútumot!
 
-![](img/04_identity_inspector.png)
+<img src="img/04_identity_inspector.png" alt="04" style="width: 25%;"/>
 
 > Az `Attributes inspector`ban állítsuk a *Background* attribútumot **Clear Color**ra és kapcsoljuk ki az *Opaque* checkbox-ot!
 
-![](img/05_attributes_inspector.png)
+<img src="img/05_attributes_inspector.png" alt="05" style="width: 25%;"/>
 
-![](img/06_two_blue_dots.png)
+<img src="img/06_two_blue_dots.png" alt="06" style="width: 30%;"/>
 
 Egyedi nézetosztályok használatánál mindig a nézet egyik ősosztályának megfelelő elemet kell behúznunk az `Interface Builder`be. Ez legáltalánosabb esetben a `UIView`, de ha például egy `UITextField`ből leszármazott egyedi osztály egy példányát akarjuk létrehozni, akkor már egy `UITextField` elemet érdemes választani és ennek állítani át a _Class_ property-jét az egyedi osztályra nevére.
 
@@ -148,7 +147,7 @@ A színválasztás azonban így még csak kódból elérhető. Szerencsére ezen
 
 Az `@IBInspectable`-ként megjelölt property-k az `Interface Builder`ben megjelennek az `Attributes inspector`ban, mint az adott osztály szerkeszthető beállításai.
 
-![](img/07_ibinspectable.png)
+<img src="img/07_ibinspectable.png" alt="07" style="width: 25%;"/>
 
 A `type inference` valamiért nem mindig működik jól az `@IBInspectable` property-knél, ezért ezeknél mindig explicit adjuk meg a property típusát!
 
@@ -164,11 +163,11 @@ A `type inference` valamiért nem mindig működik jól az `@IBInspectable` pro
 
 > A `Storyboard`ban adjunk hozzá egy `Tap Gesture Recognizer` gesztusfelismerőt a `canvas`-hez. Ehhez a `drag&drop` használatával húzzunk rá egy `Tap Gesture Recognizer` elemet, mely a művelet elvégzése után megjelenik a `View Controller` szerkesztő nézet felső részén található sávban, illetve a `Document Outline`-ban.
 
-![](img/08_tap_gesture_document_outline.png)
+<img src="img/08_tap_gesture_document_outline.png" alt="08" style="width: 50%;"/>
 
 > Az akció metódusok bekötésénél megismert módon, `Ctrl + klikk + drag&drop` húzzuk be a gesztusfelismerő akciómetódusát a kódba. A megjelenő popuban váltsunk `Action`re, adjuk neki a `handleCanvasTap` nevet és módosítsuk a metódus egyetlen paraméterének típusát `UITapGestureRecognizer`re!
 
-![](img/09_tap_gesture_action.png)
+<img src="img/09_tap_gesture_action.png" alt="09" style="width: 25%;"/>
 
 > A metódusban hozzunk létre egy új `EllipseView`-t a "koppintás" pozíciójában és adjuk hozzá a `canvas` nézethez!
 
@@ -189,7 +188,7 @@ Ezzel neki is állhatunk felhőket rajzolni!
 ## Színválasztó nézet <a id="szinvalaszto-nezet"></a>
 Egy színálasztó nézetet fogunk írni, ami végül valahogy így fog festeni.
 
-![](img/10_color_picker_done.png)
+<img src="img/10_color_picker_done.png" alt="10" style="width: 35%;"/>
 
 > Hozzunk létre egy új osztályt `ColorPicker` néven, ősosztálynak válasszuk a `UIView`-t (érdemes használni a `Cocoa Touch Class` template-et).
 
@@ -246,7 +245,7 @@ override func draw(_ rect: CGRect) {
 
 > Próbáljuk ki a nézetet! Ehhez váltsunk a `Storyboard`ra és a rajzfelület alá helyezzünk el egy új `UIView`-t (a `canvas` nézet magasságát előtte csökkentsük le, hogy alatta elférjen az új nézet)! Az új nézet osztályát az `Identity inspector`ban állítsuk át `ColorPicker`re!
 
-> <img src="img/11_ib_color_picker.png" alt="11" style="width: 50%;" />
+<img src="img/11_ib_color_picker.png" alt="11" style="width: 30%;" />
 
 Ha most kipróbáljuk, a `ColorPicker` még nem fogja kezelni az érintéseket. Ehhez hozzá fogunk adni egy gesztusfelismerőt a `ColorPicker` inicializálójában.
 
@@ -331,7 +330,7 @@ currentEllipse = ellipse
 
 A `Connections inspector`ban ellenőrizni tudjuk, hogy a megfelelő nézethez adtuk-e hozzá.
 
-![](img/12_connections_inspector.png)
+<img src="img/12_connections_inspector.png" alt="12" style="width: 25%;"/>
 
 > Kössünk be egy akciómetódust a gesztusfelismerőre, `handleCanvasPinch(_:)` névvel! (Figyeljünk arra, hogy a `sender` típusa `UIPinchGestureRecognizer` legyen!)
 
@@ -356,7 +355,7 @@ ellipse.contentMode = .redraw
 ## Ecsetméret állítása <a id="ecsetmeret-allitasa"></a>
 > Adjunk hozzá egy csúszkát (`UISlider`) a `canvas` alá, amivel a kirajzolt körök kezdeti méretét tudja állítani a felhasználó!
 
-![](img/13_uislider.png)
+<img src="img/13_uislider.png" alt="13" style="width: 30%;"/>
 
 * A `UISlider` attribútumai között beállíthatjuk a minimális, maximális és kezdeti értékét (pl. `10-100` és `10`-zel indul)
 * Vegyünk fel egy `Outlet`et (*radiusSlider*) a `UISlider`hez!
@@ -367,7 +366,7 @@ ellipse.contentMode = .redraw
 
 *  A `Swipe Gesture Recognizer`nél meg kell adnunk, hogy milyen irányú `swipe`-ot detektáljon (pl. balról-jobbra). Ennek megfelelően, ha tetszőleges irányú `swipe`-ot észlelni szeretnénk, akkor `4` külön gesztusfelismerőt kellene létrehozni.
 
-![](img/14_swipe_gesture_recognizer.png)
+<img src="img/14_swipe_gesture_recognizer.png" alt="14" style="width: 25%;"/>
 
 * Nézetek eltávolításához a `removeFromSuperView` metódust kell meghívni az eltávolítandó gyerek nézeteken. Ehhez végig kell iterálni `canvas` *subviews* property-jén (ami a gyerek nézeteket tartalmazó tömb).
 
