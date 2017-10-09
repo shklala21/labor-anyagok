@@ -1,7 +1,9 @@
-# Házi feladat specifikáció információk `2017` ősz 
+# Házi feladat tudnivalók `2017` ősz
 
 ## A házi feladatról
 A házi feladat egy önállóan elkészített `iOS` alkalmazás. Házi feladat készítése nem kötelező, a tárgykövetelményeket házi feladat beadás nélkül is lehet teljesíteni. A házi feladatra megajánlott jegyet adunk, amellyel kiváltható a vizsgázás.
+
+Minden, házi feladattal kapcsolatos interakció a `GitHub`on történik, a `labor-username` repository-khoz hasonlóan mindenki létre tud magának hozni egy `hazi-username` repository-t a **[linkre](https://classroom.github.com/a/59oFCXAJ)** kattintva.
 
 ## A megvalósított alkalmazás
 A házi feladat célja, hogy a hallgató bizonyítsa vele, hogy elsajátította az `iOS` programozás alapjait és képes önállóan egy kisebb alkalmazást elkészíteni. Bár alapesetben arra számítunk, hogy a megvalósított alkalmazás a félév során készül el, be lehet adni korábban elkészített programot is, de ennek természetesen a hallgató saját munkájának kell lennie és ezt minden esetben ellenőrizzük. A házi feladatokat az utolsó laboron lehet személyesen bemutatni a laborvezetőnek. A kész feladatok forráskódját is kérjük, de ezt bizalmasan kezeljük (sehol sem publikáljuk).
@@ -27,18 +29,24 @@ Minimális követelmények a házifeladat-alkalmazáshoz:
 
 **A megadott szempontok csak irányvonalak, bármilyen egyéb, kellően komplex alkalmazás beadható (konzultálj a laborvezetőddel)!**
 
-## Házi feladat beadása és elbírálása
+## Specifikáció
 
-Minden, házi feladattal kapcsolatos interakció a `GitHub`on történik, a `labor-username` repository-khoz hasonlóan mindenki létre tud magának hozni egy `hazi-username` repository-t a [linkre](https://classroom.github.com/a/59oFCXAJ) kattintva.
-
-### Házi feladat specifikáció
 Az első lépés a házi feladat specifikáció feltöltése és elfogadtatása. A specifikáció egy rövid, néhány mondatos leírás vagy felsorolás (maximum `1` A4-es oldal), mely tartalmazza a program célját és megvalósítandó funkciókat, valamint a felhasználandó technológiákat. A házi specifikációkat minden esetben átnézzük és egyenként elfogadjuk/visszautasítjuk. Ha valakinek nem fogadjuk el a specifikációját, arról issue-t fogunk kiírni a `GitHub` repository-jába. Elfogadás esetén a tényt rögzítjük a `README.md` fájlban.
 
 **A specifikáció feltöltésének határideje a 9. oktatási hét vége, vasárnap éjfél: 2017. november 05. 23:59** A feltöltés az `GitHub`ra történik a `hazi-username` reposityory `README.md` fájljába a sablonnak megfelelően.
 
 <p align="center">
-<b>A specifikációt <a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet">Markdown</a> formátumban várjuk!</b>
+    <b>A specifikációt <a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet">Markdown</a> formátumban várjuk!</b>
 </p>
 
-### Házi feladat beadása
-A kész házi feladatot a pótlási héten kell beadni, szintén a `hazi-username` `GitHub` repository-ba. A beadás pontos menetéről és a beadandó anyagokra vonatkozó követelményekről egy [külön leírásban](release.md) olvashattok.
+## Beadás
+__A házi feladatot 2017. december 14. 23:59-ig kell feltölteni a saját `GitHub` repository-ba.__ A feltöltött projekt mellett mindenkitől várunk a `README.md` fájlba egy nagyjából egy oldalas projekt leírást is __Markdown__ formátumban. Ennek az alkalmazás rövid leírását kell tartalmaznia `3` db jellemző képernyőkép mellett. 
+
+### Bemutatás
+A házi feladatot a pótlási héten a labor idejében (december 14. 12-14 vagy 14-16) a laborvezetőnek kell bemutatni személyesen. Ez feltétele a házi feladat elfogadásának.
+
+### Késedelmes beadás
+Késedelmes beadás esetén a vizsgaidőszak utolsó vizsgája előtti napig lehet bemutatni a házit a laborvezetővel előre egyeztett időpontban. A határidőn túli házi beadás pótdíját a Neptunon keresztül kell befizetni. Ha valaki késedelmes beadással szeretne élni, ezt az `14`. oktatási hét végéig jelezze a laborvezetőjének és a tárgy előadóinak.
+
+### Megajánlott jegy
+Aki megajánlott jegyet szerzett, fel kell vennie egy vizsgát, különben a jegyet nem tudjuk beírni. A vizsgára nem kell eljönnie.
