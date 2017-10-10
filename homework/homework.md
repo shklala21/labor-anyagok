@@ -33,7 +33,7 @@ Minimális követelmények a házifeladat-alkalmazáshoz:
 
 Az első lépés a házi feladat specifikáció feltöltése és elfogadtatása. A specifikáció egy rövid, néhány mondatos leírás vagy felsorolás (maximum `1` A4-es oldal), mely tartalmazza a program célját és megvalósítandó funkciókat, valamint a felhasználandó technológiákat. A házi specifikációkat minden esetben átnézzük és egyenként elfogadjuk/visszautasítjuk. Ha valakinek nem fogadjuk el a specifikációját, arról issue-t fogunk kiírni a `GitHub` repository-jába. Elfogadás esetén a tényt rögzítjük a `README.md` fájlban.
 
-**A specifikáció feltöltésének határideje a 9. oktatási hét vége, vasárnap éjfél: 2017. november 05. 23:59** A feltöltés az `GitHub`ra történik a `hazi-username` reposityory `README.md` fájljába a sablonnak megfelelően.
+**A specifikáció feltöltésének határideje a 9. oktatási hét vége, vasárnap éjfél: 2017. november 05. 23:59** A feltöltés a `GitHub`ra történik a `hazi-username` repository `README.md` fájljába a sablonnak megfelelően.
 
 <p align="center">
     <b>A specifikációt <a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet">Markdown</a> formátumban várjuk!</b>
@@ -46,7 +46,7 @@ __A házi feladatot 2017. december 14. 23:59-ig kell feltölteni a saját `GitHu
 A házi feladatot a pótlási héten a labor idejében (december 14. 12-14 vagy 14-16) a laborvezetőnek kell bemutatni személyesen. Ez feltétele a házi feladat elfogadásának.
 
 ### Késedelmes beadás
-Késedelmes beadás esetén a vizsgaidőszak utolsó vizsgája előtti napig lehet bemutatni a házit a laborvezetővel előre egyeztett időpontban. A határidőn túli házi beadás pótdíját a Neptunon keresztül kell befizetni. Ha valaki késedelmes beadással szeretne élni, ezt az `14`. oktatási hét végéig jelezze a laborvezetőjének és a tárgy előadóinak.
+Késedelmes beadás esetén a vizsgaidőszak utolsó vizsgája előtti napig lehet bemutatni a házit a laborvezetővel előre egyeztett időpontban. A határidőn túli házi beadás pótdíját a Neptunon keresztül kell befizetni. Ha valaki késedelmes beadással szeretne élni, ezt a `14`. oktatási hét végéig jelezze a laborvezetőjének és a tárgy előadóinak.
 
 ### Megajánlott jegy
 Aki megajánlott jegyet szerzett, fel kell vennie egy vizsgát, különben a jegyet nem tudjuk beírni. A vizsgára nem kell eljönnie.
