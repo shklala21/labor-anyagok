@@ -6,9 +6,7 @@
 
 ## Házi feladat
 
-[Specifikáció](homework/specification.md)
-
-[Beadás](homework/release.md)
+* [Tudnivalók](homework/homework.md)
 
 ## Laborok
 
