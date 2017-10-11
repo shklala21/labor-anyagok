@@ -37,15 +37,15 @@ A labor során egy többnézetes, *képkitaláló játékot* készítünk el. A 
 <img src="img/01_navigation_controller.png" alt="01" style="width: 75%;"/>
 
 A `Navigation Controller`hez az `Xcode` alapból létrehoz egy hozzácsatolt `Table View Controller`t.
-> Ezt töröljük ki és helyette adjunk a `Storyboard`hoz egy sima `View Controller`t, majd kössük be a `Navigation Controller` *root view controller* `Segue`-ére. 
+> Ezt töröljük ki és helyette adjunk a `Storyboard`hoz egy sima `View Controller`t, majd a `Navigation Controller` *root view controller* `Segue`-ére (ez egy `Relationship Segue`) `Ctrl+klikk+drag`gel kössük be az új `View Controller`t! 
 
 <!--  -->
 > Ennek tartalomnézetéhez adjunk hozzá egy `Label`t, egy `Segmented Control`t és egy `Button`t!
 >
-* Az új `View Controller`hez tartozó `Navigation Item`ben nevezzük át a `Title`-t **Játékválasztó**nak!
-* A `Label` értéke **Nehézség** legyen!
-* A `Segmented Control`nak három értéke legyen: **könnyű**, **normál** és **nehéz**. 
-* A `Button` felirata **Mutass egy képet!** legyen!
+> * Az új `View Controller`hez tartozó `Navigation Item`ben nevezzük át a `Title`-t **Játékválasztó**nak!
+> * A `Label` értéke **Nehézség** legyen!
+> * A `Segmented Control`nak három értéke legyen: **könnyű**, **normál** és **nehéz**. 
+> * A `Button` felirata **Mutass egy képet!** legyen!
 
 <img src="img/02_initial_vc.png" alt="02" style="width: 75%;"/>
 
@@ -128,7 +128,7 @@ A `Pictures.plist` ben minden képhez el van tárolva egy képcím és a képfá
 > Egy konstans formájában adjuk meg a válaszlehetőségek számát (hány képcím közül kell kiválasztani a helyes címet)!
 
 ```swift
-private let kChoices = 3
+private let choices = 3
 ```
 
 > Vegyünk fel egy új metódust, mely visszatér egy véletlenül kiválasztott képpel és képcímkék egy listájával!
@@ -152,7 +152,7 @@ func getRandomPicture(_ picture: inout UIImage?, titles: inout [String], picture
 
   // egyedi véletlen képcímek kiválasztása
   var titlesToReturn = [String]()
-  for _ in 0..<kChoices - 1 {
+  for _ in 0..<choices - 1 {
     let randomIndex = Int(arc4random_uniform(UInt32(rangeArray.count - 1)))
     if let randomPicture = pictures[rangeArray[randomIndex]] as? [String : String] {
       titlesToReturn.append(randomPicture["title"]!)
@@ -162,7 +162,7 @@ func getRandomPicture(_ picture: inout UIImage?, titles: inout [String], picture
   print("titles: \(titlesToReturn)")
 
   // választott képcím beszúrása a véletlen képcímek közé, véletlen helyre :)
-  pictureTitleIndex = Int(arc4random_uniform(UInt32(kChoices)))
+  pictureTitleIndex = Int(arc4random_uniform(UInt32(choices)))
   if let chosenPicture = pictures[selectedPictureIndex] as? [String: String] {
     titlesToReturn.insert(chosenPicture["title"]!, at: pictureTitleIndex)
     picture = UIImage(named: chosenPicture["image"]!)!
@@ -212,7 +212,7 @@ let pictureManager = PictureManager()
 
 <img src="img/08_tag.png" alt="08" style="width: 25%;"/>
 
-A `Tag` egy `integer` azonosító, melyen keresztül lekérhetjük a nézetet a kódból.
+A `Tag` egy `Int` azonosító, melyen keresztül lekérhetjük a nézetet a kódból.
 
 > Vegyünk fel két tagváltozót `GameViewController` osztályba, melybe eltároljuk az éppen mutatott képet és a helyes válasz feliratának sorszámát, továbbá egy **`pictureView`** nevű `Outlet`et a képnézethez!
 
@@ -243,8 +243,8 @@ override func viewDidLoad() {
     let cropSize = CGSize(width: 300, height: 200)
     let cropRect = CGRect(x:CGFloat(Int(arc4random()) % Int(baseImage.size.width - cropSize.width)),
                           y:CGFloat(Int(arc4random()) % Int(baseImage.size.height - cropSize.height)),
-                          width:(cropSize.width*baseImage.scale),
-                          height:(cropSize.height*baseImage.scale))
+                          width:cropSize.width * baseImage.scale,
+                          height:cropSize.height * baseImage.scale)
     let croppedImageRef = baseImage.cgImage!.cropping(to: cropRect)
     let croppedImage = UIImage(cgImage: croppedImageRef!, scale: baseImage.scale, orientation: baseImage.imageOrientation)
     pictureView.image = croppedImage
@@ -325,7 +325,7 @@ Ahhoz, hogy bezárjuk a modális `View Controller`t és visszalépjünk egy kor�
 
 Azért a `GameSelectorViewController`be vesszük fel, mert rögtön ide szeretnénk visszaugrani, először bezárva a modális `View Controller`t, majd visszalépve a `Navigation Controller`en.
 
-Az `Unwind Segue`-ek olyan korábbi `View Controller`ekre tudnak visszatérni, melyekben található egy olyan speciális (`IBAction`nel) visszatérő metódus, mely egy `UIStoryboardSegue` paramétert vár. Ez a metódus meghívódik az `Unwind Segue` bekövetkezte előtt és a paraméterül kapott `Segue`-ből kiolvasható a kiindulási `View Controller` (`segue.source`), amitől átvehetnénk az esetleg szükséges adatokat.
+Az `Unwind Segue`-ek olyan korábbi `View Controller`ekre tudnak visszatérni, melyekben található egy olyan speciális metódus, mely `IBAction`nel van annotálva és egy `UIStoryboardSegue` paramétert vár. Ez a metódus meghívódik az `Unwind Segue` bekövetkezte előtt és a paraméterül kapott `Segue`-ből kiolvasható a kiindulási `View Controller` (`segue.source`), amitől átvehetnénk az esetleg szükséges adatokat.
 
 > Próbáljuk ki az alkalmazást!
 
@@ -354,7 +354,7 @@ override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
 }
 ```
 
-Egy konkrét `View Controller`ről kiinduló összes `Segue` hatására ugyanaz a `prepare(for:sender:)` metódus hívódik meg. Ha egynél több `segue`-t indítunk ugyanarról a `View Controller`ről, akkor szükség lehet a `segue` azonosítására. Ehhez a `storyboard`ban megadhatjuk a `Segue` azonosítóját.
+Egy konkrét `View Controller`ről kiinduló összes `Segue` hatására ugyanaz a `prepare(for:sender:)` metódus hívódik meg. Ha egynél több `Segue`-t indítunk ugyanarról a `View Controller`ről, akkor szükség lehet a `Segue` azonosítására. Ehhez a `Storyboard`ban megadhatjuk a `Segue` azonosítóját.
 
 <img src="img/13_segue_identifier.png" alt="13" style="width: 25%;"/>
 
