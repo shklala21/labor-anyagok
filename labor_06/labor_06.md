@@ -4,6 +4,7 @@
 * Kelényi Imre - imre.kelenyi@aut.bme.hu
 * Kántor Tibor - tibor.kantor@autsoft.hu
 * Krassay Péter - peter.krassay@autsoft.hu
+* Szücs Zoltán - szucs.zoltan@autsoft.hu
 
 ## A labor témája
 
@@ -15,43 +16,49 @@
 * [Önálló feladat](#onallo-feladat)
     * [Új cella hozzáadása](#uj-cella-hozzaadasa)
 
-A labor célja egy utazásokat nyilvántartó alkalmazás megírása és ezzel együtt a `Table View` használatának begyakorlása.
+A labor célja egy utazásokat nyilvántartó alkalmazás megírása és ezzel együtt a `Table View` használatának elsajátítása.
 
 # iTravel <a id="itravel"></a>
 
 ## Kezdeti adatok betöltése <a id="kezdeti-adatok-betoltese"></a>
-> Hozzunk létre egy `Single View Application`t **iTravel** névvel `iPhone`-ra.
+> Hozzunk létre egy `Single View App`ot **iTravel** névvel a `labor_06` könyvtárba!
+ 
+<!--  -->
+> Állítsuk a `Devices` beállítást `iPhone`-ra (`Target` beállítások, `Deployment Info` szekció). 
 
 Az egyes utak adatai egy-egy *Dictionary*-ben vannak eltárolva. Hogy mindig legyen pár adatunk a teszteléshez, egy *Property List*ből betöltünk pár kezdeti értéket.
 
 > Húzzuk be a `res/iceland.jpg` és a `res/berlin.jpg` képeket az `Assets.xcasset` katalógusba. 
 
-A képek nyugodtan hagyhatjuk `Universal 1x`-en.
+<!-- -->
+> Hozzunk létre egy új, **Trips** nevű *Group*ot, majd húzzuk be az `InitialTrips.plist` fájlt (fontos, hogy a `Copy items if needed` opció be legyen kapcsolva!).
+<img src="img/01_new_group.png" alt="01" style="width: 33%;"/>
 
-> Húzzuk be az `InitialTrips.plist` fájlt is egy új **Trips** nevű *Group*ba. A fájlt megnyitva megnézhetjük a kezdeti adatokat.
+<img src="img/02_copy_items.png" alt="02" style="dith: 33%;"/>
 
-![](img/01_initial_trips_plist.png)
+Ezt megnyitva megnézhetjük a kezdeti adatokat.
 
-<!--  -->
-> Hozzunk létre egy új, `TripsDataManager` nevű osztályt (*Swift File* template), melyben az utazások adatait fogjuk tárolni.
+![](img/03_initial_trips_plist.png)
 
-Az osztálynak egyetlen property-je lesz, mely egy `AnyObject` típusú tömbben tárolja az utak adatait.
+> Hozzunk létre egy új, `TripsDataManager` nevű osztályt (`Swift File` template), melyben az utazások adatait fogjuk tárolni.
+
+Az osztálynak egyetlen *property*-je lesz, mely egy `AnyObject` típusú tömbben tárolja az utak adatait.
 
 ```swift
 var trips: [AnyObject]
 ```
 
-> Írjuk meg az alap inicializálót, mely betölti a kezdeti utakat a *plist*ből!
+> Írjuk meg az alap inicializálót, mely betölti a kezdeti utakat az `InitialTrips.plist`ből!
 
 
 ```swift
 init() {
   let filePath = Bundle.main.path(forResource: "InitialTrips", ofType: "plist")
-  trips = NSArray(contentsOfFile: filePath!) as! [AnyObject]
+  trips = NSArray(contentsOfFile: filePath!)! as [AnyObject]
 }
 ```
 
-> Hozzunk létre egy property-t `TripsDataManager`ből az `Application Delegate`-ben és példányosítsuk is!
+> Hozzunk létre egy *property*-t `TripsDataManager`ből az `AppDelegate`-be és példányosítsuk is!
 
 ```swift
 let tripsDataManager = TripsDataManager()
@@ -60,25 +67,25 @@ let tripsDataManager = TripsDataManager()
 ## Utak listájának megjelenítése: dinamikus `Table View` <a id="dinamikus-table-view"></a>
 > Töröljük ki a forrásfájlok közül a legenerált `ViewController`t (*Delete --> Move to Trash*)!
 
-Térjünk át a `Main.storyboard`hoz! Az alkalmazást `iPhone`ra szánjuk, ellenőrizzük tehát, hogy a **compact width**, **regular height** méretosztályban vagyunk-e. (Álló módban minden `iPhone` ezekkel a méretosztályokkal rendelkezik.)
-
-![](img/02_traits.png)
-
-> Töröljük ki a `storyboard`ban levő, generált jelenetünket!
+<!-- -->
+> A `Main.storyboard` tulajdonságainál (`File inspector`) kapcsoljuk ki a `Use Trait Variations` beállítást.
 
 <!--  -->
-> Rakjunk be egy `Table View Controller`t! Ágyazzuk be ezt a `Table View Controller`t egy `Navigation Controller`be és állítsuk be a hozzá tartozó *Navigation Item Title* property-jét **Útjaim**ra! 
+> Töröljük ki a `Storyboard`ban levő, generált jelenetünket!
 
-![](img/03_utjaim_table_view.png)
+<!--  -->
+> Rakjunk be egy `Table View Controller`t! Ágyazzuk be ezt a `Table View Controller`t egy `Navigation Controller`be és állítsuk be a hozzá tartozó `Navigation Item` *Title* property-jét **Útjaim**ra! 
+
+![](img/04_utjaim_table_view.png)
 
 Ne felejtsük el beállítani `Initial View Controller`nek a `Navigation Controller`t!
 
-> Hozzunk létre egy új, `UITableViewController`ből származó osztályt, `TripsViewController` névvel. Állítsuk be a `storyboard`ban a `Table View Controller` osztályát az újonnan definiált osztályra!
+> Hozzunk létre egy új, `UITableViewController`ből származó osztályt `TripsViewController` névvel (használjuk a `Cocoa Touch Class` *template*-et). Állítsuk be a `Storyboard`ban a `Table View Controller` osztályát az újonnan definiált osztályra!
 
 <!--  -->
 > Állítsuk át a `Table View Controller`ben lévő `Table View Cell` stílusát **Subtitle**-re és adjunk meg neki egy azonosítót: **TripsTableViewCell**!
 
-![](img/04_utjaim_table_view_cell.png)
+![](img/05_utjaim_table_view_cell.png)
 
 > A `TripsViewController`hez adjunk hozzá egy tagváltozót, melyen keresztül elérhetjük az utak adatait!
 
@@ -86,7 +93,7 @@ Ne felejtsük el beállítani `Initial View Controller`nek a `Navigation Control
 var tripsDataManager: TripsDataManager?
 ```
 
-> Ezt inicializáljuk a `viewDidLoad` metódusban!
+> Ezt inicializáljuk a `viewDidLoad()` metódusban!
 
 ```swift
 tripsDataManager = (UIApplication.shared.delegate as? AppDelegate)?.tripsDataManager
@@ -120,17 +127,13 @@ override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexP
 }
 ```
 
----
+A kommentben látható `MARK: - ` "kulcsszó" segítségével a metódusainkat csoportokba rendezhetjük, egy elválasztót hozhatunk létre közéjük.
 
-*A `MARK: - ` "kulcsszó" segítségével a metódusainkat csoportokba rendezhetjük, egy elválasztót hozhatunk létre közéjük.*
-
-![](img/05_mark_explained.png)
-
----
+![](img/06_mark_explained.png)
 
 > Próbáljuk ki az alkalmazásunkat!
 
-![](img/06_dynamic_table.png)
+<img src="img/07_dynamic_table.png" alt="07" style="width: 50%;"/>
 
 ## Utak részletezése: statikus `Table View` <a id="statikus-table-view"></a>
 > Hozzunk létre egy új `Table View Controller`t majd állítsuk át a benne foglalt `Table View` *Content* property-jét **Static Cells**-re!
@@ -138,40 +141,40 @@ override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexP
 <!--  -->
 > Állítsuk be a *Sections*-t **`2`**-re, a *Style*-t pedig **Grouped**ra!
 
-![](img/07_static_table_view_settings.png)
+![](img/08_static_table_view_settings.png)
 
 > Ezek után módosítsuk a `Table View`-t oly módon, hogy az első szekcióban `1` **Custom**, a másodikban pedig `2` **Right Detail** és `1` **Custom** stílusú cella legyen (az egyes cellák *Style* property-jét kell állítgatni).
 
 <!--  -->
 > Az első szekció cellájába adjunk hozzá egy `Image View`-t, a második szekció utolsó cellájához pedig egy `Text View`-t. Módosítsuk a feliratokat, hogy a következő képhez hasonló felületet kapjunk (a `Text View` cellájának magassága lehet nagyobb is).
 
-Ha valami miatt az `Interface builder`ben nem sikerülne beállítani az egyes cellák magasságát, akkor a `Size inspector`ban kapcsolhatjuk át **Custom**ra.
+<img src="img/09_static_table_view_layout.png" alt="09" style="width: 50%;"/>
 
-![](img/08_static_table_view_layout.png)
+Ha valami miatt az `Interface Builder`ben nem sikerülne beállítani az egyes cellák magasságát, akkor a `Size inspector`ban kapcsolhatjuk át **Custom**ra.
+
+<img src="img/10_table_view_cell_height.png" alt="10" style="width: 33%;"/>
 
 Bár ha nem adunk meg a nézetben egyetlen `Auto Layout` kényszert sem, akkor is működni fog, az elegáns megoldás, ha mind az `Image View`-t, mind a `Text View`-t rögzítjük a szülő nézeteikhez néhány kényszer megadásával (pl. **Standard** távolság a szülő összes oldalától vagy csupa 0, a *Constrain to margins* bekapcsolása mellett).
 
-![](img/09_image_view_pin.png)
+![](img/11_image_view_pin.png)
 
-> Az `Image View` *Mode* property-jét állítsuk **Aspect Fit**re!
+> Az `Image View` *Content Mode* property-jét állítsuk **Aspect Fit**re!
 
-![](img/10_image_view_aspect_fit.png)
+![](img/12_image_view_aspect_fit.png)
 
 > A `Text View`-nak kapcsoljuk ki az *Editable* property-jét és állítsuk átlátszóra a háttérszínét!
 
-![](img/11_text_view_editable.png)
+![](img/13_text_view_editable.png)
 
-![](img/12_text_view_background.png)
+<img src="img/14_text_view_background.png" alt="14" style="width: 30%;"/>
 
-> A 4 cellát kiválasztva a *Selection* property értékét állítsuk **None**-ra, hogy ne lehessen kiválasztani a cellákat!
+> A 4 cellát kiválasztva a *Selection* property értékét állítsuk **None**-ra, hogy ne lehessen kijelölni a cellákat!
 
-![](img/13_table_view_cells_selection.png)
+![](img/15_table_view_cells_selection.png)
 
-> Hozzunk létre egy új, `UITableViewController`ből leszármazó osztályt, `TripDetailViewController` névvel, **töröljük ki a generált kódot** és állítsuk be ezt a `storyboard`ban létrehozott `Table View Controller` osztályául.
+> Hozzunk létre egy új, `UITableViewController`ből leszármazó osztályt, `TripDetailViewController` névvel, **töröljük ki a generált kódot** és állítsuk be ezt a `Storyboard`ban létrehozott `Table View Controller` osztályául.
 
----
-
-*Ezt a két függvényt különösen fontos kitörölni, ugyanis ezek felülírják a storyboardban nagy gonddal beállított táblázatunkat!*
+**Ezt a két metódust különösen fontos kitörölni, ugyanis ezek felülírják a Storyboardban nagy gonddal beállított táblázatunkat!**
 
 ```swift
 // MARK: - Table view data source
@@ -186,8 +189,6 @@ override func tableView(_ tableView: UITableView, numberOfRowsInSection section:
     return 0
 }
 ```
-
----
 
 > Vegyünk fel `Outlet`eket a `4`, adatmegjelenítésre szolgálló nézethez (minden cellából azt a nézetet válasszuk ki, mely az egyedi adat megjelenítésére szolgál, és ezeket kössük be `Outlet`ekre)!
 
@@ -204,14 +205,13 @@ override func tableView(_ tableView: UITableView, numberOfRowsInSection section:
 var trip: [String: AnyObject]?
 ```
 
-> Definiáljuk fel a `viewWillAppear(_:)` metódust, melyben beállítjuk a nézetek kezdeti értékét a `trip` property-ben eltárolt utazás alapján!
+> Definiáljuk felül a `viewWillAppear(_:)` metódust, melyben beállítjuk a nézetek kezdeti értékét a `trip` property-ben eltárolt utazás alapján!
 
 ```swift
 override func viewWillAppear(_ animated: Bool) {
   super.viewWillAppear(animated)
 
   if let trip = trip {
-
     if let tripImageName = trip["image-name"] as? String {
       tripImageView.image = UIImage(named: tripImageName)
     }
@@ -225,11 +225,11 @@ override func viewWillAppear(_ animated: Bool) {
 }
 ```
 
-> A `storyboard`ban kössük be egy **Show** `segue`-el a `Trips View Controller`ben lévő `Table View` prototípus celláját a `Detail View Controller`-re. Nevezzük el a `segue`-t **TripDetailSegue**-nek!
+> A `Storyboard`ban kössük be egy **Push** `Segue`-el a `Trips View Controller`ben lévő `Table View` prototípus celláját a `Detail View Controller`-re. Nevezzük el a `Segue`-t **TripDetailSegue**-nek!
 
-![](img/14_show_segue.png)
+![](img/16_push_segue.png)
 
-![](img/15_show_segue_id.png)
+![](img/17_push_segue_id.png)
 
 > Ezek után definiáljuk felül `TripsViewController`ben a `prepare(for:sender:)` metódust, hogy átadhassa az éppen kiválasztott cellához tartozó utazás adatait a megjelenő `TripDetailViewController`nek!
 
@@ -249,7 +249,7 @@ override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
 
 ## Cellák törlése és mozgatása <a id="cellak-torlese-es-mozgatasa"></a>
 Ahhoz, hogy a `Table View` celláit törölni vagy mozgatni tudjuk, a `Table View`-t *Edit* módba kell kapcsolni. Szerencsére ennek elvégzésére van egy beépített *Edit* gomb a `Table View Controller`ben, ezt csak hozzá kell adnunk például a `Navigation Bar`hoz. 
-> Adjuk a következő sort a `TripsViewController` `viewDidLoad:` metódusához!
+> Adjuk a következő sort a `TripsViewController` `viewDidLoad()` metódusához!
 
 ```swift
 navigationItem.rightBarButtonItem = editButtonItem
@@ -263,7 +263,7 @@ override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexP
 }
 ```
 
-A törlés elvégzését viszont meg nekünk kell elvégezni.
+> A törlés elvégzését viszont nekünk kell elvégezni.
 
 ```swift
 override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
@@ -282,7 +282,7 @@ override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexP
 }
 ```
 
-A mozgatás folyamata, mely során az adatforrásként használt tömbben felcserélünk két elemet.
+> A mozgatás folyamata, mely során az adatforrásként használt tömbben felcserélünk két elemet.
 
 ```swift
 override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
@@ -295,9 +295,9 @@ override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: Index
 # Önálló feladat <a id="onallo-feladat"></a>
 
 ## Új cella hozzáadása <a id="uj-cella-hozzaadasa"></a>
-> Vegyünk fel egy új `View Controller`t a `storyboard`ba és ágyazzuk be rögtön egy szintén újonnan létrehozott `Navigation Controller`be. A cél ezután az, hogy a következő felületet állítsuk össze!
+> Vegyünk fel egy új `View Controller`t a `Storyboard`ba és ágyazzuk be rögtön egy szintén újonnan létrehozott `Navigation Controller`be. A cél ezután az, hogy a következő felületet állítsuk össze!
 
-![](img/16_edit_trip_layout.png)
+![](img/18_edit_trip_layout.png)
 
 > 
 * Vegyünk fel egy `Image View`-t és állítsuk be a háttérszínét (*Background* attribútum) valamilyen élénk színre.
@@ -308,9 +308,9 @@ Az idő szűkössége miatt nem definiálunk `Auto Layout` kényszereket, de ne 
 
 > Húzzunk be `1-1` `Bar Button Item`et a `View Controller` tetején lévő `Navigation Bar`ra, majd állítsuk ezek *System Item* attributumát **Cancel**re, illetve **Save**-re
 
-![](img/17_bar_button_item.png)
+![](img/19_bar_button_item.png)
 
-![](img/18_cancel_save.png)
+<img src="img/20_cancel_save.png" alt="20" style="width: 50%;"/>
 
 > Hozzunk létre egy új, `EditTripViewController` nevű, `UIViewController`ből származó osztályt, állítsuk be az újonnan létrehozott nézetünk *Class* property-jének az `Identity inspector`ban, majd írjuk felül a fájl tartalmát a következő kóddal!
 
@@ -334,17 +334,17 @@ class EditTripViewController: UIViewController, UITextViewDelegate, UIImagePicke
     descriptionTextView.delegate = self
   }
 
-  @IBAction func didEndOnExit(sender: UITextField) {
+  @IBAction func didEndOnExit(_ sender: UITextField) {
     sender.resignFirstResponder()
   }
 
-  @IBAction func textFieldEditingDidBegin(sender: UITextField) {
+  @IBAction func textFieldEditingDidBegin(_ sender: UITextField) {
     UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: {
       self.view.frame = self.view.frame.offsetBy(dx: 0, dy: -100)
       }, completion: nil)
   }
 
-  @IBAction func textFieldEditingDidEnd(sender: UITextField) {
+  @IBAction func textFieldEditingDidEnd(_ sender: UITextField) {
     sender.resignFirstResponder()
 
     UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: {
@@ -356,8 +356,7 @@ class EditTripViewController: UIViewController, UITextViewDelegate, UIImagePicke
     if text == "\n" {
       textView.resignFirstResponder()
       return false
-    }
-    else {
+    } else {
       return true
     }
   }
@@ -374,7 +373,7 @@ class EditTripViewController: UIViewController, UITextViewDelegate, UIImagePicke
       }, completion: nil)
   }
   
-  func handleImageViewTap(sender: UITapGestureRecognizer) {
+  @objc func handleImageViewTap(_ sender: UITapGestureRecognizer) {
     
   }
 }
@@ -382,14 +381,15 @@ class EditTripViewController: UIViewController, UITextViewDelegate, UIImagePicke
 
 > Végezzük el a következő módosításokat!
 
-* Kössük be a kódban definiált `Outlet`ekre az `Image View`-t, a `2` `Text Field`et és a `Text View`-t! Itt figyeljünk arra, hogy a bekötés során a *sender* attribútumot állítsuk át `AnyObject`ről az aktuális nézet típusára!
-* Kössük be az alsó `Text Field` *Editing Did Begin* és *Editing Did End* eseményeit a `textFieldEditingDidBegin(sender:)` és a `textFieldEditingDidEnd(sender:)` metódusokra, továbbá a `didEndOnExit(sender:)` metódusra is!
+> * Kössük be a kódban definiált `Outlet`ekre az `Image View`-t, a `2` `Text Field`et és a `Text View`-t! 
+* Kössük be az alsó `Text Field` *Editing Did Begin* és *Editing Did End* eseményeit a `textFieldEditingDidBegin(_:)` és a `textFieldEditingDidEnd(_:)` metódusokra, továbbá a `didEndOnExit(_:)` metódusra is!
 
+<!-- -->
 > Adjunk hozzá a `TripsViewController` `Navigation Bar`jához egy `Bar Button Item`et, majd ennek *System Item* attribútumát állítsuk **Add**ra!
 
-![](img/19_add_bar_button_item.png)
+<img src="img/21_add_bar_button_item.png" alt="21" style="width: 50%;"/>
 
-> Kössünk rá az új gombra egy **Show** `segue`-t, ami az új `Navigation Controller`re mutat (ami a szerkesztő `View Controller`t tartalmazza). A `segue`-t nevezzük el **AddTripSegue**-nek, majd teszteljük az alkalmazást!
+> Kössünk rá az új gombra egy **Modal** `Segue`-t, ami az új `Navigation Controller`re mutat (ami a szerkesztő `View Controller`t tartalmazza). A `Segue`-t nevezzük el **AddTripSegue**-nek, majd teszteljük az alkalmazást!
 
 Amikor az egyelőre üres képre rákattint a felhasználó, meghívódik egy `Tap Gesture Recognizer`t kezelő metódus az `EditTripViewController`ben (`handeImageViewTap(_:)`). Itt szeretnénk megjeleníteni egy képkiválasztó rendszer `View Controller`t. 
 
@@ -414,18 +414,7 @@ func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMe
 
 > Próbáljuk ki az alkalmazást!
 
-A következő *crash*-t fogjuk kapni.
-
-*iTravel[33375:1745798] [access] This app has crashed because it attempted to access privacy-sensitive data without a usage description.  The app's Info.plist must contain an NSPhotoLibraryUsageDescription key with a string value explaining to the user how the app uses this data.*
-
-`iOS 10`-től kezdve ha használni szeretnénk a rendszer beépített fotóválasztóját, akkor ezen szándékunkat előre kell jelezni az alkalmazásunk `Info.plist` fájljában. (Régebben a rendszer ilyenkor automatikusan feldobott a kérdést a felhasználónak, hogy engedélyezi-e a fotóihoz való hozzáférést.)
-
-*"To protect user privacy, an iOS app linked on or after iOS 10.0, and which accesses the user’s photo library, must statically declare the intent to do so. Include the NSPhotoLibraryUsageDescription key in your app’s Info.plist file and provide a purpose string for this key. If your app attempts to access the user’s photo library without a corresponding purpose string, your app exits."* [Forrás](https://developer.apple.com/library/prerelease/content/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html)
-
-> Adjuk hozzá az `NSPhotoLibraryUsageDescription` kulcsot az `Info.plist` fájlunkhoz valamilyen tetszőleges magyarázattal!
-
-![](img/20_photo_library.png)
-
+<!-- -->
 > A szerkesztő nézetből való kilépéshez `1-1` **Unwind** `segue`-t fogunk használni. Ehhez először fel kell vennünk `1-1` speciális akció metódust abban a `View Controller`ben, ahova "vissza szeretnénk térni" a szerkesztő nézet bezárásakor. Ez esetünkben a `TripsViewController`, úgyhogy ehhez adjuk a következő két metódust!
 
 ```swift
@@ -442,11 +431,11 @@ A következő *crash*-t fogjuk kapni.
 @IBAction func editTripViewControllerDidCancel(unwindSegue: UIStoryboardSegue) {}
 ```
 
-> A `storyboard`ban kössük be a *Cancel* és a *Save* gombokat a kis `Exit` jelre és itt válasszuk ki `TripsViewController` megfelelő metódusait!
+> A `Storyboard`ban kössük be a *Cancel* és a *Save* gombokat a kis `Exit` jelre és itt válasszuk ki `TripsViewController` megfelelő metódusait!
 
-![](img/21_unwind_segue.png)
+<img src="img/22_unwind_segue.png" alt="22" style="width: 75%;"/>
 
-> Módosítsuk `tableView(:_cellForRowAt)` metódusát, hogy az *image* kulcs esetén már egy kész képet olvasson ki az utazás adatait tároló dictionary-ból!
+> Módosítsuk `tableView(_:cellForRowAt:)` metódusát, hogy az *image* kulcs esetén már egy kész képet olvasson ki az utazás adatait tároló dictionary-ból!
 
 ```swift
 override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
