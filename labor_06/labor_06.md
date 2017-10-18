@@ -34,11 +34,11 @@ Az egyes utak adatai egy-egy *Dictionary*-ben vannak eltárolva. Hogy mindig leg
 > Hozzunk létre egy új, **Trips** nevű *Group*ot, majd húzzuk be az `InitialTrips.plist` fájlt (fontos, hogy a `Copy items if needed` opció be legyen kapcsolva!).
 <img src="img/01_new_group.png" alt="01" style="width: 33%;"/>
 
-<img src="img/02_copy_items.png" alt="02" style="dith: 33%;"/>
+<img src="img/02_copy_items.png" alt="02" style="width: 33%;"/>
 
 Ezt megnyitva megnézhetjük a kezdeti adatokat.
 
-![](img/03_initial_trips_plist.png)
+<img src="img/03_initial_trips_plist.png" alt="03" style="width: 75%;"/>
 
 > Hozzunk létre egy új, `TripsDataManager` nevű osztályt (`Swift File` template), melyben az utazások adatait fogjuk tárolni.
 
@@ -76,10 +76,11 @@ let tripsDataManager = TripsDataManager()
 <!--  -->
 > Rakjunk be egy `Table View Controller`t! Ágyazzuk be ezt a `Table View Controller`t egy `Navigation Controller`be és állítsuk be a hozzá tartozó `Navigation Item` *Title* property-jét **Útjaim**ra! 
 
-![](img/04_utjaim_table_view.png)
+<img src="img/04_utjaim_table_view.png" alt="04" style="width: 50%;"/>
 
-Ne felejtsük el beállítani `Initial View Controller`nek a `Navigation Controller`t!
+> Ne felejtsük el beállítani `Initial View Controller`nek a `Navigation Controller`t!
 
+<!-- -->
 > Hozzunk létre egy új, `UITableViewController`ből származó osztályt `TripsViewController` névvel (használjuk a `Cocoa Touch Class` *template*-et). Állítsuk be a `Storyboard`ban a `Table View Controller` osztályát az újonnan definiált osztályra!
 
 <!--  -->
@@ -90,7 +91,7 @@ Ne felejtsük el beállítani `Initial View Controller`nek a `Navigation Control
 > A `TripsViewController`hez adjunk hozzá egy tagváltozót, melyen keresztül elérhetjük az utak adatait!
 
 ```swift
-var tripsDataManager: TripsDataManager?
+private var tripsDataManager: TripsDataManager?
 ```
 
 > Ezt inicializáljuk a `viewDidLoad()` metódusban!
@@ -133,10 +134,10 @@ A kommentben látható `MARK: - ` "kulcsszó" segítségével a metódusainkat c
 
 > Próbáljuk ki az alkalmazásunkat!
 
-<img src="img/07_dynamic_table.png" alt="07" style="width: 50%;"/>
+<img src="img/07_dynamic_table.png" alt="07" style="width: 33%;"/>
 
 ## Utak részletezése: statikus `Table View` <a id="statikus-table-view"></a>
-> Hozzunk létre egy új `Table View Controller`t majd állítsuk át a benne foglalt `Table View` *Content* property-jét **Static Cells**-re!
+> Hozzunk létre egy új `Table View Controller`t majd állítsuk át a benne foglalt `Table View` *Content* property-jét **Static Cells**-re, és töröljük ki az automatikusan létrejött `Section Header` feliratokat.
 
 <!--  -->
 > Állítsuk be a *Sections*-t **`2`**-re, a *Style*-t pedig **Grouped**ra!
@@ -249,7 +250,7 @@ override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
 
 ## Cellák törlése és mozgatása <a id="cellak-torlese-es-mozgatasa"></a>
 Ahhoz, hogy a `Table View` celláit törölni vagy mozgatni tudjuk, a `Table View`-t *Edit* módba kell kapcsolni. Szerencsére ennek elvégzésére van egy beépített *Edit* gomb a `Table View Controller`ben, ezt csak hozzá kell adnunk például a `Navigation Bar`hoz. 
-> Adjuk a következő sort a `TripsViewController` `viewDidLoad()` metódusához!
+> Adjuk a következő sort a `TripsViewController` `viewDidLoad()` metódusához! (A generált, kikommentezett kód tartalmazza a sort, így akár a `//` törlése is elegendő lehet.) 
 
 ```swift
 navigationItem.rightBarButtonItem = editButtonItem
@@ -297,7 +298,7 @@ override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: Index
 ## Új cella hozzáadása <a id="uj-cella-hozzaadasa"></a>
 > Vegyünk fel egy új `View Controller`t a `Storyboard`ba és ágyazzuk be rögtön egy szintén újonnan létrehozott `Navigation Controller`be. A cél ezután az, hogy a következő felületet állítsuk össze!
 
-![](img/18_edit_trip_layout.png)
+<img src="img/18_edit_trip_layout.png" alt="18" style="width: 50%;"/>
 
 > 
 * Vegyünk fel egy `Image View`-t és állítsuk be a háttérszínét (*Background* attribútum) valamilyen élénk színre.
@@ -317,65 +318,70 @@ Az idő szűkössége miatt nem definiálunk `Auto Layout` kényszereket, de ne 
 ```swift
 import UIKit
 
-class EditTripViewController: UIViewController, UITextViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class EditTripViewController: UIViewController {
 
-  @IBOutlet weak var imageView: UIImageView!
-  @IBOutlet weak var nameTextField: UITextField!
-  @IBOutlet weak var locationTextField: UITextField!
-  @IBOutlet weak var descriptionTextView: UITextView!
+    @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var nameTextField: UITextField!
+    @IBOutlet weak var locationTextField: UITextField!
+    @IBOutlet weak var descriptionTextView: UITextView!
 
-  override func viewDidLoad() {
-    super.viewDidLoad()
+    override func viewDidLoad() {
+        super.viewDidLoad()
 
-    let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(EditTripViewController.handleImageViewTap(_:)))
-    imageView.isUserInteractionEnabled = true
-    imageView.addGestureRecognizer(tapGestureRecognizer)
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(EditTripViewController.handleImageViewTap(_:)))
+        imageView.isUserInteractionEnabled = true
+        imageView.addGestureRecognizer(tapGestureRecognizer)
 
-    descriptionTextView.delegate = self
-  }
-
-  @IBAction func didEndOnExit(_ sender: UITextField) {
-    sender.resignFirstResponder()
-  }
-
-  @IBAction func textFieldEditingDidBegin(_ sender: UITextField) {
-    UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: {
-      self.view.frame = self.view.frame.offsetBy(dx: 0, dy: -100)
-      }, completion: nil)
-  }
-
-  @IBAction func textFieldEditingDidEnd(_ sender: UITextField) {
-    sender.resignFirstResponder()
-
-    UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: {
-      self.view.frame = self.view.frame.offsetBy(dx: 0, dy: 100)
-      }, completion: nil)
-  }
-
-  func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-    if text == "\n" {
-      textView.resignFirstResponder()
-      return false
-    } else {
-      return true
+        descriptionTextView.delegate = self
     }
-  }
 
-  func textViewDidBeginEditing(_ textView: UITextView) {
-    UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: {
-      self.view.frame = self.view.frame.offsetBy(dx: 0, dy: -210)
-      }, completion: nil)
-  }
+    @IBAction func didEndOnExit(_ sender: UITextField) {
+        sender.resignFirstResponder()
+    }
 
-  func textViewDidEndEditing(_ textView: UITextView) {
-    UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: {
-      self.view.frame = self.view.frame.offsetBy(dx: 0, dy: 210)
-      }, completion: nil)
-  }
-  
-  @objc func handleImageViewTap(_ sender: UITapGestureRecognizer) {
-    
-  }
+    @IBAction func textFieldEditingDidBegin(_ sender: UITextField) {
+        UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: {
+            self.view.frame = self.view.frame.offsetBy(dx: 0, dy: -100)
+        }, completion: nil)
+    }
+
+    @IBAction func textFieldEditingDidEnd(_ sender: UITextField) {
+        sender.resignFirstResponder()
+
+        UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: {
+            self.view.frame = self.view.frame.offsetBy(dx: 0, dy: 100)
+        }, completion: nil)
+    }
+
+    @objc func handleImageViewTap(_ sender: UITapGestureRecognizer) {
+        
+    }
+
+}
+
+extension EditTripViewController: UITextViewDelegate {
+
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        if text == "\n" {
+            textView.resignFirstResponder()
+            return false
+        } else {
+            return true
+        }
+    }
+
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: {
+            self.view.frame = self.view.frame.offsetBy(dx: 0, dy: -210)
+        }, completion: nil)
+    }
+
+    func textViewDidEndEditing(_ textView: UITextView) {
+        UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: {
+            self.view.frame = self.view.frame.offsetBy(dx: 0, dy: 210)
+        }, completion: nil)
+    }
+
 }
 ```
 
@@ -394,7 +400,7 @@ class EditTripViewController: UIViewController, UITextViewDelegate, UIImagePicke
 Amikor az egyelőre üres képre rákattint a felhasználó, meghívódik egy `Tap Gesture Recognizer`t kezelő metódus az `EditTripViewController`ben (`handeImageViewTap(_:)`). Itt szeretnénk megjeleníteni egy képkiválasztó rendszer `View Controller`t. 
 
 ```swift
-func handleImageViewTap(_ sender: UITapGestureRecognizer) {
+@objc func handleImageViewTap(_ sender: UITapGestureRecognizer) {
   let pickerController = UIImagePickerController()
   pickerController.delegate = self
   pickerController.sourceType = .savedPhotosAlbum
@@ -402,28 +408,32 @@ func handleImageViewTap(_ sender: UITapGestureRecognizer) {
 }
 ```
 
-> Majd valósítsuk meg a `imagePickerController(_:didFinishPickingMediaWithInfo:)` metódust!
+> Majd valósítsuk meg egy `extension`ben a `imagePickerController(_:didFinishPickingMediaWithInfo:)` metódust!
 
 ```swift
-func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-  let selectedImage = info[UIImagePickerControllerOriginalImage] as? UIImage
-  imageView.image = selectedImage
-  dismiss(animated: true, completion: nil)
+extension EditTripViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        let selectedImage = info[UIImagePickerControllerOriginalImage] as? UIImage
+        imageView.image = selectedImage
+        dismiss(animated: true, completion: nil)
+    }
+
 }
 ```
 
 > Próbáljuk ki az alkalmazást!
 
 <!-- -->
-> A szerkesztő nézetből való kilépéshez `1-1` **Unwind** `segue`-t fogunk használni. Ehhez először fel kell vennünk `1-1` speciális akció metódust abban a `View Controller`ben, ahova "vissza szeretnénk térni" a szerkesztő nézet bezárásakor. Ez esetünkben a `TripsViewController`, úgyhogy ehhez adjuk a következő két metódust!
+> A szerkesztő nézetből való kilépéshez `1-1` **Unwind** `Segue`-t fogunk használni. Ehhez először fel kell vennünk `1-1` speciális akció metódust abban a `View Controller`ben, ahova "vissza szeretnénk térni" a szerkesztő nézet bezárásakor. Ez esetünkben a `TripsViewController`, úgyhogy ehhez adjuk a következő két metódust!
 
 ```swift
 @IBAction func editTripViewControllerDidSave(unwindSegue: UIStoryboardSegue) {
   let viewController = unwindSegue.source as! EditTripViewController
-  let trip: NSDictionary = ["name": viewController.nameTextField.text,
-                           "location": viewController.locationTextField.text,
+  let trip: NSDictionary = ["name": viewController.nameTextField.text ?? "",
+                           "location": viewController.locationTextField.text ?? "",
                            "description": viewController.descriptionTextView.text,
-                           "image": viewController.imageView.image!]
+                           "image": viewController.imageView.image ?? UIImage()]
   tripsDataManager?.trips.append(trip)
   tableView.reloadData()
 }
@@ -435,7 +445,7 @@ func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMe
 
 <img src="img/22_unwind_segue.png" alt="22" style="width: 75%;"/>
 
-> Módosítsuk `tableView(_:cellForRowAt:)` metódusát, hogy az *image* kulcs esetén már egy kész képet olvasson ki az utazás adatait tároló dictionary-ból!
+> Módosítsuk `tableView(_:cellForRowAt:)` metódusát, hogy az *image* kulcs esetén már egy kész képet olvasson ki az utazás adatait tároló dictionary-ből!
 
 ```swift
 override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
