@@ -52,7 +52,7 @@ Ekkor megváltozik a nézetvezérlő képe és piros vonalak jelennek meg.
 
 <img src="img/04_missing_auto_layout_constraints.png" alt="04" style="width: 50%;"/>
 
-A piros vonalakkal az `Xcode` kényszerek hiányát jelzi. Amíg nem adtunk hozzá egyetlen kényszert sem, addig azokat a rendszer fordítási időben legenerálja az abszolút pozíció és méret alapján. Viszont azzal, hogy már egy kényszert hozzáadtunk a nézetünkhöz manuálisan, a rendszer már nem tudja, hogy milyen egyéb kényszereket generáljon magától. Ezt egyébként a `Document Outline` is mutatja.
+A piros vonalakkal az `Xcode` kényszerek hiányát jelzi. Amíg nem adtunk hozzá egyetlen kényszert sem, addig azokat a rendszer fordítási időben legenerálja az abszolút pozíció és méret alapján. Azzal, hogy egy kényszert manuálisan hozzáadtunk a nézetünkhöz, a rendszer már nem tudja, hogy milyen egyéb kényszereket generáljon automatikusan/magától. Ezt egyébként a `Document Outline` is mutatja.
 
 <img src="img/05_document_outline_red_arrow.png" alt="05" style="width: 33%;"/>
 
@@ -66,7 +66,7 @@ A hiba tehát az, hogy az `Auto Layout` motor függőlegesen nem tudja meghatár
 
 <img src="img/07_text_field_top_pin.png" alt="07" style="width: 50%;"/>
 
-> Ugyan már nem kapunk figyelmeztetést, de mivel egy nagyobb méretű `UITextField`re van szükségünk, ezért rögzítsük a méretét a `Pin` menü segítségével!
+> Ugyan már nem kapunk figyelmeztetést, de mivel egy nagyobb méretű `Text Field`re van szükségünk, ezért rögzítsük a méretét a `Pin` menü segítségével!
 
 ![](img/08_text_field_size_constraints.png)
 
@@ -108,13 +108,13 @@ Láthatjuk, hogy hiába növeltük meg a méretet a `Storyboard`ban, a kényszer
 > Tegyünk be alá egy másik `Text Field`et az alsó szaggatott vonalához igazítva!
 
 <!--  -->
-> Jelöljük ki mindkét `Text Field`et és a `Pin` menüből állítsuk be, hogy ugyanakkora legyen a szélességük!
+> Jelöljük ki mindkét `Text Field`et és a `Pin` menüből állítsuk be, hogy ugyanakkora legyen a szélességük, és ugyanott legyen a bal oldaluk (`Align` / **`Leading Edges`**)!
 
-<img src="img/14_text_fields_equal_width.png" alt="14" style="width: 50%;"/>
+<img src="img/14_text_fields_equal_width_leading_edges.png" alt="14" style="width: 50%;"/>
 
-> Majd jelöljük ki az alsó `Text Field`et és rögzítsük a felette lévő `Text Field`től mért távolságát **8**-ra, és a `Safe Area` bal szélétől mért távolságot **16**-ra!
+> Majd jelöljük ki az alsó `Text Field`et és rögzítsük a felette lévő `Text Field`től mért távolságát **8**-ra!
 
-<img src="img/15_text_view_top_left_constraints.png" alt="15" style="width: 50%;"/>
+<img src="img/15_text_view_top_left_constraint.png" alt="15" style="width: 50%;"/>
 
 > A második `Text Field` tulajdonságainál állítsuk be *Placeholder*nek a **password**öt, és pipáljuk be a *Secure Text Entry*-t!
 
@@ -144,7 +144,7 @@ Láthatjuk, hogy hiába növeltük meg a méretet a `Storyboard`ban, a kényszer
 > Hozzunk létre egy új **`LoginViewController`** osztályt és állítsuk ezt be a `Storyboard`ban a nézetvezérlő osztályának (`Identity inspector`). (Ezután kitörölhetjük a `ViewController.swift` fájlt, ugyanis nem lesz rá szükségünk.)
 
 <!--  -->
-> Hozzunk létre egy `Outlet`et a `Label`nek **saveUserNameLabel** néven. Vegyünk fel egy `Bool` típusú, *english* nevű `private` láthatóságú változót, és inicializáljunk **true**-val.
+> Hozzunk létre egy `Outlet`et a `Label`nek **saveUsernameLabel** néven. Vegyünk fel egy `Bool` típusú, *english* nevű `private` láthatóságú változót, és inicializáljunk **true**-val.
 
 ```swift
 private var english = true
@@ -155,17 +155,17 @@ private var english = true
 
 ```swift
 @IBAction func loginButtonTouchUpInside(_ sender: Any) {
-    saveUserNameLabel.text = english ? "Enregistrer le nom d'utilisateur" : "Save username"
+    saveUsernameLabel.text = english ? "Enregistrer le nom d'utilisateur" : "Save username"
     english = !english
 }
 ```
 
 > Futtassuk le az alkalmazást! Láthatjuk, hogy nagyjából elforgatva is jól néz ki! Azonban ha rákattintunk a *Switch Language* gombra, akkor a `Switch` álló módban "eltűnik", pedig nem történt más, mint kipróbáltuk az alkalmazást francia szöveggel.
 
-Szerencsére az `Auto Layout` segítségével könnyedén tudjuk kezelni a dinamikus változásokat is a kényszerek prioritásai segítségével. Itt olyan kényszerekre van szükségünk, hogy “ha lehetőség van rá, akkor a `Label` és a `Switch` közti távolság legyen **176**, de a `Switch` és a képernyő széle között mindig legyen legalább **16** egységnyi távolság”. Az első kényszernek kisebb lesz a prioritása, mert a második kényszer fontosabb.
+Szerencsére az `Auto Layout` segítségével könnyedén tudjuk kezelni a dinamikus változásokat is a kényszerek prioritásai segítségével. Itt olyan kényszerekre van szükségünk, hogy “ha lehetőség van rá, akkor a `Label` és a `Switch` közti távolság legyen valamekkora, de a `Switch` és a képernyő széle között mindig legyen legalább **16** egységnyi távolság”. Az első kényszernek kisebb lesz a prioritása, mert a második kényszer fontosabb.
 
-> Ehhez jelöljük ki a `Switch`-et és rögzítsük a `View` jobb széle és a közte lévő távolságot (`Pin` / **`Trailing Space To Superview`**), állítsuk be, hogy az érték legalább ekkora legyen (*Relation*: **Greater Than Or Equal**) illetve, állítsuk be a *konstanst* **0**-ra!
-> A kettő közti távolság kényszerének a *prioritását* vegyünk le **900**-ra, a *konstans*át pedig egy kisebb értékre, **50**-re!
+> Ehhez jelöljük ki a `Switch`-et és rögzítsük a `View` jobb széle és a közte lévő távolságot (`Pin` / **`Trailing Space To Superview`**), állítsuk be, hogy az érték legalább ekkora legyen (*Relation*: **Greater Than Or Equal**), illetve állítsuk be a *konstanst* **16**-ra!
+> A kettő közti távolság kényszerének a *prioritását* vegyünk le **750**-ra, a *konstans*át pedig egy kisebb értékre, **50**-re!
 
 <img src="img/20_switch_trailing_space_constraint.png" alt="20" style="width: 33%;"/><img src="img/21_switch_language_button_vertical_spacing.png" alt="21" style="width: 33%;"/>
 
@@ -190,10 +190,10 @@ Ha futtatjuk az alkalmazást, akkor hiba nélkül fut, ugyanakkor a konzolban l�
 > Töröljük hát a `Safe Area` és a `Text Field` teteje közti távolság kényszert!
 
 <!--  -->
-> Képnek állítsuk be a sötétebbik `AUT` logót!
+> Képnek állítsuk be a sötétebbik `AUT` logót, és állítsuk a `Content Mode`-ot **`Aspect Fit`**re!
 
 <!--  -->
-> Futtassuk az alkalmazást és kattintsunk bele a `Text Field`ekbe. (Ha nem jelenne meg a billentyűezet, akkor nyomjuk meg a `Cmd` + `K` billentyűkombinációt, vagy a `Simulator` menüjéből válasszuk ki a `Hardware/Keyboard/Toggle Software Keyboard` menüpontot.)
+> Futtassuk az alkalmazást és kattintsunk bele a `Text Field`ekbe. (Ha nem jelenne meg a billentyűezet, akkor nyomjuk meg a `⌘` + `K` billentyűkombinációt, vagy a `Simulator` menüjéből válasszuk ki a `Hardware/Keyboard/Toggle Software Keyboard` menüpontot.)
 
 Azt látjuk, hogy `landscape` módban az alsó `Text Field`et kitakarja a billentyűzet.
 
@@ -282,7 +282,7 @@ Az `Auto Layout`tól való pihenésképpen valósítsuk meg, hogy a felhasznál�
 > Először változtassuk meg a gomb címkéjét **Login**ra.
 
 <!--  -->
-> Hozzunk létre a `Switch`-hez egy **`saveUserNameSwitch`** `Outlet`et, illetve kössük be a felső `Text Field`et is **`userNameTextField`** névvel! A gombnyomás implementációját pedig cseréljük le!
+> Hozzunk létre a `Switch`-hez egy **`saveUsernameSwitch`** `Outlet`et, illetve kössük be a felső `Text Field`et is **`usernameTextField`** névvel! A gombnyomás implementációját pedig cseréljük le!
 
 ```swift
 @IBAction func loginButtonTouchUpInside(_ sender: AnyObject) {
@@ -291,9 +291,9 @@ Az `Auto Layout`tól való pihenésképpen valósítsuk meg, hogy a felhasznál�
   alertController.addAction(defaultAction)
   present(alertController, animated: true, completion: nil)
 
-  UserDefaults.standard.set(saveUserNameSwitch.isOn, forKey: "userNameSaved")
-  if saveUserNameSwitch.isOn {
-    UserDefaults.standard.set(userNameTextField.text, forKey: "userName")
+  UserDefaults.standard.set(saveUsernameSwitch.isOn, forKey: "usernameSaved")
+  if saveUsernameSwitch.isOn {
+    UserDefaults.standard.set(usernameTextField.text, forKey: "username")
   }
 }
 ```
@@ -304,9 +304,9 @@ Az `Auto Layout`tól való pihenésképpen valósítsuk meg, hogy a felhasznál�
 override func viewDidLoad() {
   super.viewDidLoad()
 
-  saveUserNameSwitch.setOn(UserDefaults.standard.bool(forKey: "userNameSaved"), animated: false)
-  if saveUserNameSwitch.isOn {
-    userNameTextField.text = UserDefaults.standard.value(forKey: "userName") as? String
+  saveUsernameSwitch.setOn(UserDefaults.standard.bool(forKey: "usernameSaved"), animated: false)
+  if saveUsernameSwitch.isOn {
+    usernameTextField.text = UserDefaults.standard.value(forKey: "username") as? String
   }
 }
 ```
