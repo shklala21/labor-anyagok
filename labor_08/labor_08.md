@@ -233,7 +233,7 @@ class NameViewController: UIViewController {
     super.viewDidLoad()
 
     if nameToDisplay == nil {
-      nameToDisplay = NameHandler.sharedInstance().names!.first as? [NSString: NSString]
+      nameToDisplay = NameHandler.shared.names!.first as? [NSString: NSString]
     }
 
     let name = nameToDisplay!["name"]
@@ -260,7 +260,7 @@ class NamesViewController: UITableViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    names = NameHandler.sharedInstance().names!
+    names = NameHandler.shared.names!
     title = "Mai névnapok"
   }
 
