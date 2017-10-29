@@ -158,9 +158,7 @@ class NameHandler: NSObject {
 
   let names: [AnyObject]?
 
-  static let shared = {
-    return NameHandler()
-  }
+  static let shared = NameHandler()
 
   private override init() {
     let path = Bundle.main.path(forResource: "Names", ofType: ".plist")
