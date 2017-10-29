@@ -158,11 +158,11 @@ class NameHandler: NSObject {
 
   let names: [AnyObject]?
 
-  static let sharedInstance = {
+  static let shared = {
     return NameHandler()
   }
 
-  override init() {
+  private override init() {
     let path = Bundle.main.path(forResource: "Names", ofType: ".plist")
     self.names = NSArray(contentsOfFile: path!)! as [AnyObject]
 
