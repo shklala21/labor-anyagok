@@ -23,7 +23,7 @@ A labor célja az `Adaptive Layout` használatatának a gyakorlása egy névnapo
 > A `Devices` beállítást (`Target` beállítások, `Deployment Info` szekció) hagyjuk `Universal`on! 
 
 <!--  -->
-> A `res/` mappában található *képeket* húzzuk be az `Assets.xcassets` katalógusba.
+> A `res/` mappában található `Flower` és `TransparentWoman` *képeket* húzzuk be az `Assets.xcassets` katalógusba.
 
 <!--  -->
 > Váltsunk át a `Main.storyboard`ra!
@@ -103,7 +103,7 @@ Ha egy frissen hozzáadott kényszerre kattintunk a tulajdonságainál látjuk, 
 
 <img src="img/12_compact_height_only_constaints.png" alt="12" style="width: 33%;"/>
 
-> Az `Image View`-n töröljük a bal oldalát és tetejét rögzítő kényszerekt! Ezt követően:
+> Az `Image View`-n töröljük a bal oldalát és tetejét rögzítő kényszereket! Ezt követően:
 > - Adjuk hozzá a szülő nézet tetejétől mért **0** távolság kényszert.
 > - A bal oldalát pedig rögzítsük **0** távolságra a mellette lévő sötétzöld`View`-tól!
 
@@ -175,8 +175,8 @@ class NameHandler {
   static let shared = NameHandler()
 
   private init() {
-    let path = Bundle.main.path(forResource: "Names", ofType: ".plist")
-    self.names = NSArray(contentsOfFile: path!)! as [AnyObject]
+    let path = Bundle.main.path(forResource: "Names", ofType: "plist")
+    names = NSArray(contentsOfFile: path!)! as [AnyObject]
   }
 
 }
@@ -185,7 +185,7 @@ class NameHandler {
 > Térjünk vissza a `Main.storyboard`hoz és ágyazzuk be a nézetvezérlőt egy `Navigation Controller`be!
 
 <!--  -->
-> Tegyünk be egy `Split View Controller`t a `Storyboard`ba, a létrejött `Detail View Controller`t töröljük ki, és a `Split View Controller` *details view controller* `Segue`-hez pedig állítsuk be az az imént létrehozott `Navigation Controller`t!
+> Tegyünk be egy `Split View Controller`t a `Storyboard`ba, a létrejött `Detail View Controller`t töröljük ki, és a `Split View Controller` *detail view controller* `Segue`-hez pedig állítsuk be az az imént létrehozott `Navigation Controller`t!
 
 <img src="img/22_show_details_segue.png" alt="22" style="width: 20%;"/>
 
@@ -447,7 +447,7 @@ A `Split View Controller` behelyezésével bizonyos képernyőméreteken pl. `iP
 > Javítsuk ki a hibákat új adaptív kényszerek hozzáadásával vagy a meglévő kényszerek módosításával, hogy minden képernyőn jól nézzen ki az alkalmazás!
 
 <!--  -->
-> Nem minden szöveg fér el a `Popover Controller`ben, módosítsuk a `NameFactsViewController` kényszereit, hogy ez ne legyen probléma!
+> Nem minden szöveg fér el a `Popover Controller`ben, módosítsuk a `NameFactsViewController`t, hogy ez ne legyen probléma!
 
 Ha kritikusabb szemmel megnézzük a felületünket, akkor láthatjuk, hogy az `iPad`en lévő zöld alapon fekete kép nem a legszebb. Mennyivel jobb lenne, ha fehér lenne. iOS-en ezt a problémát egyszerűen meg tudjuk oldani, akár a kép változtatása nélkül is!
 
