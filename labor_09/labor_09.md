@@ -7,47 +7,43 @@
 ## A labor témája
 
 * [UberNotebook](#ubernotebook)
-    * [Alkalmazás váz, Core Data alapok](#core-data-alapok)
-    * [Adatmodell definiálása](#adatmodell-definialasa)
-    * [Adatmodell osztályok](#adatmodell-osztalyok)
-    * [`Notebook`ok megjelenítése](#notebookok-megjelenitese)
-    * [Jegyzetek, `NSFetchedResultsController`](#jegyzetek-nsfetchedresultcontroller)
-    * [Jegyzetek felvétele](#jegyzetek-felvetele)
-    * [Jegyzetek törlése](#jegyzetek-torlese)
-    * [További műveletek](#tovabbi-muveletek)
-    * [`Managed Object Context` mentése](#moc-mentese)
+  * [Alkalmazás váz, Core Data alapok](#core-data-alapok)
+  * [Adatmodell definiálása](#adatmodell-definialasa)
+  * [Adatmodell osztályok](#adatmodell-osztalyok)
+  * [`Notebook`ok megjelenítése](#notebookok-megjelenitese)
+  * [Jegyzetek, `NSFetchedResultsController`](#jegyzetek-nsfetchedresultcontroller)
+  * [Jegyzetek felvétele](#jegyzetek-felvetele)
+  * [Jegyzetek törlése](#jegyzetek-torlese)
+  * [További műveletek](#tovabbi-muveletek)
+  * [`Managed Object Context` mentése](#moc-mentese)
 * [Önálló feladatok](#onallo-feladatok)
 
 ## UberNotebook <a id="ubernotebook"></a>
 
 ### Alkalmazás váz, Core Data alapok <a id="core-data-alapok"></a>
-> Hozzunk létre egy új `Single View Application`t **UberNotebook** névvel `iPhone`-ra. Ne felejtsük el bekapcsolni a **Use Core Data** opciót a projekt generálásakor!
+> Hozzunk létre egy `Single View App`ot **UberNotebook** névvel a `labor_09` könyvtárba! Ne felejtsük el bekapcsolni a **Use Core Data** opciót a projekt generálásakor!
 
-![](img/01_use_core_data.png)
+<img src="img/01_use_core_data.png" alt="01" style="width: 33%;"/>
 
-> Töröljük ki a projektből a generált `ViewController.swift` fájlt és a `Main.storyboard`ból is távolítsuk el az ott felvett jelenetet (*View Controller*).
+> Töröljük ki a projektből a generált `ViewController.swift` fájlt és a `Main.storyboard`ból is távolítsuk el az ott létrejött jelenetet (*View Controller Scene*).
 
----
+Érdemes megvizsgálni az `AppDelegate.swift`ben a `Core Data` stackhez kapcsolódó metódusokat.
 
-_Érdemes megvizsgálni az `AppDelegate.swift`ben a `Core Data` stackhez kapcsolódó metódusokat._
+A `persistentContainer` property fogja össze a `Core Data` stacket, definíciójában láthatjuk a nevét: **UberNotebook**. A háttérben alapértelmezetten egy `SQLite` adatbázis lesz, ami az `UberNotebook.sqlite`-ban tárolja az adatokat.
 
-_A `persistentContainer` property fogja össze a `Core Data` stacket, definíciójában láthatjuk a nevét, **UberNotebook**. A háttérben alapértelmezetten egy `SQLite` adatbázis lesz, ami az `UberNotebook.sqlite`-ban tárolja az adatokat._
+A `persistentContainer.viewContext` property-jének segítségével fogjuk tudni elérni a kontextust, amin keresztül a `Core Data` műveleteket elvégezhetjük.
 
-_A `persistentContainer.viewContext` property-jének segítségével fogjuk tudni elérni a kontextust, amin keresztül a `Core Data` műveleteket elvégezhetjük._
-
-_A `saveContext()` metódust használjuk a kontextus mentéséhez. Egyrészt rögtön naplózza az esetleges hibát, másrészt csak akkor fog ténylegesen menteni, ha az előző mentés óta változott valami a kontextusban._
-
----
+A `saveContext()` metódust használjuk a kontextus mentéséhez. Egyrészt rögtön naplózza az esetleges hibát, másrészt csak akkor fog ténylegesen menteni, ha az előző mentés óta volt valamilyen változás.
 
 ### Adatmodell definiálása <a id="adatmodell-definialasa"></a>
 
 > Nyissuk meg a `UberNotebook.xcdatamodeld` fájlt és vegyünk fel:
-
->* új entitást **`Notebook`** névvel:
-    * **title** (*String*) *attribútum*mal
-* új entitást **`Note`** névvel
-    * **content** (*String*) *attribútum*mal
-    * **creationDate** (*Date*) *attribútum*mal
+>
+> * új entitást **`Notebook`** névvel:
+>   * **title** (*String*) *attribútum*mal
+> * új entitást **`Note`** névvel
+>   * **content** (*String*) *attribútum*mal
+>   * **creationDate** (*Date*) *attribútum*mal
 
 <!--  -->
 > Vegyünk fel a `Notebook`ba egy **notes** *relationship*et, mely a `Note`-ra hivatkozik!
@@ -56,23 +52,17 @@ _A `saveContext()` metódust használjuk a kontextus mentéséhez. Egyrészt rö
 > Vegyünk fel a `Note`-ba egy **notebook** *relationship*et, mely a `Notebook`ra hivatkozik!
 
 <!--  -->
-> Mindkét *relationship*nél állítsuk be az inverz relációt a másikra!
+> Mindkét *relationship*nél állítsuk be az inverz relációt a másikra! (Ha az egyiknél beállítottuk, akkor a másiknál jó esetben be fogja állítani automatikusan.)
 
----
-
-_A `Core Data`-ban relációknál mindig meg kell adnunk egy inverz relációt is. Erre azért van szükség, hogy az objektum gráf ne kerülhessen inkonzisztens állapotba, például törlés esetén (ha egy entitásra van egy reláció, de ennek a relációnak nincs inverze, akkor az entitás törlése esetén nem lehetne értesíteni a reláció tulajdonosát, hogy törlődött egy hivatkozott objektum)._
-
----
+A `Core Data`ban relációknál mindig meg kell adnunk egy inverz relációt is. Erre azért van szükség, hogy az objektum gráf ne kerülhessen inkonzisztens állapotba, például törlés esetén (ha egy entitásra van egy reláció, de ennek a relációnak nincs inverze, akkor az entitás törlése esetén nem lehetne értesíteni a reláció tulajdonosát, hogy törlődött egy hivatkozott objektum).
 
 > Állítsuk be a **notes** reláció *típusát* **`To Many`**-re és a *törlési szabályát* **`Cascade`**-re! (Így ha törlődik a `Notebook`, a bejegyzései is törlődnek vele együtt).
 
-![](img/02_notes_relationshop.png)
-
-![](img/03_graph_editor.png)
+<img src="img/02_notes_relationshop.png" alt="02" style="width: 25%;"/> <img src="img/03_graph_editor.png" alt="03" style="width: 25%;"/>
 
 Itt az ideje az adatmodell kipróbálásának!
 
-> Az `AppDelegate.swift` `application(_:didFinisLaunchingWithOptions:)` metódusban hozzunk létre egy új `Notebook`ot és benne egy `Note`-ot!
+> Az `AppDelegate.swift` `application(_:didFinisLaunchingWithOptions:)` metódusban, a `return true` sor elé hozzunk létre egy új `Notebook`ot és benne egy `Note`-ot!
 
 ```swift
 let notebook = NSEntityDescription.insertNewObject(forEntityName: "Notebook", into: persistentContainer.viewContext)
@@ -80,7 +70,7 @@ notebook.setValue("Notebook \(arc4random_uniform(10000))", forKey: "title")
 
 let note = NSEntityDescription.insertNewObject(forEntityName: "Note", into: persistentContainer.viewContext)
 note.setValue("\(arc4random_uniform(10000)) a kedvenc véletlen számom!", forKey: "content")
-note.setValue(NSDate(), forKey: "creationDate")
+note.setValue(Date(), forKey: "creationDate")
 note.setValue(notebook, forKey: "notebook")
 
 saveContext()
@@ -90,25 +80,22 @@ saveContext()
 
 ```swift
 let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Note")
-
 do {
   let notes = try persistentContainer.viewContext.fetch(fetchRequest)
-  notes.forEach({ note in
-    let content = note.value(forKey: "content") as! String
-    print(content)
-  })
+  notes.forEach { note in
+   let content = note.value(forKey: "content") as! String
+   print(content)
+  }
 } catch let error as NSError {
-  print("Couldn't fetch \(error), \(error.userInfo)")
+  print("Couldn't fetch: \(error.userInfo))")
 }
+
+return true
 ```
 
-Mivel az alkalmazás indításakor mindig létrehozunk egy új `Notebook`ot és benne egy `Note`-ot, a logban is minden indítás után egyre hosszabb felsorolást kapunk.
+Mivel az alkalmazás indításakor mindig létrehozunk egy új `Notebook`ot és benne egy `Note`-ot, a logban minden indítás után egyre hosszabb felsorolást kapunk.
 
----
-
-_Figyeljük meg a `do-catch` párost, mely a `Swift` 2.0-ban bevezetett hibakezelés. Bármilyen metódus, mely hibával térhet vissza, csak egy `do` blokkon belül hívható továbbá ezen metódusok hívását külön meg kell jelölni a `try` kulcsszóval. A hibát a `catch` blokkban tudjuk feldolgozni._
-
----
+Figyeljük meg a `Swift` hibakezelés egyik módját, a `do-catch` párost. Bármilyen olyan metódus, ami hibával térhet vissza (`throws` kulcsszó van a végén), egy `do` blokkon belül hívható csak meg, és a hívás elé a `try` kulcsszót kell beírni. A hibát pedig a `catch` blokkban tudjuk feldolgozni.
 
 > Próbáljuk ki, hogy bár a lekérdezésben csak `Note`-okat kérünk le, a lekérdezett objektumok relációs property-jein keresztül el tudunk érni más entitásokat is (ilyen esetekben a `Core Data` automatikusan elvégzi a lekérdezést a háttérben). Esetünkben le tudjuk kérni a `Note`-hoz tartozó `Notebook`ot.
 
@@ -117,9 +104,9 @@ let notebook = note.value(forKey: "notebook") as! NSManagedObject
 print(notebook.value(forKey: "title") as! String)
 ```
 
-> Kapcsoljuk be a `Product/Scheme/Edit Scheme` menüben, hogy a futtatáskor a konzolon megjelenjenek a `Core Data` használata közben kiadott `SQL` utasítások. Ehhez a **-com.apple.CoreData.SQLDebug 1** argumentumot kell felvenni. (Xcode 8-ban sajnos ez így még nem fog működni egy [ismert hiba](https://developer.apple.com/library/content/releasenotes/General/WhatNewCoreData2016/ReleaseNotes.html) miatt. Vegyük fel a **-com.apple.CoreData.Logging.stderr 1** argumentumot is!)
+> Kapcsoljuk be a `Product/Scheme/Edit Scheme` menüben, hogy a futtatáskor a konzolon megjelenjenek a `Core Data` használata közben kiadott `SQL` utasítások. Ehhez a **-com.apple.CoreData.SQLDebug 1** argumentumot kell felvenni. (A szám 1-4-ig lehet bármilyen egész, a nagyobb szám [több információt](https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/CoreData/TroubleshootingCoreData.html) fog kiírni.)
 
-![](img/04_sql.png)
+<img src="img/04_sql.png" alt="04" style="width: 50%;"/>
 
 Miután kipróbáltuk az alkalmazást érdemes kikapcsolni az `SQL` loggolást.
 
@@ -128,33 +115,28 @@ Miután kipróbáltuk az alkalmazást érdemes kikapcsolni az `SQL` loggolást.
 
 `Xcode 8`-tól az adatmodellhez definiált összes entitáshoz alapértelmezésként automatikusan legenerálódnak az `NSManagedObject` leszármazottak. (Az entitás *Codegen* propery-je **Class Definition** értékű.)
 
-![](img/05_codegen.png)
+<img src="img/05_codegen.png" alt="05" style="width: 15%;"/>
 
-> Vizsgáljuk meg az automatikusan legenerált fájlokat! Ehhez **ideiglenesen** állítsuk át a `Derived Data` helyét, hogy könnyebben megtaláljuk a `Finder`ben.
+> Vizsgáljuk meg az automatikusan legenerált fájlokat! A `Finder`ben nyomjunk egy `⌘+⇧+G`-t és illesszük be a következő útvonalat: `~/Library/Developer/Xcode/DerivedData/`, majd kattintsunk a `Go` gombra.
 
-![](img/06_project_settings.png)
-![](img/07_relative_to_workspace.png)
+<img src="img/06_go_to_derived_data.png" alt="06" style="width: 50%;"/>
 
-> Fordítsuk újra a projektet (`Cmd+B`)!
+> Miután bekerülünk abba a mappába, ahol az `Xcode` tárolja a fordítási eredményeket, keressük meg az `UberNotebook-xxxxxxxxxxxxxxxxxxxxxxxxxxxx` mappát, majd vizsgáljuk meg a tartalmát!
 
-Minden `NSManagedObject` alosztályhoz két külön `Swift` fájl jön létre. Az `Entity+CoreDataProperties.swift`ben egy külön `extension`be kerülnek a generált property-k, míg magát a entitás osztály az `Entity+CoreDataClass.swift` fájlba generálódik.
+<img src="img/07_derived_data.png" alt="07" style="width: 33%;"/>
 
-![](img/08_derived_data.png)
+Minden `NSManagedObject` alosztályhoz két külön `Swift` fájl jön létre. Az `Entity+CoreDataProperties.swift`ben egy külön `extension`be kerülnek a generált property-k, míg maga az entitás osztály definíciója az `Entity+CoreDataClass.swift` fájlba generálódik.
 
----
+Érdemes ismerni még a *Codegen* további beállításait is.
 
-*A* Codegen *további beállításait is érdemes ismerni.*
+__Manual/None__: régi módszer, kézzel kell megírni, vagy legenerálni a szükséges fájlokat. Ehhez az `Xcode` segítséget nyújt, az adatmodellben az entitást kiválasztva, az `Editor/Create NSManagedObject Subclass...` opcióval legenerálja az osztályokat az entitásokhoz.
 
-* __Manual/None__: *régi módszer, kézzel kell megírni, vagy legenerálni a szükséges fájlokat. Ehhez az `Xcode` segítséget nyújt, az adatmodellben az entitást kiválasztva, az `Editor/Create NSManagedObject Subclass...` opcióval legenerálja az osztályokat az entitásokhoz.*
-
-* __Category/Extension__: *"félautomata" módba kapcsolja a generátort. Ilyenkor automatikusan legenerálódik az `Entity+CoreDataGeneratedProperties.swift` fájl, azonban magáról az osztály 
-deklarálásáról nekünk kell gondoskodnunk.*
-
----
+__Category/Extension__: "félautomata" módba kapcsolja a generátort. Ilyenkor automatikusan legenerálódik az `Entity+CoreDataGeneratedProperties.swift` fájl, azonban magáról az osztály 
+deklarálásáról nekünk kell gondoskodnunk.
 
 ### `Notebook`ok megjelenítése <a id="notebookok-megjelenitese"></a>
 
-> Hogy megkönnyítsük a `NSManagedObjectContext` elérését, vegyünk fel egy *computed type property*-t az `AppDelegate.swift`be!
+> Hogy megkönnyítsük a `NSManagedObjectContext` elérését, vegyünk fel egy computed property-t az `AppDelegate.swift`be!
 
 ```swift
 class var managedContext: NSManagedObjectContext {
@@ -166,17 +148,17 @@ class var managedContext: NSManagedObjectContext {
 
 > A `Main.storyboard`ban vegyünk fel egy új `Table View Controller`t és ágyazzuk be egy `Navigation Controller`be, amit jelöljünk ki a kezdeti `View Controller`nek!
 
-![](img/09_desired_ui.png)
+<img src="img/08_desired_ui.png" alt="08" style="width: 33%;"/>
 
 > Továbbra is az `Interface Builder`ben válasszuk ki a `Table View Controller`t és
 
-> 1.  A `Navigation Bar` fejlécére klikkelve nevezzük át **Notebooks**-ra.
-2.  Az `Identity inspector`ban változtassuk át az osztályát **NotebookViewController**re.
+> 1.  A `Navigation Item` *title*-jéhez írjunk **Notebooks**-ot.
+> 2.  Az `Identity inspector`ban változtassuk át `Table View Controller` osztályát **NotebookViewController**re.
 
 <!--  -->
-> Állítsuk be a cella prototípus *azonosítóját* **NotebookCell**re, a *típusát* **Basic**re:
+> Állítsuk be a prototípus cella *típusát* **Basic**re, az *azonosítóját* pedig **NotebookCell**re!
 
-![](img/10_table_view_cell.png)
+<img src="img/09_table_view_cell.png" alt="09" style="width: 15%;"/>
 
 > A `NotebookViewController.swift` fájlban importáljuk be a `Core Data` modult és vegyünk fel egy property-t a jegyzetfüzetek tárolására!
 
@@ -205,7 +187,7 @@ func fetchNotebooks() {
 }
 ```
 
-> Hívjuk meg `fetchNotebooks()`-ot `viewDidLoad()`-ban!
+> Hívjuk meg `fetchNotebooks()`-ot a `viewDidLoad()`-ban!
 
 ```swift
 override func viewDidLoad() {
@@ -215,7 +197,7 @@ override func viewDidLoad() {
 }
 ```
 
-> Valósítsuk meg a `UITableViewDataSource` metódusok közül kötelezőket!
+> Valósítsuk meg a `UITableViewDataSource` metódusok közül a két kötelezőt!
 
 
 ```swift
@@ -237,20 +219,20 @@ override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexP
 
 ### Jegyzetek, `NSFetchedResultsController` <a id="jegyzetek-nsfetchedresultcontroller"></a>
 
-> A `Main.storyboard`ban hozzunk létre egy új `Table View Controller`t! Kössük be egy *Show* `segue`-el a `Notebooks View Controller` cellájára!
+> A `Main.storyboard`ban hozzunk létre egy új `Table View Controller`t! Kössünk be egy *Show* (*selection*) `segue`-t a `Notebooks View Controller` cellájára!
 
-![](img/11_desired_ui.png)
+<img src="img/10_desired_ui.png" alt="10" style="width: 50%;"/>
 
 > Válasszuk ki a `segue`-t és *azonosítónak* adjuk meg a **ShowNotesSegue**-t.
 
-![](img/12_show_notes_segue.png)
+<img src="img/11_show_notes_segue.png" alt="11" style="width: 15%;"/>
 
-> Hozzunk létre egy új osztály, `NoteViewController` névvel, mely a `UITableViewController`ből származik, majd a `storyboard`ban állítsuk be ezt az osztályt az új jelenethez!
+> Hozzunk létre egy új osztály, `NoteViewController` névvel, mely a `UITableViewController`ből származik, majd a `Storyboard`ban állítsuk be ezt az osztályt az új jelenethez!
 
 <!--  -->
-> A cella *prototípus stílusát* állítsuk **Subtitle**-re, az *Identifier* attribútumot pedig **NoteCell**re!
+> A prototípus cella *stílusát* állítsuk **Subtitle**-re, az *azonosítóját* pedig **NoteCell**re!
 
-![](img/13_note_cell.png)
+<img src="img/12_note_cell.png" alt="12" style="width: 15%;"/>
 
 > A `NoteViewController.swift`ben importáljuk a `Core Data` modult és vegyünk fel egy **notebook** property-t, melyben azt tároljuk el, hogy melyik `Notebook` jegyzeteit mutatja a nézet!
 
@@ -297,7 +279,7 @@ override func viewDidLoad() {
   let predicate = NSPredicate(format: "%K == %@", #keyPath(Note.notebook), notebook)
   fetchRequest.predicate = predicate
 
-  // rendezés creationDate szerint, csökkenő sorrendben
+  // rendezés creationDate szerint csökkenő sorrendben
   let sortDescriptor = NSSortDescriptor(key: #keyPath(Note.creationDate), ascending: false)
   fetchRequest.sortDescriptors = [sortDescriptor]
 
@@ -318,7 +300,9 @@ override func viewDidLoad() {
 }
 ```
 
-Most még nem látszik miért jobb az `NSFetchedResultsController` egy sima `array`-be történő lekérdezéshez képest, később viszont látni fogjuk, hogy jelzi ha bármi megváltozik a lekérdezésben érintett objektumokban, ha pl. létrehozunk vagy törlünk egy új `Note`-ot.
+Ugyan `Swift 4`-ben van egy [újfajta szintaxis](https://github.com/apple/swift-evolution/blob/master/proposals/0161-key-paths.md) a *keyPath*-ek használatára, `NSPredicate`-ek esetén ezek sajnos egyelőre nem működnek.
+
+Most még nem látszik miért jobb az `NSFetchedResultsController` egy sima `Array`-be történő lekérdezéshez képest, később viszont látni fogjuk, hogy az előbbi jelzi ha bármi megváltozik a lekérdezésben érintett objektumokban: pl. ha létrehozunk vagy törlünk egy új `Note`-ot.
 
 > A `UITableViewDataSource` metódusoknál töröljük ki a szekciók számát megadót, a sorok számánál pedig térjünk vissza a `NSFetchedResultsController`től elkért értékkel!
 
@@ -343,7 +327,7 @@ func configure(cell: UITableViewCell, at indexPath: IndexPath) {
   let dateFormatter = DateFormatter()
   dateFormatter.dateStyle = .medium
   dateFormatter.timeStyle = .medium
-  cell.detailTextLabel?.text = dateFormatter.string(from: note.creationDate as! Date)
+  cell.detailTextLabel?.text = dateFormatter.string(from: note.creationDate!)
 }
 ```
 
@@ -361,52 +345,55 @@ override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexP
 
 ### Jegyzetek felvétele <a id="jegyzetek-felvetele"></a>
 
-> Definiáljunk egy `createNote(content:)` nevű metódust, mely létrehoz egy új jegyzetet és hozzárendeli az aktuális `Notebook`hoz!
+> Definiáljunk egy `createNote(with:)` nevű metódust, mely létrehoz egy új jegyzetet és hozzárendeli az aktuális `Notebook`hoz!
 
 ```swift
-func createNoteWith(content: String) {
+func createNote(with content: String) {
   let managedObjectContext = AppDelegate.managedContext
 
   let note = Note(context: managedObjectContext)
   note.content = content
-  note.creationDate = NSDate()
+  note.creationDate = Date()
   note.notebook = notebook
 
   (UIApplication.shared.delegate as! AppDelegate).saveContext()
 }
 ```
 
-> A `storyboard`ban vegyünk fel egy `Bar Button Item`et a `Note View Controller`re a `Navigation Bar` jobb szélére! (Amennyiben nem sikerülne rögtön ráhúzni a `Bar Button Item`et a jelenetünkre, valószínűleg hiányzik a `Navigation Item`. Pótoljuk, ha szükséges.)
+> A `Storyboard`ban vegyünk fel egy `Bar Button Item`et a `Note View Controller`re a `Navigation Bar` jobb szélére! (Amennyiben nem sikerülne rögtön ráhúzni a `Bar Button Item`et a jelenetünkre, valószínűleg hiányzik a `Navigation Item`. Pótoljuk, ha szükséges.)
 
-![](img/14_add_bar_button_item.png)
+<!--  -->
+> Allítsuk be a `Bar Button Item` *System Item* property-jét **Add**ra.
 
-> Kössünk be hozzá egy `addNoteButtonTap()` akció metódust, melyben jelenítsünk meg egy `Alert Controller`t, az új jegyzet szövegének bekéréséhez!
+<img src="img/13_add_bar_button_item.png" alt="13" style="width: 33%;"/>
+
+> Kössünk be hozzá egy `addNoteButtonTap()` akció metódust, melyben jelenítsünk meg egy `Alert Controller`t az új jegyzet szövegének bekéréséhez!
 
 ```swift
 @IBAction func addNoteButtonTap(_ sender: Any) {
   let createNoteAlert = UIAlertController(title: "Create Note", message: "Enter the content", preferredStyle: .alert)
-
+  
   createNoteAlert.addTextField() {
     textField in
     textField.placeholder = "Note content"
   }
-
+  
   let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
   createNoteAlert.addAction(cancelAction)
-
+  
   let createAction = UIAlertAction(title: "Create", style: .default) {
     action in
-
+    
     let textField = createNoteAlert.textFields!.first!
-    self.createNote(content: textField.text!)
+    self.createNote(with: textField.text!)      
   }
   createNoteAlert.addAction(createAction)
-
+  
   present(createNoteAlert, animated: true, completion: nil)
 }
 ```
 
-Ha kipróbáljuk az alkalmazást, azt láthatjuk, hogy nem jelenik meg az új jegyzet a mentés után. Ez azért van mert a `Table View` még nem értesül a kontextus módosításáról. Ekkor tűnik fel a képben újra az `NSFetchedResultsController`, mely képes értesítéseket küldeni, ha megváltozik az általa figyelt lekérdezés, esetünkben azok a `Note` objektumok, amik az éppen kiválasztott `Notebook`hoz tartoznak.
+Ha kipróbáljuk az alkalmazást, azt láthatjuk, hogy nem jelenik meg az új jegyzet a mentés után. Ez azért van mert a `Table View` még nem értesült a kontextus módosításáról. Itt tűnik fel újra az `NSFetchedResultsController`, mely képes értesítéseket küldeni, ha megváltozik az általa figyelt lekérdezés, esetünkben azok a `Note` objektumok, amik az éppen kiválasztott `Notebook`hoz tartoznak.
 
 > Adjuk hozzá `NoteViewController`hez az `NSFetchedResultsControllerDelegate` protokolt!
 
@@ -503,7 +490,13 @@ func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, 
 
 A jelenlegi implementáció rögtön elmenti a változásokat a perzisztens tárolóba. Sok módosítás esetén (vagy ha esetleg szeretnénk érvényteleníteni a legutóbbi változtatásokat), érdemes lehet a módosításokat csak akkor menteni, mikor az alkalmazás a háttérbe kerül.
 
-> Ehhez módosítsuk az `applicationDidEnterBackground(_:)` metódust az `AppDelegate.swift`ben!
+> Ehhez először töröljük a `createNote(with content: String)` metódusból a következő sort!
+
+```swift
+(UIApplication.shared.delegate as! AppDelegate).saveContext()
+```
+
+> Majd módosítsuk az `applicationDidEnterBackground(_:)` metódust az `AppDelegate.swift`ben!
 
 ```swift
 func applicationDidEnterBackground(_ application: UIApplication) {
