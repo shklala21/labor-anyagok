@@ -39,7 +39,7 @@ A `saveContext()` metódust használjuk a kontextus mentéséhez. Egyrészt rög
 
 > Nyissuk meg a `UberNotebook.xcdatamodeld` fájlt és vegyünk fel:
 >
-> * új entitást **`Notebook`** névvel:
+> * új entitást **`Notebook`** névvel
 >   * **title** (*String*) *attribútum*mal
 > * új entitást **`Note`** névvel
 >   * **content** (*String*) *attribútum*mal
@@ -62,7 +62,7 @@ A `Core Data`ban relációknál mindig meg kell adnunk egy inverz relációt is.
 
 Itt az ideje az adatmodell kipróbálásának!
 
-> Az `AppDelegate.swift` `application(_:didFinisLaunchingWithOptions:)` metódusban, a `return true` sor elé hozzunk létre egy új `Notebook`ot és benne egy `Note`-ot!
+> Az `AppDelegate.swift` `application(_:didFinisLaunchingWithOptions:)` metódusában, a `return true` sor elé hozzunk létre egy új `Notebook`ot és benne egy `Note`-ot!
 
 ```swift
 let notebook = NSEntityDescription.insertNewObject(forEntityName: "Notebook", into: persistentContainer.viewContext)
@@ -167,22 +167,21 @@ import CoreData
 ```
 
 ```swift
-var notebooks = [Notebook]()
+private var notebooks = [Notebook]()
 ```
 
 > Definiáljunk egy metódust, mely lekéri a `Notebook`okat!
 
 ```swift
-func fetchNotebooks() {
+private func fetchNotebooks() {
   let managedObjectContext = AppDelegate.managedContext
 
   let fetchRequest: NSFetchRequest<Notebook> = Notebook.fetchRequest()
 
   do {
-    let notebooks = try managedObjectContext.fetch(fetchRequest)
-    self.notebooks = notebooks
+    notebooks = try managedObjectContext.fetch(fetchRequest)
   } catch {
-    print("Couldn't fetch!")
+    print(error.localizedDescription)
   }
 }
 ```
@@ -219,7 +218,7 @@ override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexP
 
 ### Jegyzetek, `NSFetchedResultsController` <a id="jegyzetek-nsfetchedresultcontroller"></a>
 
-> A `Main.storyboard`ban hozzunk létre egy új `Table View Controller`t! Kössünk be egy *Show* (*selection*) `segue`-t a `Notebooks View Controller` cellájára!
+> A `Main.storyboard`ban hozzunk létre egy új `Table View Controller`t! Kössük be egy *Show* (*selection*) `Segue`-jel a `Notebooks View Controller` cellájáról!
 
 <img src="img/10_desired_ui.png" alt="10" style="width: 50%;"/>
 
@@ -260,7 +259,7 @@ override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
 > Váltsunk a `NoteViewController.swift`re és vegyünk fel egy `NSFetchedResultsController` típusú property-t!
 
 ```swift
-var fetchedResultsController: NSFetchedResultsController<Note>!
+private var fetchedResultsController: NSFetchedResultsController<Note>!
 ```
 
 > A `viewDidLoad()` metódusban hozzuk létre a `Note`-okat visszaadó lekérdezést és rendeljük egy újonnan létrehozott `NSFetchedResultsController`hez!
@@ -302,7 +301,7 @@ override func viewDidLoad() {
 
 Ugyan `Swift 4`-ben van egy [újfajta szintaxis](https://github.com/apple/swift-evolution/blob/master/proposals/0161-key-paths.md) a *keyPath*-ek használatára, `NSPredicate`-ek esetén ezek sajnos egyelőre nem működnek.
 
-Most még nem látszik miért jobb az `NSFetchedResultsController` egy sima `Array`-be történő lekérdezéshez képest, később viszont látni fogjuk, hogy az előbbi jelzi ha bármi megváltozik a lekérdezésben érintett objektumokban: pl. ha létrehozunk vagy törlünk egy új `Note`-ot.
+Most még nem látszik miért jobb az `NSFetchedResultsController` egy sima `Array`-be történő lekérdezéshez képest, később viszont látni fogjuk, hogy az előbbi jelzi ha bármi megváltozik a lekérdezésben érintett objektumokban: pl. ha létrehozunk vagy törlünk egy `Note`-ot.
 
 > A `UITableViewDataSource` metódusoknál töröljük ki a szekciók számát megadót, a sorok számánál pedig térjünk vissza a `NSFetchedResultsController`től elkért értékkel!
 
@@ -348,7 +347,7 @@ override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexP
 > Definiáljunk egy `createNote(with:)` nevű metódust, mely létrehoz egy új jegyzetet és hozzárendeli az aktuális `Notebook`hoz!
 
 ```swift
-func createNote(with content: String) {
+private func createNote(with content: String) {
   let managedObjectContext = AppDelegate.managedContext
 
   let note = Note(context: managedObjectContext)
