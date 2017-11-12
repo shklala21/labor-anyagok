@@ -4,6 +4,7 @@
 * Kelényi Imre - imre.kelenyi@aut.bme.hu
 * Kántor Tibor - tibor.kantor@autsoft.hu
 * Krassay Péter - peter.krassay@autsoft.hu
+* Szücs Zoltán - szucs.zoltan@autsoft.hu
 
 ## A labor témája
 
@@ -18,68 +19,63 @@
 
 ## Messenger <a id="messenger"></a>
 
-> Másoljuk a `res/` mappában lévő **`Messenger`** kezdőprojektet a `labor_10/` mappánkba!
+> Másoljuk a `res` mappában lévő **`Messenger`** kezdőprojektet a `labor_10` mappánkba!
 
 ![](img/01_start.png)
 
 > Próbáljuk ki az alkalmazást és nézzük át a forráskódját! 
 
-Az alkalmazás tartalmaz egy `Table View Controller`t (`MessagesViewController.swift`), illetve egy új üzenetek írására szolgáló `ComposeMessageViewController`t.
+Az alkalmazás két `Table View Controller`t tartalmaz. A `Messages View Controller` az üzeneteket listázza, a `Compose Message View Controller` pedig új üzenet írására szolgál.
 
 ### Üzenetek letöltése <a id="uzenetek-letoltese"></a>
 
-> A `MessagesViewController.swift`-be vegyünk fel egy új property-t, mely az `URLSession` példányt tárolja! Helyben inicializáljuk is!
+> A `MessagesViewController.swift`be vegyünk fel egy új *property*-t, mely az `URLSession` példányt tárolja! Helyben inicializáljuk is!
 
 ```swift
-var urlSession: URLSession = {
-  let sessionConfiguration = URLSessionConfiguration.default
-  return URLSession(configuration: sessionConfiguration, delegate: nil, delegateQueue: OperationQueue.main)
+private var urlSession: URLSession = {
+    let sessionConfiguration = URLSessionConfiguration.default
+    return URLSession(configuration: sessionConfiguration, delegate: nil, delegateQueue: OperationQueue.main)
 }()
 ```
 
-> Valósítsuk meg a *Refresh* gomb megnyomásakor meghívódó metódust, mely elindítja az üzenetek letöltését! (Az üres metódus `refreshButtonTap(_:)` néven már ott van a kódban és be is van kötve a gomb megfelelő eseményéhez.)
+> Valósítsuk meg a *Refresh* gomb megnyomásakor meghívódó metódust, mely elindítja az üzenetek letöltését! (Az üres metódus `refreshButtonTap(_:)` néven már ott van a kódban, és be is van kötve a gomb megfelelő eseményéhez.)
 
 ```swift
 // MARK: - Actions
 
-@IBAction func refreshButtonTap(_ sender: AnyObject) {
-  let url = URL(string: "http://atleast.aut.bme.hu/ait-ios/messenger/messages")
-  urlSession.dataTask(with: url!) { data, response, error in
-    if let data = data {
-      let responseString = NSString(data: data, encoding: String.Encoding.utf8.rawValue)
-      print("\(responseString)")
-    }
-  }.resume()
+@IBAction func refreshButtonTap(_ sender: Any) {
+    let url = URL(string: "http://atleast.aut.bme.hu/ait-ios/messenger/messages")
+    urlSession.dataTask(with: url!) { data, response, error in
+        if let data = data, let responseString = String(data: data, encoding: .utf8) {
+            print("\(responseString)")
+        }
+    }.resume()
 }
 ```
 
-> Teszteljük az alkalmazást és ellenőrizzük, hogy a konzolon megjelenik a letöltött `JSON` formátumú válasz!
+> Teszteljük az alkalmazást és ellenőrizzük, hogy a konzolon megjelenik-e a letöltött `JSON` formátumú válasz!
 
-A konzolon csak a következő üzenet fog megjelenni.
+A konzolon csak a következő üzenet jelenik meg:
 
 `App Transport Security has blocked a cleartext HTTP (http://) resource load since it is insecure. Temporary exceptions can be configured via your app's Info.plist file.`
 
----
+Az *App Transport Security*-t (*ATS*) az `Apple` az `iOS 9`-cel mutatta be. Lényegében egy olyan biztonsági mechanizmus, ami alapértelmezetten minden, az alkalmazás által indított kapcsolatot tilt, ami nem `HTTPS` felett megy a legerősebb `TLS` használatával.
 
-_Az *App Transport Security*-t (*ATS*-t) az `Apple` az `iOS 9`-el mutatta be. Lényegében egy olyan biztonsági mechanizmus, ami alapértelmezetten minden, az alkalmazások által indított kapcsolatot tilt, ami nem `HTTPS` felett megy a legerősebb `TLS` használatával._
+Természetesen egy ilyen változtatásnál időt kell adni a fejlesztőknek, hogy frissíthessék az alkalmazásokat, illetve a szervereket, ezért az `Apple` engedélyezte kivételek hozzáadását, illetve az *ATS* teljes kikapcsolását is.
 
-_Természetesen egy ilyen változtatásnál időt kell adni a fejlesztőknek, hogy frissíthessék az alkalmazásokat, illetve a szervereket, ezért az `Apple` engedélyezte kivételek hozzáadását, illetve az *ATS* teljes kikapcsolását is._
+A `2016`-os `WWDC`-n az `Apple` bejelentette, hogy `2017` januárjától az `App Store`-ba felöltött alkalmazásoknak (és az őket kiszolgáló szervereknek) adaptálniuk kell az *ATS*-t (ezt a határidőt később kitolták). Ez alól csak nagyon indokolt esetben adnak felmentést.
 
-_A `2016`-os `WWDC`-n az `Apple` bejelentette, hogy `2017` januárjától az `App Store`-ba felöltött alkalmazásoknak (és az őket kiszolgáló szervereknek) adaptálniuk kell az *ATS*-t. Ez alól csak nagyon indokolt esetben adnak felmentést._
+A fejlesztés idejére azonban továbbra is ki lehet kapcsolni ezt a biztonsági funkciót.
 
-_A fejlesztés idejére azonban továbbra is ki lehet kapcsolni ezt a biztonsági funkciót._
-
----
-
-> Az *ATS* kikapcsolásához az `Info.plist`-ben vegyük fel az *`App Transport Security Settings`* kulcsot, majd azon belül az *`Allow Arbitrary Loads`* kulcsot **`YES`** értékkel!
+> Az *ATS* kikapcsolásához az `Info.plist`ben vegyük fel az *`App Transport Security Settings`* kulcsot, majd azon belül az *`Allow Arbitrary Loads`* kulcsot **`YES`** értékkel!
 
 ![](img/02_ats.png)
 
-Ezen változtatás után már meg kell jelennie a konzolon a `JSON` válasznak.
+Ezen változtatás után már meg fog jelenni a konzolon a `JSON` válasz.
 
 ### `JSON` feldolgozás <a id="json-feldolgozas"></a>
 
-A szervertől kapott válasz `JSON` formátumú. Egy külső tömbben `JSON` objektumok írják le a megjelenítendő üzeneteket. A szerver válaszát egy böngészőben is megvizsgálhatjuk az URL megnyitásával.
+A szervertől kapott válasz `JSON` formátumú: egy tömbben `JSON` objektumok írják le a megjelenítendő üzeneteket. A szerver válaszát böngészőben is megvizsgálhatjuk az URL megnyitásával.
 
 [`http://atleast.aut.bme.hu/ait-ios/messenger/messages`](http://atleast.aut.bme.hu/ait-ios/messenger/messages
 )
@@ -99,100 +95,106 @@ A szervertől kapott válasz `JSON` formátumú. Egy külső tömbben `JSON` obj
 ]
 ```
 
-> Az üzenetek tárolásához vegyünk fel egy új property-t, melyet egy üres tömbbel inicializáljunk!
+`JSON` feldolgozásra a `Swift 4`-ben bevezetett `Codable`-t fogjuk használni. A `Codable` egy `typealias`, két *protocol*t fog össze: `typealias Codable = Decodable & Encodable`. A sorosítást és visszaalakítást ún. *Encoder* és *Decoder* osztályok végzik, melyek gyakran használt formátumokhoz (pl. `JSON`, `Plist`) beépítve rendelkezésünkre állnak.
+
+> Az üzenetek tárolásához vegyünk fel egy új, `Message` nevű `struct`ot. 
 
 ```swift
-var messages = [Any]()
+struct Message: Codable {
+
+    let sender: String
+    let recipient: String
+    let topic: String
+    
+    enum CodingKeys: String, CodingKey {
+        case sender = "from_user"
+        case recipient = "to_user"
+        case topic
+    }
+    
+}
 ```
 
-> A data taszk befejeztekor meghívódó blokkban dolgozzuk fel a kapott `JSON`-t és rendeljük az eredményt a `messages` változóhoz!
+A `CodingKeys` `enum`ra esetünkben azért van szükség, mert bizonyos mezők eltérő néven szerepelnek a szervertől érkező adathalmazban.
+
+> A `MessagesViewController.swift` fájlban vegyünk fel és inicializáljunk egy `Message` tömböt, melyben a szerverről kapott üzeneteket fogjuk tárolni.
+
+```swift
+private var messages = [Message]()
+```
+
+> A `Data Task` befejeztekor meghívódó *closure*-ben dolgozzuk fel a kapott `JSON`-t és rendeljük az eredményt a `messages` property-hez!
 
 ```swift
 // MARK: - Actions
 
 @IBAction func refreshButtonTap(_ sender: AnyObject) {
-  let url = URL(string: "http://atleast.aut.bme.hu/ait-ios/messenger/messages")
-  urlSession.dataTask(with: url!) { data, response, error in
-    if let error = error {
-      print("Error during comminication: \(error.localizedDescription).")
-      return
-    }
-
-    do {
-      guard let messages = try (JSONSerialization.jsonObject(with: data!, options: .mutableContainers) as? [Any]) else {
-        return
-      }
-      self.messages = messages
-      self.tableView.reloadData()
-    } catch let parseError {
-      print("Error parsing JSON: \(parseError.localizedDescription)")
-    }
-
-  }.resume()
+    let url = URL(string: "http://atleast.aut.bme.hu/ait-ios/messenger/messages")
+    urlSession.dataTask(with: url!) { data, response, error in
+        if let error = error {
+            print("Error during communication: \(error.localizedDescription)")
+        } else if let data = data {
+            let decoder = JSONDecoder()
+            do {
+                self.messages = try decoder.decode(Array<Message>.self, from: data)
+                self.tableView.reloadData()
+            } catch let decodeError {
+                print("Error during JSON decoding: \(decodeError.localizedDescription)")
+            }
+        }
+    }.resume()
 }
 ```
 
-> Valósítsuk meg a `Table View` adatforrás metódusait, hogy megjelenítsük az üzeneteket!
+> Az üzenetek megjelenítéséhez valósítsuk meg a `Table View Data Source` metódusait!
 
 ```swift
 // MARK: - Table view data source
-
+    
 override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-  return messages.count
+    return messages.count
 }
-
+    
 override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-  let cell = tableView.dequeueReusableCell(withIdentifier: "MessageCell", for: indexPath) as! MessageCell
-
-  let message = messages[indexPath.row] as! [String: Any]
-
-  let fromUser = message["from_user"] as! String
-  let toUser = message["to_user"] as! String
-  let topic = message["topic"] as! String
-
-  cell.recipientLabel.text = fromUser + " - " + toUser
-  cell.subjectLabel.text = topic
-
-  return cell
+    let cell = tableView.dequeueReusableCell(withIdentifier: "MessageCell", for: indexPath) as! MessageCell
+    
+    let message = messages[indexPath.row]
+    
+    cell.recipientLabel.text = "\(message.sender) -> \(message.recipient)"
+    cell.topicLabel.text = message.topic
+    
+    return cell
 }
 ```
-
-Az üzenetek megjelenítéséhez egy egyedi cella osztályt használunk (`MessageCell`).
 
 > Próbáljuk ki az alkalmazást!
 
 ### Üzenetek feltöltése <a id="uzenetek-feltoltese"></a>
 
-Új üzenet küldéséhez a `URL`-re egy `HTTP` `POST` kérést kell küldenünk, a következő formátumú tartalommal.
+Új üzenet küldéséhez az `URL`-re egy `HTTP` `POST` kérést kell küldenünk, a következő formátumú tartalommal.
 
 ```json
 {
   "from_user": "",
   "to_user": "",
-  "content": "",
   "topic": "",
   "image": "base64 kódolású JPEG kép"
 }
 ```
 
-Az üzenet összeállítását a `composeViewControllerDidSend()` metódusban végezhetjük, mely be van kötve az új üzenet írásához készített `View Controller`hez.
+Az üzenet összeállítását és küldését a `ComposeMessageViewControllerDelegate` `composeViewControllerDidSend(_:)` metódusában végezhetjük. A *protocol*t a `Messages View Controller` valósítja meg.
 
-> Első lépésként állítsuk össze az adathierarchiát, majd alakítsuk `JSON`-ná (az opcionálisan megadható kép feltöltését későbbre hagyjuk). **A _`YOUR NAME`_ helyett mindenki válasszon egy egyedi nevet!**
+> Állítsuk össze az adathierarchiát, majd alakítsuk `JSON`-né (az opcionálisan megadható kép feltöltését későbbre hagyjuk). **A _`YOUR NAME`_ helyett mindenki válasszon egy egyedi nevet!**
 
 ```swift
 func composeMessageViewControllerDidSend(_ viewController: ComposeMessageViewController) {
-  var message = [String: Any]()
-  message["from_user"] = "YOUR NAME"
-  message["to_user"] = viewController.toUserTextField.text
-  message["topic"] = viewController.topicTextField.text
-
-  let jsonData: Data!
-  do {
-    jsonData = try JSONSerialization.data(withJSONObject: message, options: .prettyPrinted)
-  } catch {
-    return
-  }
-}
+    navigationController?.popToRootViewController(animated: true)
+    guard let recipient = viewController.recipientTextField.text, let topic = viewController.topicTextField.text else { return }
+    
+    let message = Message(sender: "YOUR NAME", recipient: recipient, topic: topic)
+    let encoder = JSONEncoder()
+    
+    guard let jsonData = try? encoder.encode(message) else { return }
 ```
 
 A `POST` kérés küldéséhez egy `URLRequest`re lesz szükségünk.
@@ -204,31 +206,27 @@ request.httpMethod = "POST"
 request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 ```
 
-> Indítsunk egy upload taszkot, mely befejeztekor egy alertet feldobva nyugtázzuk a folyamatot!
+> Indítsunk egy `Upload Task`ot, mely befejeztekor egy `Alert`et feldobva nyugtázzuk a folyamatot!
 
 ```swift
 urlSession.uploadTask(with: request, from: jsonData) { data, response, error in
-  if let error = error {
-    print("Error during comminication: \(error.localizedDescription).")
-    return
-  }
-
-  do {
-    guard let response = try JSONSerialization.jsonObject(with: data!, options: .mutableContainers) as? [String: Any] else {
-      return
+    if let error = error {
+        print("Error during comminication: \(error.localizedDescription).")
+        return
+    } else if let data = data {
+        let decoder = JSONDecoder()
+        do {
+            let sendResponse = try decoder.decode(MessageSendResponse.self, from: data)
+            
+            let alert = UIAlertController(title: "Server response", message: sendResponse.result, preferredStyle: .alert)
+            let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+            alert.addAction(okAction)
+            
+            self.present(alert, animated: true, completion: nil)
+        } catch {
+            print("Error during JSON decoding: \(error.localizedDescription)")
+        }
     }
-
-    let result = response["result"] as! String
-
-    let alert = UIAlertController(title: "Server response", message: result, preferredStyle: .alert)
-    let okAction = UIAlertAction(title: "Ok", style: .default, handler: nil)
-    alert.addAction(okAction)
-
-    self.present(alert, animated: true, completion: nil)
-  } catch {
-    print("Error.")
-  }
-
 }.resume()
 ```
 
@@ -236,60 +234,100 @@ Ha újra letöltjük az üzeneteket, meg kell jelennie az új küldeménynek.
 
 ### Képek feltöltése <a id="kepek-feltoltese"></a>
 
-> A szervernek elküldendő `JSON` üzenetbe illesszük be a kiválasztott képet. Ehhez először lekicsinyítjük, majd a `JPEG` reprezentációját `base64` kódolással alakítjuk sztringgé!
+> Bővítsük a `Message` `struct`ot az `image` mezővel. Ne feledkezzünk meg a `CodingKeys` `enum` bővítéséről sem! Vegyünk fel egy új *inicializáló*t is, ugyanis az `image` *property*-t később fogjuk beállítani, így az *alapértelmezett inicializáló* már nem felel meg az igényeinknek.
+
+```swift 
+struct Message: Codable {
+    ...
+    var image: String?
+    ...
+    init(sender: String, recipient: String, topic: String) {
+        self.sender = sender
+        self.recipient = recipient
+        self.topic = topic
+    }
+
+    enum CodingKeys: String, CodingKey {
+        ...
+        case image
+    }
+    
+}
+```
+
+> A szervernek elküldendő üzenetbe illesszük be a kiválasztott képet. Ehhez először lekicsinyítjük, majd a `JPEG` reprezentációját `base64` kódolással alakítjuk `String`gé! (Ügyeljünk rá, hogy az üzenetet reprezentáló lokális `message` példányunkat konstans (`let`) helyett változóként (`var`) hozzuk létre, hogy az `image` *property*-jét be tudjuk állítani!) 
 
 ```swift
-if let image = viewController.imageView.image {
-  let scaledImage = image.scaleImage(to: CGSize(width: 40, height: 40))
-  if let jpegImageData = UIImageJPEGRepresentation(scaledImage, 0.7) {
-    message["image"] = jpegImageData.base64EncodedString()
-  }
+var message = Message(sender: "YOUR NAME", recipient: recipient, topic: topic)
+if let image = viewController.imageView.image, let jpegImageData = UIImageJPEGRepresentation(image.scale(to: CGSize(width: 40, height: 40)), 0.7) {
+    message.image = jpegImageData.base64EncodedString()
 }
 ```
 
 ### Képek letöltése <a id="kepek-letoltese"></a>
 
-A szerveren minden feltöltött kép eltárolódik, majd az üzenetek lekérdezésekor az `imageurl` kulcshoz tartozó érték alapján tudjuk letölteni őket. Hogy ne töltsünk le feleslegesen egy képet többször, hozzunk létre egy kis „cache”-t, mely `URL – kép` párokat tartalmaz. 
+A szerveren minden feltöltött kép eltárolódik, majd az üzenetek lekérdezésekor az `imageurl` kulcshoz tartozó érték alapján tudjuk letölteni őket. 
 
-> Vegyünk fel egy új property-t `MessagesViewController`hez!
+> Bővítsük a `Message` `struct`ot az `imageUrl` mezővel. Ne feledkezzünk meg a `CodingKeys` `enum` és az `init` bővítéséről sem!
+
+```swift 
+struct Message: Codable {
+    ...
+    let imageUrl: String?
+   
+    init(sender: String, recipient: String, topic: String) {
+   	    ...
+        imageUrl = nil
+    }
+
+    
+    enum CodingKeys: String, CodingKey {
+        ...
+        case imageUrl = "imageurl"
+    }
+}
+``` 
+
+Hogy ne töltsünk le feleslegesen egy képet többször, tároljuk el őket egy *dictionary*-ben, mely `URL – kép` párokat tartalmaz. 
+
+> Vegyünk fel egy új property-t a `MessagesViewController.swift` fájlban!
 
 ```swift
-var imageCache = [URL: UIImage]()
+private var imageCache = [URL: UIImage]()
 ```
 
-> Definiáljunk egy új metódust, mely az `URL`-je alapján beállít egy képet a cache-ből egy cellához, vagy letölti, ha még nincs meg és azután állítja be.
+> Definiáljunk egy új metódust, mely az `URL`-je alapján beállít egy képet a *dictionary*-ből egy cellához, vagy letölti, ha még nincs meg, és azt követően állítja be.
 
 ```swift
 // MARK: - Helper methods
 
-func downloadImage(with url: URL, for cell: MessageCell) {
-  if let cachedImage = imageCache[url] {
-    cell.messageImageView.image = cachedImage
-  }
-  else {
-    cell.messageImageView.image = nil
-
-    urlSession.dataTask(with: url) { [weak cell] data, response, error in
-      if let data = data, let image = UIImage(data: data) {
-        self.imageCache[url] = image
-        cell?.messageImageView.image = image
-      }
-    }.resume()
-  }
+func setImage(from url: URL, for cell: MessageCell) {
+    if let cachedImage = imageCache[url] {
+        cell.messageImageView.image = cachedImage
+    } else {
+        cell.messageImageView.image = nil
+        
+        urlSession.dataTask(with: url) { [weak cell] data, response, error in
+            if let data = data, let image = UIImage(data: data) {
+                self.imageCache[url] = image
+                cell?.messageImageView.image = image
+            }
+        }.resume()
+    }
 }
 ```
 
-> A cellák létrehozásakor (`tableView(_:cellForRowAt:)`) indítsuk el a cellához tartozó kép letöltését!
+> A cellák konfigurálásakor (`tableView(_:cellForRowAt:)`) indítsuk el a cellához tartozó kép letöltését!
 
 ```swift
-if let imageURLString = message["imageurl"] as? String {
-  downloadImage(with: URL(string: imageURLString)!, for: cell)
+if let imageUrlString = message.imageUrl, let imageUrl = URL(string: imageUrlString) {
+    setImage(from: imageUrl, for: cell)
 }
 ```
 
 ### Network Activity Indicator <a id="network-activity-indicator"></a>
 
-> Jelenítsük meg, ill. rejtsük el a hálózati aktivitást jelző „pörgettyűt”, üzenet küldésekor és üzenetek letöltésekor, illetve mikor a műveletek véget érnek!
+> Jelenítsük meg, ill. rejtsük el a hálózati aktivitást jelző `Network Activity Indicator`t üzenet küldésekor, üzenetek letöltésekor és képek letöltésekor, illetve mikor a műveletek véget érnek!
 
 ```swift
 UIApplication.shared.isNetworkActivityIndicatorVisible = true
@@ -305,12 +343,11 @@ UIApplication.shared.isNetworkActivityIndicatorVisible = false
 >
 > ![](img/03_example_ui.png)
 >
-* Hozzunk létre egy új `Single View` alkalmazást **iValuta** néven!
-* Készítsünk egy egyszerű felhasználói felületet! (Szükség lesz két `UITextField`re a valutanemek és az átváltandó összeg bekérése, `UIlabel`re az eredmény kiírásához, valamint egy `UIButton`re a folyamat indításához.)
-* Az átváltás gomb megnyomásakor indítsunk egy `HTTP` `GET` kérést (egy data taszkot), mely letölti az aktuális árfolyamot. Az `URL` formátuma a következő:
+* Hozzunk létre egy új `Single View App`ot **iCurrency** néven!
+* Készítsünk egy egyszerű felhasználói felületet! (Szükség lesz két `Text Field`re a valutanemek és az átváltandó összeg bekérése, egy `Label`re az eredmény kiírásához, valamint egy `Button`re a folyamat indításához.)
+* Az átváltás gomb megnyomásakor indítsunk egy `HTTP` `GET` kérést (egy `Data Task`ot), mely letölti az aktuális árfolyamot. Az `URL` formátuma a következő:
   [http://api.fixer.io/latest?base=**USD**&symbols=**HUF**](http://api.fixer.io/latest?base=USD&symbols=HUF)
-* Dolgozzuk fel a `JSON` választ és jelenítsük meg a váltás eredményét!
-    * A számértékek `NSNumber`ökre képződnek le, amiket lehet castolni pl. `Double`-re.
+* Dolgozzuk fel a `JSON` választ (használjunk `Codable`-t!) és jelenítsük meg a váltás eredményét!
     * A válaszban a váltási valutanem lesz az egyik kulcs érték.
 
 ```json
