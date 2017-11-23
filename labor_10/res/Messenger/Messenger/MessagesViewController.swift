@@ -18,7 +18,7 @@ class MessagesViewController: UITableViewController {
   }
   
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    let cell = tableView.dequeueReusableCell(withIdentifier: "MessageCell", for: indexPath)
+    let cell = tableView.dequeueReusableCell(withIdentifier: "MessageCell", for: indexPath) as! MessageCell
     
     return cell
   }
@@ -39,7 +39,7 @@ class MessagesViewController: UITableViewController {
   
   // MARK: - Helper methods
   
-  func setImage(from url: URL, for cell: UITableViewCell) {
+  func setImage(from url: URL, for cell: MessageCell) {
   }
   
 }
