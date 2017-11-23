@@ -8,8 +8,8 @@
 import Foundation
 
 struct MessageSendResponse: Codable {
-    
-    let result: String
-    let status: String
-    
+  
+  let result: String
+  let status: String
+  
 }

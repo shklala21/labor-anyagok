@@ -33,8 +33,8 @@ Az alkalmazás két `Table View Controller`t tartalmaz. A `Messages View Control
 
 ```swift
 private var urlSession: URLSession = {
-    let sessionConfiguration = URLSessionConfiguration.default
-    return URLSession(configuration: sessionConfiguration, delegate: nil, delegateQueue: OperationQueue.main)
+  let sessionConfiguration = URLSessionConfiguration.default
+  return URLSession(configuration: sessionConfiguration, delegate: nil, delegateQueue: OperationQueue.main)
 }()
 ```
 
@@ -44,12 +44,12 @@ private var urlSession: URLSession = {
 // MARK: - Actions
 
 @IBAction func refreshButtonTap(_ sender: Any) {
-    let url = URL(string: "http://atleast.aut.bme.hu/ait-ios/messenger/messages")
-    urlSession.dataTask(with: url!) { data, response, error in
-        if let data = data, let responseString = String(data: data, encoding: .utf8) {
-            print("\(responseString)")
-        }
-    }.resume()
+  let url = URL(string: "http://atleast.aut.bme.hu/ait-ios/messenger/messages")
+  urlSession.dataTask(with: url!) { data, response, error in
+    if let data = data, let responseString = String(data: data, encoding: .utf8) {
+      print("\(responseString)")
+    }
+  }.resume()
 }
 ```
 
@@ -95,22 +95,22 @@ A szervertől kapott válasz `JSON` formátumú: egy tömbben `JSON` objektumok 
 ]
 ```
 
-`JSON` feldolgozásra a `Swift 4`-ben bevezetett `Codable`-t fogjuk használni. A `Codable` egy `typealias`, két *protocol*t fog össze: `typealias Codable = Decodable & Encodable`. A sorosítást és visszaalakítást ún. *Encoder* és *Decoder* osztályok végzik, melyek gyakran használt formátumokhoz (pl. `JSON`, `Plist`) beépítve rendelkezésünkre állnak.
+`JSON` feldolgozásra a `Swift 4`-ben bevezetett `Codable`-t fogjuk használni. A `Codable` egy `typealias`, két *protocol*t fog össze: `typealias Codable = Decodable & Encodable`. A sorosítást és visszaalakítást *Encoder* és *Decoder* osztályok végzik, melyek gyakran használt formátumokhoz (pl. `JSON`, `Plist`) beépítve rendelkezésünkre állnak.
 
-> Az üzenetek tárolásához vegyünk fel egy új, `Message` nevű `struct`ot. 
+> Az üzenetek tárolásához hozzunk létre egy `Message.swift` nevű fájlt, és vegyünk fel benne egy `Message` nevű `struct`ot. 
 
 ```swift
 struct Message: Codable {
 
-    let sender: String
-    let recipient: String
-    let topic: String
+  let sender: String
+  let recipient: String
+  let topic: String
     
-    enum CodingKeys: String, CodingKey {
-        case sender = "from_user"
-        case recipient = "to_user"
-        case topic
-    }
+  enum CodingKeys: String, CodingKey {
+    case sender = "from_user"
+    case recipient = "to_user"
+    case topic
+  }
     
 }
 ```
@@ -129,20 +129,20 @@ private var messages = [Message]()
 // MARK: - Actions
 
 @IBAction func refreshButtonTap(_ sender: AnyObject) {
-    let url = URL(string: "http://atleast.aut.bme.hu/ait-ios/messenger/messages")
-    urlSession.dataTask(with: url!) { data, response, error in
-        if let error = error {
-            print("Error during communication: \(error.localizedDescription)")
-        } else if let data = data {
-            let decoder = JSONDecoder()
-            do {
-                self.messages = try decoder.decode(Array<Message>.self, from: data)
-                self.tableView.reloadData()
-            } catch let decodeError {
-                print("Error during JSON decoding: \(decodeError.localizedDescription)")
-            }
-        }
-    }.resume()
+  let url = URL(string: "http://atleast.aut.bme.hu/ait-ios/messenger/messages")
+  urlSession.dataTask(with: url!) { data, response, error in
+    if let error = error {
+      print("Error during communication: \(error.localizedDescription)")
+    } else if let data = data {
+      let decoder = JSONDecoder()
+      do {
+        self.messages = try decoder.decode(Array<Message>.self, from: data)
+        self.tableView.reloadData()
+      } catch let decodeError {
+        print("Error during JSON decoding: \(decodeError.localizedDescription)")
+      }
+    }
+  }.resume()
 }
 ```
 
@@ -152,18 +152,18 @@ private var messages = [Message]()
 // MARK: - Table view data source
     
 override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return messages.count
+  return messages.count
 }
     
 override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    let cell = tableView.dequeueReusableCell(withIdentifier: "MessageCell", for: indexPath) as! MessageCell
+  let cell = tableView.dequeueReusableCell(withIdentifier: "MessageCell", for: indexPath) as! MessageCell
     
-    let message = messages[indexPath.row]
+  let message = messages[indexPath.row]
     
-    cell.recipientLabel.text = "\(message.sender) -> \(message.recipient)"
-    cell.topicLabel.text = message.topic
+  cell.recipientLabel.text = "\(message.sender) -> \(message.recipient)"
+  cell.topicLabel.text = message.topic
     
-    return cell
+  return cell
 }
 ```
 
@@ -188,13 +188,13 @@ Az üzenet összeállítását és küldését a `ComposeMessageViewControllerDe
 
 ```swift
 func composeMessageViewControllerDidSend(_ viewController: ComposeMessageViewController) {
-    navigationController?.popToRootViewController(animated: true)
-    guard let recipient = viewController.recipientTextField.text, let topic = viewController.topicTextField.text else { return }
+  navigationController?.popToRootViewController(animated: true)
+  guard let recipient = viewController.recipientTextField.text, let topic = viewController.topicTextField.text else { return }
     
-    let message = Message(sender: "YOUR NAME", recipient: recipient, topic: topic)
-    let encoder = JSONEncoder()
+  let message = Message(sender: "YOUR NAME", recipient: recipient, topic: topic)
+  let encoder = JSONEncoder()
     
-    guard let jsonData = try? encoder.encode(message) else { return }
+  guard let jsonData = try? encoder.encode(message) else { return }
 ```
 
 A `POST` kérés küldéséhez egy `URLRequest`re lesz szükségünk.
@@ -210,23 +210,23 @@ request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
 ```swift
 urlSession.uploadTask(with: request, from: jsonData) { data, response, error in
-    if let error = error {
-        print("Error during comminication: \(error.localizedDescription).")
-        return
-    } else if let data = data {
-        let decoder = JSONDecoder()
-        do {
-            let sendResponse = try decoder.decode(MessageSendResponse.self, from: data)
+  if let error = error {
+    print("Error during comminication: \(error.localizedDescription).")
+    return
+  } else if let data = data {
+    let decoder = JSONDecoder()
+    do {
+      let sendResponse = try decoder.decode(MessageSendResponse.self, from: data)
             
-            let alert = UIAlertController(title: "Server response", message: sendResponse.result, preferredStyle: .alert)
-            let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
-            alert.addAction(okAction)
+      let alert = UIAlertController(title: "Server response", message: sendResponse.result, preferredStyle: .alert)
+      let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+      alert.addAction(okAction)
             
-            self.present(alert, animated: true, completion: nil)
-        } catch {
-            print("Error during JSON decoding: \(error.localizedDescription)")
-        }
+      self.present(alert, animated: true, completion: nil)
+    } catch {
+      print("Error during JSON decoding: \(error.localizedDescription)")
     }
+  }
 }.resume()
 ```
 
@@ -238,19 +238,19 @@ Ha újra letöltjük az üzeneteket, meg kell jelennie az új küldeménynek.
 
 ```swift 
 struct Message: Codable {
-    ...
-    var image: String?
-    ...
-    init(sender: String, recipient: String, topic: String) {
-        self.sender = sender
-        self.recipient = recipient
-        self.topic = topic
-    }
+  ...
+  var image: String?
+  ...
+  init(sender: String, recipient: String, topic: String) {
+    self.sender = sender
+    self.recipient = recipient
+    self.topic = topic
+  }
 
-    enum CodingKeys: String, CodingKey {
-        ...
-        case image
-    }
+  enum CodingKeys: String, CodingKey {
+    ...
+    case image
+  }
     
 }
 ```
@@ -260,7 +260,7 @@ struct Message: Codable {
 ```swift
 var message = Message(sender: "YOUR NAME", recipient: recipient, topic: topic)
 if let image = viewController.imageView.image, let jpegImageData = UIImageJPEGRepresentation(image.scale(to: CGSize(width: 40, height: 40)), 0.7) {
-    message.image = jpegImageData.base64EncodedString()
+  message.image = jpegImageData.base64EncodedString()
 }
 ```
 
@@ -272,19 +272,18 @@ A szerveren minden feltöltött kép eltárolódik, majd az üzenetek lekérdez�
 
 ```swift 
 struct Message: Codable {
-    ...
-    let imageUrl: String?
+  ...
+  let imageUrl: String?
    
-    init(sender: String, recipient: String, topic: String) {
-   	    ...
-        imageUrl = nil
-    }
-
-    
-    enum CodingKeys: String, CodingKey {
-        ...
-        case imageUrl = "imageurl"
-    }
+  init(sender: String, recipient: String, topic: String) {
+    ...
+    imageUrl = nil
+  }
+  
+  enum CodingKeys: String, CodingKey {
+    ...
+    case imageUrl = "imageurl"
+  }
 }
 ``` 
 
@@ -302,18 +301,18 @@ private var imageCache = [URL: UIImage]()
 // MARK: - Helper methods
 
 func setImage(from url: URL, for cell: MessageCell) {
-    if let cachedImage = imageCache[url] {
-        cell.messageImageView.image = cachedImage
-    } else {
-        cell.messageImageView.image = nil
+  if let cachedImage = imageCache[url] {
+    cell.messageImageView.image = cachedImage
+  } else {
+    cell.messageImageView.image = nil
         
-        urlSession.dataTask(with: url) { [weak cell] data, response, error in
-            if let data = data, let image = UIImage(data: data) {
-                self.imageCache[url] = image
-                cell?.messageImageView.image = image
-            }
-        }.resume()
-    }
+    urlSession.dataTask(with: url) { data, response, error in
+      if let data = data, let image = UIImage(data: data) {
+        self.imageCache[url] = image
+        cell.messageImageView.image = image
+      }
+    }.resume()
+  }
 }
 ```
 
@@ -321,13 +320,15 @@ func setImage(from url: URL, for cell: MessageCell) {
 
 ```swift
 if let imageUrlString = message.imageUrl, let imageUrl = URL(string: imageUrlString) {
-    setImage(from: imageUrl, for: cell)
+  setImage(from: imageUrl, for: cell)
 }
 ```
 
+> Próbáljuk ki az alkalmazást!
+
 ### Network Activity Indicator <a id="network-activity-indicator"></a>
 
-> Jelenítsük meg, ill. rejtsük el a hálózati aktivitást jelző `Network Activity Indicator`t üzenet küldésekor, üzenetek letöltésekor és képek letöltésekor, illetve mikor a műveletek véget érnek!
+> Jelenítsük meg a hálózati aktivitást jelző `Network Activity Indicator`t üzenetek küldésekor, letöltésekor, valamint a képek letöltésekor, majd rejtsük el mikor a műveletek véget érnek!
 
 ```swift
 UIApplication.shared.isNetworkActivityIndicatorVisible = true
@@ -346,9 +347,10 @@ UIApplication.shared.isNetworkActivityIndicatorVisible = false
 * Hozzunk létre egy új `Single View App`ot **iCurrency** néven!
 * Készítsünk egy egyszerű felhasználói felületet! (Szükség lesz két `Text Field`re a valutanemek és az átváltandó összeg bekérése, egy `Label`re az eredmény kiírásához, valamint egy `Button`re a folyamat indításához.)
 * Az átváltás gomb megnyomásakor indítsunk egy `HTTP` `GET` kérést (egy `Data Task`ot), mely letölti az aktuális árfolyamot. Az `URL` formátuma a következő:
-  [http://api.fixer.io/latest?base=**USD**&symbols=**HUF**](http://api.fixer.io/latest?base=USD&symbols=HUF)
+  [https://api.fixer.io/latest?base=**USD**&symbols=**HUF**](https://api.fixer.io/latest?base=USD&symbols=HUF)
 * Dolgozzuk fel a `JSON` választ (használjunk `Codable`-t!) és jelenítsük meg a váltás eredményét!
     * A válaszban a váltási valutanem lesz az egyik kulcs érték.
+    * A második `Text Field`hez használjunk **Number Pad** billentyűzetet.
 
 ```json
 {
