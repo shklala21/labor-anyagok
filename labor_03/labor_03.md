@@ -147,7 +147,7 @@ view.endEditing(true)
 A probléma most már csak az, hogy a feljövő virtuális billentyűzetet csak úgy tudjuk eltüntetni, ha megnyomjuk az számológép gombját. Az elegáns megoldás `Decimal Pad` billentyűzet eltüntetésére, hogy a gyökér nézet hátterét bárhol megérintve eltűnjön a billentyűzet.
 
 Ahhoz, hogy a gyökér nézet megérintését le tudjuk kezelni, le kell cserélnünk az osztályát `UIView`-ról, `UIControl`ra (hiszen csak `UIControl` és belőle származó osztályok tudnak előre definiált eseményeket generálni). 
-> Az `Interface Builder`ben kiválasztva a `ViewController` gyökér nézetét, a `Identity Inspector`ban választhatjuk ki hozzá a konkrét osztályt, itt váltsunk `UIControl`ra!
+> Az `Interface Builder`ben kiválasztva a `ViewController` gyökér nézetét, az `Identity Inspector`ban választhatjuk ki hozzá a konkrét osztályt, itt váltsunk `UIControl`ra!
 
 > <img src="img/09_selected_view.png" alt="09" style="width: 30%;"/>
 

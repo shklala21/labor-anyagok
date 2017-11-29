@@ -18,21 +18,24 @@
 
 > Másoljuk a `res/` mappában lévő **`Messenger`** kezdőprojektet a `labor_11/` mappánkba! Ez lényegében az előző labor során kidolgozott projekt.
 
-![](img/01_start.png)
+<img src="img/01_start.png" alt="01" style="width: 33%;"/>
 
-A főbb változások az előző verzióhoz képest, hogy a `MessagesViewController` alján megjelent egy `UIToolBar` rajta egy **Map** feliratú gombbal, illetve az üzenet létrehozó nézeten megjelent egy `UILabel` **Pending** felirattal. Ez a nézet fogja jelezni, hogy sikerült-e a feladó koordinátáját lekérdezni. Ezen kívül a `ComposeMessageViewController`ben megjelent egy `CLLocation` property, ami a pozíciót fogja majd tárolni. 
+A legfőbb UI-t érintő változás az előző verzióhoz képest, hogy az alkalmazásba bekerült egy `Tab Bar` két elemmel: **Messages** és **Map**. Az előbbiről a múlt órai labor képernyői érhetőek el, az utóbbit pedig ezen a laboron fogjuk elkészíteni. További különbség, hogy az `ComposeMessageViewController`en megjelent egy **Pending** feliratú `Label` (kódszinten pedig egy `CLLocation` property, ami a pozíciót fogja majd tárolni). Ez a nézet fogja jelezni, hogy sikerült-e a feladó koordinátáját lekérdezni. Végül egy fontos, motorháztető alatti átalakítás az új `NetworkHelper` osztály is, ahová ki lettek szervezve a hálózati hívások.
 
+> A `MessagesViewController`ben írjuk át a `YOUR NAME`-et a saját nevünkre!
+
+<!--  -->
 > Próbáljuk ki az alkalmazást és nézzük át a forráskódját! 
 
 ### Pozíció lekérdezése <a id="pozicio-lekerdezese"></a>
-> Készítsünk el egy osztályt, mely segítségével le tudjuk kérdezni az aktuális pozíciónkat. Ehhez hozzuk létre a `LocationManager` nevű, `NSObject`ből származó osztályunkat!
+> Készítsünk el egy osztályt, amely segítségével le tudjuk kérdezni az aktuális pozíciónkat. Ehhez hozzuk létre a `LocationManager` nevű, `NSObject`ből származó osztályunkat!
 
-Ahhoz, hogy az osztály értesítéseket kapjon a pozícióval kapcsolatban, implementálni kell a `CLLocationManagerDelegate` protokolt. Ahogy az a kódban is látható, az osztálynak ehhez importálnia kell a `CoreLocation` modult.
+Ahhoz, hogy az osztály értesítéseket kapjon a pozícióval kapcsolatban, implementálni kell a `CLLocationManagerDelegate` *protocol*t. Ehhez először importálni kell a `CoreLocation` modult.
 
 > Hozzunk létre 
 >
 > * egy `CLLocation` típusú, **lastLocation** nevű property-t, ami a legutolsó ismert pozíciót fogja tárolni,
-> * egy `NSTimer` típusú, **timeoutTimer** nevű property-t,
+> * egy `Timer` típusú, **timeoutTimer** nevű property-t,
 > * egy closure-t, **locationUpdated** névvel, hogy értesíteni tudjuk a pozícióra várakozó objektumainkat a pozíció változásáról (ennek értéket a hívó fél ad a `startLocationManager` meghívásakor),
 > * egy `CLLocationManager` típusú, **locationManager** nevű property-t!
 
@@ -43,20 +46,14 @@ import Foundation
 class LocationManager: NSObject {
 
   var lastLocation: CLLocation?
-  var timeoutTimer: Timer?
-  var locationUpdated: (()->())!
-  var locationManager: CLLocationManager!
-
-}
-
-extension LocationManager: CLLocationManagerDelegate {
+  private var timeoutTimer: Timer?
+  private var locationUpdated: (()->())!
+  private var locationManager: CLLocationManager!
 
 }
 ```
 
-> Implementáljuk a szükséges függvényeket!
-
-A pozíció lekérdezés indítását a következő függvény végzi. Ha nem történik érdemi esemény, `15` másodperc után leáll a pozíció lekérdezése.
+A pozíció lekérdezés indítását a következő metódus végzi. A `CLLocationManager` létrehozása és felparaméterezése után indít egy `Timer`, aminek a segítségével `15` másodperc után leállítjuk a pozíció lekérdezése (ha nem történik érdemi esemény).
 
 ```swift
 func startLocationManager(updated: @escaping ()->()) {
@@ -74,7 +71,28 @@ func startLocationManager(updated: @escaping ()->()) {
 }
 ```
 
-Ha időközben érkezik frissítés, akkor az alábbi függvény le fogja kezelni.
+> Imlementáljuk a `Timer` lejártakor meghívódó metódust!
+
+```swift
+@objc func stopLocationManager() {
+  if let timer = timeoutTimer {
+    timer.invalidate()
+  }
+
+  locationManager.stopUpdatingLocation()
+  locationUpdated()
+}
+```
+
+> Ezt követően valósítsuk meg `CLLocationManagerDelegate`-et és két metódusát.
+
+```swift
+extension LocationManager: CLLocationManagerDelegate {
+
+}
+```
+
+Ha érkezik frissítés, akkor az alábbi metódus fog meghívódni és a frissítést lekezelni.
 
 ```swift
 func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -100,7 +118,7 @@ func locationManager(_ manager: CLLocationManager, didUpdateLocations locations:
 }
 ```
 
-> Ezután írjuk meg a hibakezelő delegate metódust. Ha nem tudta meghatározni a pozíciónkat, akkor állítsuk meg a frissítést!
+> Amennyiben hiba történne (a rendszer nem tudja meghatározni a pozíciónkat) állítsuk meg a frissítést.
 
 ```swift
 func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
@@ -109,34 +127,21 @@ func locationManager(_ manager: CLLocationManager, didFailWithError error: Error
 }
 ```
 
-> Majd implementáljuk azt a metódust, mely ténylegesen leállítja a frissítési folyamatot!
-
-```swift
-func stopLocationManager() {
-  if let timer = timeoutTimer {
-    timer.invalidate()
-  }
-
-  locationManager.stopUpdatingLocation()
-  locationUpdated()
-}
-```
-
 > Végül adjuk hozzá az `Info.plist` fájlban az alábbi kulcsot **Privacy - Location When In Use Usage Description** (`NSLocationWhenInUseUsageDescription`)!
 
-![](img/02_location_when_in_use.png)
+<img src="img/02_location_when_in_use.png" alt="02" style="width: 66%;"/>
 
-Értéknek bármi megadható, de vigyázzunk, mert ezt fogja a felhasználó először elolvasni, amikor engedélyt kér az alkalmazás tőle.
+Értéknek bármi megadható, de vigyázzunk, mert ezt fogja a felhasználó először elolvasni, amikor engedélyt kér tőle az alkalmazás.
 
 ### Pozíció csatolása az üzenethez <a id="pozicio-csatolasa-az-uzenethez"></a>
 
 > Térjünk rá a `ComposeMessageViewController` kiegészítésére! Először vegyünk fel egy `LocationManager` típusú property-t az osztályban és inicializáljuk is!
 
 ```swift
-var locationManager = LocationManager()
+private var locationManager = LocationManager()
 ```
 
-> Ezután valósítsuk meg az aktuális pozíció tárolásáért felelős részeket. Indítsuk el/állítsuk le a frissítést, amikor szükséges és implementáljuk a megfelelő closure-t a pozíció frissítéshez!
+> Ezután valósítsuk meg az aktuális pozíció tárolásáért felelős részeket. Indítsuk el, illetve állítsuk le a frissítést amikor szükséges, és implementáljuk a megfelelő closure-t a pozíció frissítéshez!
 
 ```swift
 // MARK: - View Lifecycle
@@ -160,12 +165,23 @@ override func viewWillDisappear(_ animated: Bool) {
 }
 ```
 
-> Ahhoz, hogy a koordinátákat ténylegesen fel is küldjük a szervernek, a `MessagesViewController`ben egészítsük ki a `composeMessageViewControllerDidSend(_:)` metódust a koordinátánk felküldésével!
+Ahhoz, hogy a koordinátákat ténylegesen fel is küldjük a szervernek, ki kell egészítenünk a `Message` `struct`unkat, illetve a `MessagesViewController`ben a `composeMessageViewControllerDidSend(_:)` metódusban is be kell mapelnünk a koordinátákat! 
+
+```swift
+  ...
+  var latitude: Double?
+  var longitude: Double?
+  ...
+
+  case latitude
+  case longitude
+  ...
+```
 
 ```swift
 if let location = viewController.location {
-  message["latitude"] = location.coordinate.latitude
-  message["longitude"] = location.coordinate.longitude
+  message.latitude = location.coordinate.latitude
+  message.longitude = location.coordinate.longitude
 }
 ```
 
@@ -174,16 +190,18 @@ if let location = viewController.location {
 ###  `MapView` megjelenítés <a id="mapview-megjelnites"></a>
 > Hogy meg is tudjuk nézni az egyes, helyhez kötött üzeneteket, hozzunk létre egy `MapViewController` nevű osztályt, ami a `UIViewController`ből származik.
 
-<!--  -->
-> A `Main.storyboard`ban tegyünk a `MapViewController` `view`-jába egy teljes nézetet betöltő `MKMapView`-t, majd kössük be egy `Outlet`tel a `MapViewController`be **mapView** néven.
+> A `Main.storyboard`ban a `Map` jelenetnek állítsuk be a az `Identity inspector`ban a *Class* attribútumát `MapViewController`re!
 
-![](img/03_mapview_vc.png) ![](img/04_mapview_object.png)
+<!--  -->
+> `AutoLayout` kényszerek segítségével tegyünk a `MapViewController` `view`-jába egy teljes nézetet betöltő `MKMapView`-t, majd kössük be egy `Outlet`tel a `MapViewController`be **mapView** néven.
+
+![](img/03_mapview_vc.png)
 
 > Ne felejtsük el az újonnan hozzáadott `MKMapView`-nak beállítani a tartalmazó `ViewController`t, mint delegate-et!
 
-![](img/05_mapview_delegate.png)
+<img src="img/04_mapview_delegate.png" alt="04" style="width: 33%;"/>
 
-> Miután ez megvan, térjünk vissza az osztály forrásához, importáljuk a `MapKit` modult! Adjunk továbbá hozzá egy property-t, ami majd a megjelenítendő üzeneteinket fogja tartalmazni,  illetve jelezzük, hogy meg fogjuk valósítani az `MKMapViewDelegate`-et (`extension`)!
+> Miután ez megvan, térjünk vissza az osztály forrásához és importáljuk a `MapKit` modult! Adjunk továbbá hozzá egy property-t, ami majd a megjelenítendő üzeneteinket fogja tartalmazni,  illetve jelezzük, hogy meg fogjuk valósítani az `MKMapViewDelegate`-et (`extension`)!
 
 ```swift
 import MapKit
@@ -192,7 +210,8 @@ import UIKit
 class MapViewController: UIViewController {
 
   @IBOutlet weak var mapView: MKMapView!
-  var messages = [Any]()
+  
+  private var messages = [Message]()
 
 }
 
@@ -201,29 +220,25 @@ extension MapViewController: MKMapViewDelegate {
 }
 ```
 
-> A `Main.storyboard`ban hozzunk létre egy **MapSegue** nevű **Show** `segue`-t, amivel a **Map** gombra kattintva betölthetjük a térképet. A navigation bar *title*-je legyen **Map**!
+> Teszteljük az alkalmazást!
 
-<!--  -->
-> Ezután menjünk át a `MessagesViewController`be és készítsük fel a térkép betöltésére: egészítsük ki a `prepare(for:sender:)` metódust!
+Látható, hogy a térkép betöltődött, ugyanakkor nincs rajta semmi. Ahhoz, hogy bármit is meg tudjunk jeleníteni, szükségünk van az üzenetekre. Ezek ugyanazok az üzenetek, amiket a `Messages` tabon is láthatunk, így egy komolyabb alkalmazásban valamilyen központi helyen tárolnánk ezeket, pl.: `CoreData`, `Realm`, stb. A laboron most azt fogjuk csinálni, hogy a `Map` tabra navigáláskor minden alkalommal le fogjuk tölteni a friss üzeneteket és azokat jelenítjük csak meg, amikben vannak koordináták is. (Most jön jól, hogy a hálózati hívások ki lettek szervezve, nem kell kódot duplikálni.)
+
+> Töltsük le az üzeneteket a `NetworkHelper` segítségével!
 
 ```swift
-override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-  if segue.identifier == "ComposeMessageSegue" {
-    let vc = segue.destination as? ComposeMessageViewController
-    vc?.delegate = self
-  }
-  else if segue.identifier == "MapSegue" {
-    let vc = segue.destination as? MapViewController
-    vc?.messages = messages
+override func viewWillAppear(_ animated: Bool) {
+  super.viewWillAppear(animated)
+  
+  NetworkHelper.downloadMessages { messages in
+    self.messages = messages
   }
 }
 ```
 
-> Teszteljük az alkalmazást!
+A sikeres letöltés után már minden üzenet a birtokunkban lesz. Ahhoz, hogy ezeket meg is tudjuk jeleníteni a térképen egy saját osztállyal meg kell valósítani az `MKAnnotation` *protocol*t.
 
-Látható, hogy a térkép betöltődött, ugyanakkor nincs rajta semmi.
-
-> Ezt megoldandó, hozzunk létre egy új `NSObject`ből leszármazó osztályt, `MessageAnnotation` névvel, ami megvalósítja az `MKAnnotation` protokolt!
+> Hozzunk tehát létre egy új, `NSObject`ből származó osztályt `MessageAnnotation` névvel, ami megvalósítja az `MKAnnotation` *protocol*t!
 
 ```swift
 import MapKit
@@ -243,27 +258,37 @@ class MessageAnnotation: NSObject {
 
 }
 
-extension MessageAnnotation: MKAnnotation { }
+extension MessageAnnotation: MKAnnotation {}
 ```
 
-> Ha ez kész, akkor térjünk vissza a `MapViewController`be és tegyük lehetővé, hogy a térképen megjelenjenek az üzenetek!
-
-<!--  -->
-> Először is adjuk hozzá az üzeneteket a térképhez `annotation` formában!
+> Ha ez kész, akkor térjünk vissza a `MapViewController`be és azokra az üzenetekre, ahol vannak koordináta adatok, hozzunk létre új `MessageAnnotation`öket.
 
 ```swift
-// MARK: - View Lifecycle
+override func viewWillAppear(_ animated: Bool) {
+  super.viewWillAppear(animated)
+  
+  NetworkHelper.downloadMessages { messages in
+    self.messages = messages
 
-override func viewDidLoad() {
-  super.viewDidLoad()
+    self.messages.filter { return ($0.longitude != nil) && $0.latitude != nil }.forEach { message in
+      let coordinate = CLLocationCoordinate2D(latitude: message.latitude!, longitude: message.longitude!)
+      let title = "\(message.recipient) \(message.sender)"
+      let subtitle = message.topic
+      
+      let annotation = MessageAnnotation(coordinate: coordinate, title: title, subtitle: subtitle)
+ 
+      self.mapView.addAnnotation(annotation)
+    }
+  }
+}
+```
 
-  for case let message as [String: Any] in messages {
-    let coordinate = CLLocationCoordinate2D(latitude: message["latitude"] as! Double, longitude: message["longitude"] as! Double)
-    let title = "\(message["to_user"] as! String) \(message["from_user"] as! String)"
-    let subtitle = message["topic"] as! String
+> Azért, hogy ugyanarra a `Map View`-ra ne rakjuk ki ugyanazokat az üzeneteket minden alkalommal amikor idenavigálunk, szedjük le őket amint elhagyjuk a jelenetet. (Itt is elegánsabb lenne a valóságban a központi adatbázisból szedett üzenetek közül mindig csak az újakat rárakni a térképre és akkor nem kéne semmit levenni.)
 
-    let annotation = MessageAnnotation(coordinate: coordinate, title: title, subtitle: subtitle)
-    mapView.addAnnotation(annotation)
+```swift
+override func viewWillDisappear(_ animated: Bool) {
+  mapView.annotations.forEach { annotation in
+    self.mapView.removeAnnotation(annotation)
   }
 }
 ```
@@ -274,30 +299,27 @@ override func viewDidLoad() {
 > Az annotációk mellett adjunk hozzá egy törtvonalat (`MKPolyLine`) is a térképhez úgy, hogy minden üzenet legyen egymás után sorban összekötve. Ehhez először hozzunk létre egy koordinátákat tartalmazó tömböt, amivel létrehozzuk a törtvonalat, majd adjuk hozzá a törtvonalat a `mapView`-hoz, mint *overlay*!
 
 ```swift
-// MARK: - View Lifecycle
-
-override func viewDidLoad() {
-  super.viewDidLoad()
-
-  var coordinates = [CLLocationCoordinate2D]()
-
-  for case let message as [String: Any] in messages {
-    guard let latitude = message["latitude"] as? Double, latitude != 0, let longitude = message["longitude"] as? Double, longitude != 0 else {
-      continue
+override func viewWillAppear(_ animated: Bool) {
+  super.viewWillAppear(animated)
+  
+  NetworkHelper.downloadMessages { messages in
+    self.messages = messages
+    
+    var coordinates = [CLLocationCoordinate2D]()
+    self.messages.filter { return ($0.longitude != nil) && $0.latitude != nil }.forEach { message in
+      let coordinate = CLLocationCoordinate2D(latitude: message.latitude!, longitude: message.longitude!)
+      let title = "\(message.recipient) \(message.sender)"
+      let subtitle = message.topic
+      
+      let annotation = MessageAnnotation(coordinate: coordinate, title: title, subtitle: subtitle)
+      self.mapView.addAnnotation(annotation)
+      
+      coordinates.append(coordinate)
     }
-
-    let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-    let title = "\(message["to_user"] as! String) \(message["from_user"] as! String)"
-    let subtitle = message["topic"] as! String
-
-    let annotation = MessageAnnotation(coordinate: coordinate, title: title, subtitle: subtitle)
-    mapView.addAnnotation(annotation)
-
-    coordinates.append(coordinate)
+    
+    let polyline = MKPolyline(coordinates: coordinates, count: coordinates.count)
+    self.mapView.add(polyline)
   }
-
-  let polyline = MKPolyline(coordinates: &coordinates, count: coordinates.count)
-  mapView.add(polyline)
 }
 ```
 
@@ -317,7 +339,7 @@ func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayR
 }
 ```
 
-Látható, hogy most már szépen megjelennek az üzenetek és az azokat összekötő vonal, ugyanakkor nem tudjuk betölteni a teljes tartalmukat.
+Látható, hogy most már szépen megjelennek az üzenetek és az azokat összekötő vonal.
 
 > Ehhez valósítsuk meg a következő delegate metódust, aminek a segítségével testreszabhatjuk a megjelenő annotation kinézetét és viselkedését!
 
@@ -325,23 +347,23 @@ Látható, hogy most már szépen megjelennek az üzenetek és az azokat összek
 func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
   if annotation is MessageAnnotation {
     let reusableId = "MessangerAnnotationID"
-    var pinAnnotationView = mapView.dequeueReusableAnnotationView(withIdentifier: reusableId) as? MKPinAnnotationView
-
-    if pinAnnotationView == nil {
-      pinAnnotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reusableId)
-      pinAnnotationView?.pinTintColor = UIColor.green
-      pinAnnotationView?.canShowCallout = true
-
+    var markerAnnotationView = mapView.dequeueReusableAnnotationView(withIdentifier: reusableId) as? MKMarkerAnnotationView
+    
+    if markerAnnotationView == nil {
+      markerAnnotationView = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: reusableId)
+      markerAnnotationView?.markerTintColor = UIColor.green
+      markerAnnotationView?.canShowCallout = true
+      
       let calloutButton = UIButton(type: .detailDisclosure)
-      pinAnnotationView?.rightCalloutAccessoryView = calloutButton
+      markerAnnotationView?.rightCalloutAccessoryView = calloutButton
     }
     else {
-      pinAnnotationView?.annotation = annotation
+      markerAnnotationView?.annotation = annotation
     }
-
-    return pinAnnotationView
+    
+    return markerAnnotationView
   }
-
+  
   return nil
 }
 ```
@@ -395,6 +417,11 @@ func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, callou
 
 ## Önálló feladatok <a id="onallo-feladatok"></a>
 
-1.  Az üzenetek mellett jelenítsük meg a saját pozíciónkat is a térképen!
-1.  Az annotation `leftCalloutAccessoryView`-jában jelenítsük meg az üzenethez tartozó képet! (A kép letöltését érdemes a `mapView(:didSelect:)`delegate metódusban elindítani.)
-1.  Módosítsunk a vonal kirajzolásán úgy, hogy azok az üzenetek legyenek összekötve, akiknek a szerzői üzentek már a másik félnek. (Több vonalra lesz szükség.)
+-  Az üzenetek mellett jelenítsük meg a saját pozíciónkat is a térképen!
+-  Az annotation `leftCalloutAccessoryView`-jában jelenítsük meg az üzenethez tartozó képet! 
+    - A kép letöltését érdemes a `mapView(:didSelect:)`delegate metódusban elindítani.
+    - Jó ötlet lehet a `MessageAnnotation` osztályba bevenni a hozzá tartozó üzenetet.
+-  Módosítsunk a vonal kirajzolásán úgy, hogy azok az üzenetek legyenek összekötve, akiknek a szerzői üzentek már a másik félnek.
+    - `A` és `B` esetén volt már tehát `A` --> `B` és `B` --> `A` üzenet is.
+    - Több vonalra lesz szükség.
+
