@@ -47,16 +47,16 @@ class LocationManager: NSObject {
 
   var lastLocation: CLLocation?
   private var timeoutTimer: Timer?
-  private var locationUpdated: (()->())!
+  private var locationUpdated: (() -> Void)!
   private var locationManager: CLLocationManager!
 
 }
 ```
 
-A pozíció lekérdezés indítását a következő metódus végzi. A `CLLocationManager` létrehozása és felparaméterezése után indít egy `Timer`, aminek a segítségével `15` másodperc után leállítjuk a pozíció lekérdezése (ha nem történik érdemi esemény).
+A pozíció lekérdezés indítását a következő metódus végzi. A `CLLocationManager` létrehozása és felparaméterezése után indít egy `Timer`t, melynek segítségével `15` másodperc után leállítjuk a pozíció lekérdezését (ha nem történik érdemi esemény).
 
 ```swift
-func startLocationManager(updated: @escaping ()->()) {
+func startLocationManager(updated: @escaping () -> Void) {
 
   locationUpdated = updated
 
@@ -71,7 +71,7 @@ func startLocationManager(updated: @escaping ()->()) {
 }
 ```
 
-> Imlementáljuk a `Timer` lejártakor meghívódó metódust!
+> Implementáljuk a `Timer` lejártakor meghívódó metódust!
 
 ```swift
 @objc func stopLocationManager() {
@@ -149,10 +149,10 @@ private var locationManager = LocationManager()
 override func viewWillAppear(_ animated: Bool) {
   super.viewWillAppear(animated)
 
-  locationManager.startLocationManager {
-    if let location = self.locationManager.lastLocation {
-      self.location = location
-      self.coordinateLabel.text = "\(location.coordinate.latitude) " + "\(location.coordinate.longitude)"
+  locationManager.startLocationManager { [weak self] in
+    if let location = self?.locationManager.lastLocation {
+      self?.location = location
+      self?.coordinateLabel.text = "\(location.coordinate.latitude) " + "\(location.coordinate.longitude)"
     }
   }
   coordinateLabel.text = "Pending"
@@ -165,7 +165,7 @@ override func viewWillDisappear(_ animated: Bool) {
 }
 ```
 
-Ahhoz, hogy a koordinátákat ténylegesen fel is küldjük a szervernek, ki kell egészítenünk a `Message` `struct`unkat, illetve a `MessagesViewController`ben a `composeMessageViewControllerDidSend(_:)` metódusban is be kell mapelnünk a koordinátákat! 
+Ahhoz, hogy a koordinátákat ténylegesen fel is küldjük a szervernek, először is ki kell egészítenünk a `Message` `struct`unkat.
 
 ```swift
   ...
@@ -177,6 +177,8 @@ Ahhoz, hogy a koordinátákat ténylegesen fel is küldjük a szervernek, ki kel
   case longitude
   ...
 ```
+
+Majd a `MessagesViewController`ben a `composeMessageViewControllerDidSend(_:)` metódusban is fel kell vennünk a koordinátákat! 
 
 ```swift
 if let location = viewController.location {
@@ -190,7 +192,7 @@ if let location = viewController.location {
 ###  `MapView` megjelenítés <a id="mapview-megjelnites"></a>
 > Hogy meg is tudjuk nézni az egyes, helyhez kötött üzeneteket, hozzunk létre egy `MapViewController` nevű osztályt, ami a `UIViewController`ből származik.
 
-> A `Main.storyboard`ban a `Map` jelenetnek állítsuk be a az `Identity inspector`ban a *Class* attribútumát `MapViewController`re!
+> A `Main.storyboard`ban a `Map` jelenetnek állítsuk be az `Identity inspector`ban a *Class* attribútumát `MapViewController`re!
 
 <!--  -->
 > `AutoLayout` kényszerek segítségével tegyünk a `MapViewController` `view`-jába egy teljes nézetet betöltő `MKMapView`-t, majd kössük be egy `Outlet`tel a `MapViewController`be **mapView** néven.
@@ -242,7 +244,6 @@ A sikeres letöltés után már minden üzenet a birtokunkban lesz. Ahhoz, hogy 
 
 ```swift
 import MapKit
-import UIKit
 
 class MessageAnnotation: NSObject {
 
@@ -287,6 +288,7 @@ override func viewWillAppear(_ animated: Bool) {
 
 ```swift
 override func viewWillDisappear(_ animated: Bool) {
+  super.viewWillDisappear(animated)
   mapView.annotations.forEach { annotation in
     self.mapView.removeAnnotation(annotation)
   }
@@ -327,15 +329,15 @@ override func viewWillAppear(_ animated: Bool) {
 
 ```swift
 func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-  if overlay is MKPolyline {
-    let line = MKPolylineRenderer(overlay: overlay)
-    line.strokeColor = UIColor.blue
-    line.lineWidth = 2
-
-    return line
+  guard overlay is MKPolyline else {
+    return MKPolylineRenderer()
   }
-
-  return MKPolylineRenderer()
+  
+  let line = MKPolylineRenderer(overlay: overlay)
+  line.strokeColor = .blue
+  line.lineWidth = 2
+  
+  return line
 }
 ```
 
@@ -351,13 +353,12 @@ func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnota
     
     if markerAnnotationView == nil {
       markerAnnotationView = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: reusableId)
-      markerAnnotationView?.markerTintColor = UIColor.green
+      markerAnnotationView?.markerTintColor = .green
       markerAnnotationView?.canShowCallout = true
       
       let calloutButton = UIButton(type: .detailDisclosure)
       markerAnnotationView?.rightCalloutAccessoryView = calloutButton
-    }
-    else {
+    } else {
       markerAnnotationView?.annotation = annotation
     }
     

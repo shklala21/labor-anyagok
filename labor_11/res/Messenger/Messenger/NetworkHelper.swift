@@ -9,12 +9,11 @@ import UIKit
 
 class NetworkHelper {
   
-  static var urlSession: URLSession = {
+  private static var urlSession: URLSession = {
     let sessionConfiguration = URLSessionConfiguration.default
     return URLSession(configuration: sessionConfiguration, delegate: nil, delegateQueue: OperationQueue.main)
   }()
-  
-  static var imageCache = [URL: UIImage]()
+  private static var imageCache = [URL: UIImage]()
   
   static func downloadMessages(completion: @escaping ([Message])->()) {
     let url = URL(string: "http://atleast.aut.bme.hu/ait-ios/messenger/messages")

@@ -9,7 +9,7 @@ import Foundation
 
 struct Message: Codable {
   
-    let sender: String
+  let sender: String
   let recipient: String
   let topic: String
   var image: String?
@@ -21,7 +21,7 @@ struct Message: Codable {
     self.topic = topic
     imageUrl = nil
   }
-
+  
   enum CodingKeys: String, CodingKey {
     case sender = "from_user"
     case recipient = "to_user"
@@ -29,5 +29,5 @@ struct Message: Codable {
     case image
     case imageUrl = "imageurl"
   }
-
+  
 }
