@@ -29,7 +29,7 @@ Alkalmazásunk a [fortepan.hu](http://fortepan.hu)-ról fog letölteni közepes,
 <img src="img/01_deployment_info.png" alt="01" style="width: 66%;"/>
 
 ### `ViewController` inicializálása kódból <a id="viewcontroller-inicializalasa-kodbol"></a>
-> Egészítsük ki a `ViewController.swift`et! Hozzunk létre egy **imageView** nevű *UIImageView* property-t, hogy szükség esetén le tudjuk cserélni a benne lévő képet, illetve egy **contentUrl** és egy **imageUrl** property-t *URL* típussal.
+> Egészítsük ki a `ViewController.swift`et! Hozzunk létre egy **imageView** nevű *UIImageView* típusú property-t, hogy szükség esetén le tudjuk cserélni a benne lévő képet, illetve egy **contentUrl** és egy **imageUrl** property-t *URL* típussal.
 
 ```swift
 // MARK: - Properties
@@ -216,7 +216,7 @@ class MenuViewController: UITableViewController {
 }
 ```
 
-> Nyissuk meg a `Main.storyboard`ot és adjunk hozzá egy `UITableViewController`t! Osztályának a `MenuViewController`t állítsuk be! 
+> Nyissuk meg a `Main.storyboard`ot, töröljük ki a benne található jelenetet, majd adjunk hozzá egy `UITableViewController`t! Osztályának a `MenuViewController`t állítsuk be! 
 
 <!--  -->
 > A `Table View`-t kiválasztva állítsuk át a *Content*et **Static Cells**-re, majd adjunk hozzá `3` **Basic** stílusú cellát ahogy a képen is látható! 
@@ -260,11 +260,11 @@ Ha mindent jól csináltunk, akkor valami ehhez hasonló elrendezést kell kapnu
 
 > Teszteljük az alkalmazást!
 
-Azt láthatjuk, hogy hiába van beállítva a `Main.storyboard`ban az `Is Initial View Controller` property, továbbra is a `ViewController` jön csak be, nem a nagy nehezen összerakott menü. 
+Azt láthatjuk, hogy hiába van beállítva a `Main.storyboard`ban az `Is Initial View Controller` property, továbbra is a kezdeti `ViewController` jön csak be, nem a nagy nehezen összerakott menü. 
 
 > Ahhoz, hogy a Storyboard érvényre jusson, az `AppDelegate.swift`ben az `application(_:didFinishLaunchingWithOptions:)` metódusból a `return true` sor kivételével töröljünk mindent, valamint a labor elején a `Deployment Info`nál kitörölt `Main Interface` értékét is állítsuk vissza **Main.storyboard**ra!
 
-Ezek után a menünek már szépen működnie kell, viszont a képek nem jelennek meg.
+Ezek után a menünek már szépen működnie kell, a képek viszont még nem jelennek meg.
 
 > Ezt orvosolandó, a `ViewController.swift`ben készítsünk egy `setupUrls()` segédfüggvényt!
 
@@ -306,6 +306,8 @@ override func viewDidLoad() {
 }
 ```
 
+> Próbáljuk ki az alkalmazást!
+
 ### MBProgressHUD <a id="mbprogresshud"></a>
 
 Most, hogy már van mit letölteni, adjuk hozzá a projekthez az `MBProgressHUD` third-party könyvtárat, amivel különböző *progress bar*okat tudunk megjeleníteni.
@@ -316,10 +318,9 @@ Most, hogy már van mit letölteni, adjuk hozzá a projekthez az `MBProgressHUD`
 <!--  -->
 > Keressük meg és adjuk hozzá a projekthez az `MBProgressHUD.h` és az `MBProgressHUD.m` fájlokat (egy **MBProgressHUD** groupba)!
 
-Mivel ezek `Objective-C`-ben írt állományok, a rendszer automatikusan felajánlja, hogy készít hozzájuk *bridging header*t.
+Mivel ezek `Objective-C`-ben írt állományok, `Swift` kódból történő használatukhoz ún. *bridging header*re van szükség. A segítségével importált állományok elérhetőek és használhatóak lesznek a `Swift` fájlokból.
 
-> Ha ez nem történnne meg, akkor hozzunk létre egyet manuálisan!
-> `File/New/File/Source/Header file`: `PictureDownload-Bridging-Header.h` néven hozzunk létre egy fájlt, majd menjünk át a projektbeállításokhoz, azon belül is `Build Settings`-hez és állítsuk be az `Objective-C Brigding Header`t: **`$(PROJECT)/PictureDownload-Bridging-Header.h`** 
+> Amennyiben az `Xcode` nem ajánlja fel a *bridging header* létrehozását, készítsük el manuálisan! `PictureDownload-Bridging-Header.h` néven hozzunk létre egy *Header* fájlt, majd menjünk át a projektbeállításokhoz, azon belül is `Build Settings`-hez és állítsuk be az `Objective-C Brigding Header`t: **`$(PROJECT)/PictureDownload-Bridging-Header.h`** 
 
 <img src="img/14_bridging_header.png" alt="14" style="width: 75%;" />
 
@@ -390,6 +391,8 @@ sudo gem install cocoapods
 
 <img src="img/17_podfile_location.png" alt="17" style="width: 66%;" />
 
+> Módosítsuk tartalmát a következőre:
+
 ```ruby
 platform :ios, '11.0'
 use_frameworks!
@@ -417,7 +420,7 @@ Valami ilyesmit kell látnunk.
 
 > Nyissuk meg a `ViewController.swift` állományunkat és kommentezzük ki a korábban írt `viewWillAppear(_:)` metódust! 
 
-Ezzel sajnos azt értük el, hogy már nem töltődnek be automatikusan a járművek képei, amikor a nézetet megjelenítjük. 
+Ezzel sajnos azt értük el, hogy már nem töltődnek be automatikusan a járművek képei, amikor a nézetet megjelenítjük. A következőkben módosítjuk a `ViewController`t, hogy a kép letöltését (és cache-elését) a `Kingfisher` végezze. 
 
 > A `Kingfisher`t használat előtt importáljuk!
 
