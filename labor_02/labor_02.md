@@ -1,10 +1,5 @@
 # `iOS` alapú szoftverfejlesztés - Labor `02`
 
-## A laborsegédletet összeállította
-* Kelényi Imre - imre.kelenyi@aut.bme.hu
-* Kántor Tibor - tibor.kantor@autsoft.hu
-* Krassay Péter - peter.krassay@autsoft.hu
-
 ## A labor témája
 * [`Swift` alapismeretek](#swift-alapismeretek)
     * [Osztályok definiálása és példányosítása](#osztalyok-def-es-peld)
@@ -16,7 +11,7 @@
 * [Önálló feladatok](#onallo)
 
 ### Cheat sheets
-- [https://github.com/iwasrobbed/Swift-CheatSheet](https://github.com/iwasrobbed/Swift-CheatSheet) (még nem frissült `Swift 4.0`-ra)
+- [https://github.com/iwasrobbed/Swift-CheatSheet](https://github.com/iwasrobbed/Swift-CheatSheet)
 - [https://www.raywenderlich.com/73967/swift-cheat-sheet-and-quick-reference](https://www.raywenderlich.com/73967/swift-cheat-sheet-and-quick-reference)
 
 ### *Style guide*
@@ -126,12 +121,20 @@ Ha `nil` értékű `Optional`t próbálunk kicsomagolni, az alkalmazás el fog s
 hero2?.level = 30
 ```
 
-#### `if let binding`
+#### `Optional Binding`
+##### `if let`
 
 ```swift
 if let unwrappedHero = hero2 {
   unwrappedHero.level = 30
 }
+```
+
+##### `guard let`
+
+```swift
+guard let unwrappedHero = hero2 else { return }
+unwrappedHero.level = 30
 ```
 
 ### Generikus tárolók, metódusok és osztályhierarchiák <a id="gen"></a>
@@ -266,7 +269,6 @@ var power: Int {
 
 ```swift
 class Hero: GameCharacter {
-
   enum WeaponType {
     case laserCannon
     case spoon
@@ -303,6 +305,7 @@ override var power: Int {
 protocol Fightable {
   var isDead: Bool { get }
   var power: Int { get }
+  
   func takeDamage(from enemy: Fightable)
 }
 ```
@@ -311,7 +314,6 @@ protocol Fightable {
 
 ```swift
 func fight(fighter1: Fightable, fighter2: Fightable) -> Fightable? {
-
   while !fighter1.isDead && !fighter2.isDead {
     fighter1.takeDamage(from: fighter2)
     fighter2.takeDamage(from: fighter1)
@@ -352,7 +354,7 @@ extension GameCharacter: Fightable {
 
 ```swift
 func takeDamage(from enemy: Fightable) {
-  let attackRating = Double(arc4random_uniform(10) + 1) / 10
+  let attackRating = Double.random(in: 0...10) / 10
   hitPoints -= Int(Double(enemy.power) * attackRating)
 }
 ```
@@ -371,10 +373,16 @@ Mindez még az eltérő bitszámú vagy nemnegatív/előjeles egész számokra i
 
 ---
 
-*Véletlen egész számok generálásához használjuk az `arc4random_uniform(max)` függvényt, mely `[0..max)` intervallumban fog visszaadni véletlen egész számokat.*
+*Véletlen számok generálásához használjuk az `T.random(in: Range<T>)` függvényt, mely a [megadott intervallumban](https://developer.apple.com/documentation/swift/range) fog visszaadni véletlen `T` típusú számokat.*
 
 ---
 
 > Játsszunk le néhány ütkezetet különböző `Monster` és `Hero` példányok között!
 
 ![](img/01_macskafogo.png)
+
+## A laborsegédletet összeállította
+* Varga Domonkos - varga.domonkos@autsoft.hu
+* Krassay Péter - peter.krassay@autsoft.hu
+* Kántor Tibor - tibor.kantor@autsoft.hu
+* Kelényi Imre - imre.kelenyi@aut.bme.hu
