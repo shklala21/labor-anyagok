@@ -9,6 +9,7 @@
     * [Protokollok](#protokollok)
     * [A `Swift` erősen típusos (`strongly typed`) nyelv](#strongly-typed)
 * [Önálló feladatok](#onallo)
+* [Szorgalmi feladatok](#szorgalmi)
 
 ### Cheat sheets
 - [https://github.com/iwasrobbed/Swift-CheatSheet](https://github.com/iwasrobbed/Swift-CheatSheet)
@@ -368,7 +369,11 @@ Mindez még az eltérő bitszámú vagy nemnegatív/előjeles egész számokra i
 > * A szörnynek legyen egy neve (`name`), hogy fényes győzelme után büszkén a világba kiálthassa az eredményt.
 > * Rendelkezzen egy egész szám típusú `headCount` property-vel, mely a szörny, még meglévő fejeinek számát reprezentálja.
 > * Támadóereje (`power`) mindig az aktuális fejeinek száma szorozva `20`-al.
-> * Akkor hal meg ha már egy feje sem marad.
+
+## Szorgalmi feladatok <a id="szorgalmi"></a>
+> Folytassuk tovább az önálló feladatot az alábbiakkal:
+
+> * Akkor hal meg a szörny ha már egy feje sem marad.
 > * Mikor a szörnyet megtámadják, `power` / `10` eséllyel leesik egy feje (tehát `1`-es `power` esetén `10%`, `10`-es vagy nagyobb power esetén `100%`)
 
 ---

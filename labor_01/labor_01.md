@@ -26,7 +26,7 @@
     - [Gyakorlás](#git_playground)
     - [További segédletek](#git_readings)
 - [Labor feltöltése GitHub-ra](#git_upload)
-- [Extra feladatok](#extra-feladatok)
+- [Önálló feladatok](#extra-feladatok)
     - [`iPad` támogatás](#ipad)
 
 
@@ -464,7 +464,7 @@ git push
 
 Fontos az előbbi lépések és a `git` kezelésnek alapos ismerete, mert mind a laborok, mind a házifeladat leadása ezen keresztül történik. Nem megfelelő tudás esetén kötelezően ajánlott a fentebb leírt [Git alapismeretek](#git_tutorial) és [ajánlott linkek](#git_readings) tanulmányozása, vagy segítség kérése a laborvezetőktől.  
 
-## Extra feladatok (idő függvényében) <a id="extra-feladatok"></a>
+## Önálló feladatok (idő függvényében) <a id="extra-feladatok"></a>
 ### `iPad` támogatás <a id="ipad"></a>
 A labor elején létrehozott projekt alapértelmezetten `Universal` alkalmazásként jött létre. 
 
