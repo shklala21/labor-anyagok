@@ -1,20 +1,17 @@
 # `iOS` alapú szoftverfejlesztés - Labor `03`
 
-## A laborsegédletet összeállította
-* Kelényi Imre - imre.kelenyi@aut.bme.hu
-* Kántor Tibor - tibor.kantor@autsoft.hu
-* Krassay Péter - peter.krassay@autsoft.hu
-* Szücs Zoltán - szucs.zoltan@autsoft.hu
-
 ## A labor témája
 * [iCalculator](#icalculator)
     * [Alap nézetek használata](#alap-nezetek-hasznalata)
     * [`Outlet`ek és akció metódusok](#outletek-es-akcio-metodusok)
-* [Stack View](#stack-view)
+    * [Debugolás alapok](#debugolas-alapok)
+    * [Stack View](#stack-view)
 * [Önálló feladatok](#onallo)
     * [Több számológép művelet támogatása](#tobb-szamologep-muvelet)
+    * [Alkalmazás ikon beállítása](#app_icon)
+* [Szorgalmi feladatok](#szorgalmi)
     * [Korábbi számítások (*`History` nézet*)](#korabbi-szamitasok)
-    * [Extra: alkalmazás ikon](#extra)
+
 
 A labor során egy egyszerű számológép alkalmazást készítünk el, melyen keresztül megismerkedünk az `iOS`-es felhasználói felület készítésének alapjaival.
 
@@ -40,12 +37,16 @@ A labor során egy egyszerű számológép alkalmazást készítünk el, melyen 
 
 *A `Layout Traits`ben találhatjuk meg többek között a `Size Classes` `Trait`et, ami lehetővé teszi, hogy különféle képernyőméretekre (készülék kategóriákra) és tájolásokra (álló/fekvő) egyetlen nagy közös UI tervet készítsünk (egy `Storyboard`ot).*
 
-*Ez a `Trait Variations` felel meg *Xcode 9*-ben az `Adaptive Layout`nak, amivel később fogunk megismerkedni. Ha kikapcsoljuk, akkor a `Storyboard` azt feltételezi, hogy a felületet csak egyetlen "eszköz típusra" definiáljuk (pl. `iPhone`-ra).*
+*Ez a `Trait Variations` felel meg az `Adaptive Layout`nak, amivel később fogunk megismerkedni. Ha kikapcsoljuk, akkor a `Storyboard` azt feltételezi, hogy a felületet csak egyetlen "eszköz típusra" definiáljuk (pl. `iPhone`-ra).*
 
 *A `Safe Area Layout Guide`-ok a képernyő egy olyan területét határolják, melyet nem takar semmilyen rendszerhez tartozó elem, vagy egyéb tartalom. Az `iOS 11`-ben vezették be, a `Top` illetve `Bottom Layout Guide`-ok helyett.*
 
-<a id="alap-nezetek-hasznalata"></a>
-> Hozzunk létre a `Main.storyboard`ban, a `ViewController`en belül lévő `View`-ban **2 db** `UITextField`et, **2 db** `UILabel`t és **1 db** `UIButton`t.
+
+## Alap nézetek használata <a id="alap-nezetek-hasznalata"></a>
+
+> Hozzunk létre a `Main.storyboard`ban, a `ViewController`en belül lévő `View`-ban **2 db** `UITextField`et, **2 db** `UILabel`t és **1 db** `UIButton`t. Ezeket az elemeket `Object Library`ből érhetjük el.
+
+> <img src="img/26_object_library.png" alt="26" style="width: 50%;"/>
 
 > <img src="img/03_starter_ui.png" alt="03" style="width: 50%;"/>
 
@@ -71,7 +72,9 @@ Lehetőség van rá, hogy értelmes neveket adjunk az egyes felületelemeknek. A
 @IBOutlet weak var inputTextFieldA: UITextField!
 ```
 
-<a id="outletek-es-akcio-metodusok"></a>
+
+## `Outlet`ek és akció metódusok <a id="outletek-es-akcio-metodusok"></a>
+
 **Mi az `Outlet`?**
 *Property, amin keresztül hivatkozhatunk egy, a grafikus szerkesztőben (`Interface Builder`) létrehozott, felületi elemre.*
 
@@ -164,13 +167,49 @@ Ahhoz, hogy a gyökér nézet megérintését le tudjuk kezelni, le kell cserél
 *He szeretnénk, hogy eltűnjön a már beírt szöveg a `Text Field` kiválasztásakor, akkor kapcsoljuk be a `Clear when editing begins` opciót az `Attributes Inspector`ban. Itt adhatjuk meg azt is, hogy a törlés (`Clear`) gomb mikor jelenjen meg.*
 ![](img/11_clear_text_field.png)
 
+
+## Debugolás alapok <a id="debugolas-alapok"></a>
+*Debug breakpointok* a kódsorok elé klikkelve hozhatók létre, illetve itt kapcsolhatók ki/be. 
+![](img/29_add_breakpoint.png)
+
+Próbáljuk ki a *breakpointot*. Futtassuk az alkalmazást és léptessük, hogy lássuk ahogy példányosodnak és értéket kapnak az objektumok. 
+![](img/30_test_breakpoint.png)
+
+Kapcsoljuk ki a hozzáadott *breakpointot* és vezessünk be egy hibát a kódba, adjuk hozzá a `UITextField`et saját magához (nyilván ez helytelen művelet).
+
+```swift
+override func viewDidLoad() {
+super.viewDidLoad()
+
+inputTextFieldA.addSubview(inputTextFieldA)
+inputTextFieldA.text = "13"
+}
+```
+
+> Indítsuk el az alkalmazást és figyeljük meg milyen, amikor egy `Exception` keletkezik.
+
+Először a konzolt keressük meg és ezen belül görgessünk oda, ahol az exception leírása olvasható (ez mindig a stack trace előtt található, a konzol log vége felé).
+
+`'2018-08-31 10:40:26.637447+0200 iCalculator[11108:797169] *** Terminating app due to uncaught exception 'NSInvalidArgumentException', reason: 'Can't add self as subview'`
+
+A leírás itt elég jó, de azért próbáljuk megnézni pontosan melyik kódsor is dobta hibát. Nyissuk meg a `Debug Navigator`t, ha nem lenne nyitva (`⌘+7`). A probléma, hogy az `AppDelegate` van megjelölve mint az utolsó lefutó kódot tartalmazó osztály. Ez azért van, mert alapesetben, kivételek keletkezése után, ha azt a kivételt nem kapja el semmilyen köztes kód, végül itt, az `AppDelegate` egy (általunk nem látható) kódrészlete lövi ki a szálat.
+![](img/31_breakpoint.png)
+
+Szerencsére van lehetőség rá, hogy az exception keletkezéséhez legközelebbi kódrészletnél álljon meg a futás, ehhez Egy `Exception Breakpoint`ot kell létrehozni (ezt minden projektben egyetlen egyszer kell csak megtenni).
+![](img/32_new_breakpoint.png)
+
+> Futtassuk újra az alkalmazást és most már láthatjuk, hogy hol is keletkezett a hiba. Azonban érdemes azt is megfigyelni, hogy ilyenkor még nem jelenik meg a konzolon az exception leírása. Ahhoz, hogy azt megkapjuk "tovább kell engedni" a debuggert a `Continue Program Execution` gomb néhányszori megnyomásával (gyakran nem elég egyszer megnyomni).
+![](img/33_xcode_continue_program_execution.png)
+
+
 ## Stack View <a id="stack-view"></a>
 
 Ha most kipróbáljuk az alkalmazást egy, a grafikus tervezőfelülettel nem megegyező méretű szimulátoron, azt fogjuk tapasztalni, hogy a nézetek nem középre rendezve jelennek meg. Ennek oka, hogy jelenleg abszolút koordinátákkal adtuk meg a nézetek méretét és elhelyezkedését, ami nem változik ha eltérő méretű kijelzőt használunk.
 
 A legegyszerűbb megoldás az elemek dinamikus elrendezéséhez az `iOS 9`-ben debütáló `Stack View`. 
 
-> Válasszuk ki az összes nézetet, majd nyomjuk meg a `Stack` gombot a szerkesztő nézet jobb alsó sarkában! ![](img/12_stack_button.png)
+> Válasszuk ki az összes nézetet, majd nyomjuk meg a `Stack` gombot a szerkesztő nézet jobb alsó sarkában! 
+![](img/12_stack_button.png)
 
 Először valami hasonló, nem túl jól kinéző felületet fogunk látni.
 
@@ -249,11 +288,37 @@ operationSelector.selectedSegmentIndex = 0
 
 Ezek után már csak annyi dolgunk van, hogy a kiszámítást elindító gomb megnyomásakor meghívódó akció metódusban `operationType` tartalmának megfelelő műveletet végezzünk (itt is érdemes egy állapotgépet használni).
 
+## Alkalmazás ikon beállítása <a id="app_icon"></a>
+> Töltsük le a `res` mappában lévő [képet az alkalmazás ikonjáról](res/app-icon.png).  
+
+> Válasszuk ki a projekt fájlai közül az `Assets.xcassets` nevű asset katalógust.
+![](img/27_assets_xcasset.png)
+
+> Nyissuk meg az [alábbi linket](https://github.com/onmyway133/IconGenerator), töltsük le az ott található alkalmazást és kövessük az ott található utasításokat, kezdve az `Assets katalógusban` lévő `AppIcon` nevű asset törlésével.
+
+![](img/28_assets_appicon.png)
+
+---
+
+*Az asset katalógusok az alkalmazás képfájljainak csoportosítására szolgálnak. Egy `iOS` alkalmazásban egy képfájlból (ikonból) gyakran több különféle felbontású verzió is kell, ezeket az összetartozó képeket tudjuk hatékonyan együtt kezelni az asset katalógusok segítségével. 
+Pl. az `AppIcon` azonosítóhoz hozzárendelhetjük a menüben (Springboard) megjelenő `120x120` pixeles változatot, illetve a keresésnél (Spotlight) megjelenő kisebb változatokat is.
+Ha nem adunk meg az egyik típushoz ikont, akkor a rendszer megpróbálja azt a megadott ikonból legenerálni (átméretezéssel), de ez a legtöbb esetben nem fog hibátlan eredménnyel járni.*
+
+---
+
+---
+
+*Érdemes megjegyezni, hogy `iPhone`-on és `iPad`en eltérő méretű az alkalmazások ikonja.*
+
+---
+
+> A szimulátorban ellenőrizzük, hogy megjelenik-e az új alkalmazás ikon!
+
+# Szorgalmi feladatok <a id="szorgalmi"></a>
+
 ## Korábbi számítások (*`History` nézet*) <a id="korabbi-szamitasok"></a>
 
-> Adjunk hozzá egy `Text View`-t a `Stack View` aljához, majd hozzunk létre hozzá egy `IBOutlet`et a `View Controller` interfészében (pl. `historyView` névvel)!
-
-> ![](img/23_text_view.png)
+> Adjunk hozzá egy `Text View`-t a `Stack View` aljához, majd hozzunk létre hozzá egy `IBOutlet`et a `View Controller` interfészében (pl. `historyView` névvel)! A `Text View` csak olvasható legyen.
 
 > <img src="img/24_history_view.png" alt="24" style="width: 50%;"/>
 
@@ -261,17 +326,14 @@ Ezek után már csak annyi dolgunk van, hogy a kiszámítást elindító gomb me
 
 *A `Text View` legfőbb különbségei `UILabel`hez képest, hogy szerkeszthető és a kilógó szöveg görgethető.*
 
-> Állítsuk a `Text View`-t csak olvasható üzemmódba (`historyView.isEditable = false`)!
-
 > Módosítsuk az eredményeket kiszámító kódot oly módon, hogy az aktuális számításról bekerüljön egy sor a `Text View`-ba, pl. `13.00 + 13.00 = 26.00`!
 
 > ![](img/25_history_view.png)
 
-Tippek:
+## A laborsegédletet összeállította
 
-* Allítsunk össze egy `String`et az új bejegyzéshez.
-* Allítsuk be a `Text View` `text` property-jének értékét oly módon, hogy az új bejegyzéshez hozzáillesztjük a `Text View` `text` property-jének korábbi értékét (`textView.text = újSzöveg + textView.text`).
-* Egy `enum` rendelkezhet `String` `raw value`-val, és így rendelhetünk hozzá szöveges értéket.
-
-## Extra: alkalmazás ikon <a id="extra"></a>
-> Töltsük le, majd állítsuk be [az ikont](res/Icon-120.png)!
+* Varga Domonkos - varga.domonkos@autsoft.hu
+* Szücs Zoltán - szucs.zoltan@autsoft.hu
+* Krassay Péter - peter.krassay@autsoft.hu
+* Kántor Tibor - tibor.kantor@autsoft.hu
+* Kelényi Imre - imre.kelenyi@aut.bme.hu
