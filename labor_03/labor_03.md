@@ -131,7 +131,7 @@ override func viewDidLoad() {
 > Állítsuk át a `Storyboard`ban, a `Text Field`ek `Keyboard` attribútumát `Decimal Pad`ra. Ezzel elérjük, hogy egy csak számokat tartalmazó billentyűzet jelenjen meg!
 ![](img/08_decimal_number_pad.png)
 
-> Ezek után adjuk az `onCalculateButtonTouchUpInside` akció metódusunkhoz a következő két utasítás, melyek hatására el fog tűnni a billentyűzet a képernyőről (amennyiben éppen aktív/látható)!
+> Ezek után adjuk a `calculateButtonTouchUpInside` akció metódusunkhoz a következő két utasítás, melyek hatására el fog tűnni a billentyűzet a képernyőről (amennyiben éppen aktív/látható)!
 
 ```swift
 inputTextFieldA.resignFirstResponder()
@@ -156,10 +156,10 @@ Ahhoz, hogy a gyökér nézet megérintését le tudjuk kezelni, le kell cserél
 
 > ![](img/10_identity_inspector.png)
 
-> Ezek után a `Connections inspector`ban a `Touch Up Inside` eseményhez rendeljünk hozzá egy `onBackgroundTouchUpInside` nevű metódust!
+> Ezek után a `Connections inspector`ban a `Touch Up Inside` eseményhez rendeljünk hozzá egy `backgroundTouchUpInside` nevű metódust!
 
 ```swift
-@IBAction func onBackgroundTouchUpInside(_ sender: Any) {
+@IBAction func backgroundTouchUpInside(_ sender: Any) {
   view.endEditing(true)
 }
 ```
