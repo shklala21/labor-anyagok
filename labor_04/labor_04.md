@@ -1,11 +1,5 @@
 # `iOS` alapú szoftverfejlesztés - Labor `04`
 
-## A laborsegédletet összeállította
-* Kelényi Imre - imre.kelenyi@aut.bme.hu
-* Kántor Tibor - tibor.kantor@autsoft.hu
-* Krassay Péter - peter.krassay@autsoft.hu
-* Szücs Zoltán - szucs.zoltan@autsoft.hu
-
 ## A labor témája
 * [iPaint](#ipaint)
     * [Egyedi nézet osztály és rajzolás](#egyedi-nezet-osztaly-es-rajzolas)
@@ -13,8 +7,9 @@
     * [`Interface Builder` támogatás egyedi osztályokhoz](#IB-tamogatas-egyedi-osztalyhoz)
     * [Gesztusfelismerés és rajzolás](#gesztusfelismeres-es-rajzolas)
     * [Színválasztó nézet](#szinvalaszto-nezet)
-    * [Legutóbb rajzolt kör átméretezése](#legutobb-rajzolt-kor-atmeretezese)
 * [Önálló feladatok](#onallo-feladatok)
+    * [Legutóbb rajzolt kör átméretezése](#legutobb-rajzolt-kor-atmeretezese)
+* [Szorgalmi feladatok](#szorgalmi-feladatok)
     * [Ecsetméret állítása](#ecsetmeret-allitasa)
     * [Swipe to delete](#swipe-to-delete)
 
@@ -85,7 +80,7 @@ context?.strokeEllipse(in: ellipseRect)
 
 Ezen a laboron is csak abszolút koordinátákkal és méretekkel dolgozunk, vagyis csak azon a kijelzőméreten fog helyesen megjelenni a felhasználói felület, amire megszerkesztettük. Éppen ezért érdemes a teszteléshez `iPhone 8` szimulátort használni (ennek a méretére szerkesztjük a felületet a `Storyboard`ban).
 
-> Adjunk hozzá egy üres `View`-t a gyökérnézethez. Ez lesz a "rajzlapunk", ehhez a nézethez fogjuk majd hozzáadni a rajzolás során létrehozott gyereknézeteket. Érdemes a rajzlap nézet háttérszínét is megváltoztatni valami világos színre, hogy jobban elüssön a hátterétől.
+> Adjunk hozzá egy üres `View`-t a gyökérnézethez, majd igazitsuk a széleit a ViewController gyökérnézetének a széleihez. Ez lesz a "rajzlapunk", ehhez a nézethez fogjuk majd hozzáadni a rajzolás során létrehozott gyereknézeteket. Érdemes a rajzlap nézet háttérszínét is megváltoztatni valami világos színre, hogy jobban elüssön a hátterétől.
 
 <img src="img/02_canvas.png" alt="02" style="width: 50%;"/>
 
@@ -227,17 +222,17 @@ private var colorWidth: CGFloat {
 override func draw(_ rect: CGRect) {
   let context = UIGraphicsGetCurrentContext()
 
-  for i in stride(from: 0.0, to: colorCount, by: 1.0) {
-    let color = UIColor(hue: i * (1.0 / colorCount), saturation: 1.0, brightness: 1.0, alpha: 1.0)
+  for index in stride(from: 0.0, to: colorCount, by: 1.0) {
+    let color = UIColor(hue: index * (1.0 / colorCount), saturation: 1.0, brightness: 1.0, alpha: 1.0)
     context?.setFillColor(color.cgColor)
 
-    context?.fill(CGRect(x: i * colorWidth, y: 0, width: colorWidth, height: bounds.height))
+    context?.fill(CGRect(x: index * colorWidth, y: 0, width: colorWidth, height: bounds.height))
 
-    if Int(i) == selectedColorIndex {
+    if Int(index) == selectedColorIndex {
       context?.setStrokeColor(UIColor.black.cgColor)
       context?.setLineWidth(2.0)
 
-      context?.stroke(CGRect(x: i * colorWidth, y: 1, width: colorWidth - 1, height: bounds.height - 2))
+      context?.stroke(CGRect(x: index * colorWidth, y: 1, width: colorWidth - 1, height: bounds.height - 2))
     }
   }
 }
@@ -266,9 +261,9 @@ required init?(coder aDecoder: NSCoder) {
 }
 ```
 
-Ha `Storyboard`ból vagy `XIB`-ből töltődik be egy nézet, akkor az `init(coder:)` hívódik meg.*
-*Ha kódból hozzuk létre a nézetet, akkor pedig az `init(frame:)`-et használjuk.*
-*Ha egyedi nézetet készítünk, akkor célszerű mindkettőt feldefiniálni. Az `NSCoder` paraméterű inicializáló `required`, vagyis kötelező minden leszármazott osztályban felüldefiniálni (pont azért, hogy `IB`-ben használva az osztályt, helyes működést kapjunk).
+Ha `Storyboard`ból vagy `XIB`-ből töltődik be egy nézet, akkor az `init(coder:)` hívódik meg.
+Ha kódból hozzuk létre a nézetet, akkor pedig az `init(frame:)`-et használjuk.
+Ha egyedi nézetet készítünk, akkor célszerű mindkettőt feldefiniálni. Az `NSCoder` paraméterű inicializáló `required`, vagyis kötelező minden leszármazott osztályban felüldefiniálni (pont azért, hogy `IB`-ben használva az osztályt, helyes működést kapjunk).
 
 > `commonInit`ben hozzunk létre a kódból egy `Tap Gesture Recognizer`t és rendeljük hozzá a `handleTap` akció metódust!
 
@@ -313,6 +308,8 @@ Ha kipróbáljuk az alkalmazást, színválasztón már váltakozni fog a kivál
 ellipse.color = colorPicker.selectedColor
 ```
 
+# Önálló feladatok <a id="onallo-feladatok"></a>
+
 ## Legutóbb rajzolt kör átméretezése <a id="legutobb-rajzolt-kor-atmeretezese"></a>
 > A `ViewController`be vegyünk fel egy új property-t, melyben eltároljuk a legutóbb létrehozott nézetet!
 
@@ -350,7 +347,7 @@ Láthatjuk, hogy nagyításkor egy "maszatos" átskálázott képet kapunk. Ez a
 ellipse.contentMode = .redraw
 ```
 
-# Önálló feladatok <a id="onallo-feladatok"></a>
+# Szorgalmi feladatok <a id="szorgalmi-feladatok"></a>
 
 ## Ecsetméret állítása <a id="ecsetmeret-allitasa"></a>
 > Adjunk hozzá egy csúszkát (`UISlider`) a `canvas` alá, amivel a kirajzolt körök kezdeti méretét tudja állítani a felhasználó!
@@ -381,3 +378,11 @@ for view in canvas.subviews {
 ```swift
 canvas.subviews.forEach { $0.removeFromSuperview() }
 ```
+
+## A laborsegédletet összeállította
+* Dávid Márk-Tamás - david.tamas@autsoft.hu
+* Varga Domonkos - varga.domonkos@autsoft.hu
+* Krassay Péter - peter.krassay@autsoft.hu
+* Szücs Zoltán - szucs.zoltan@autsoft.hu
+* Kántor Tibor - tibor.kantor@autsoft.hu
+* Kelényi Imre - imre.kelenyi@aut.bme.hu
