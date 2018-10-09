@@ -1,18 +1,14 @@
 # `iOS` alapú szoftverfejlesztés - Labor `05`
 
-## A laborsegédletet összeállította
-* Kelényi Imre - imre.kelenyi@aut.bme.hu
-* Kántor Tibor - tibor.kantor@autsoft.hu
-* Krassay Péter - peter.krassay@autsoft.hu
-
 ## A labor témája
 * [PictureGuess](#pictureguess)
     * [Játékválasztó nézet](#jatekvalaszto-nezet)
     * [Picture Manager](#picture-manager)
     * [Játék nézet](#jatek-nezet)
     * [Eredmény nézet](#eredmeny-nezet)
+* [Önálló feladatok](#onallo)
     * [Nehézség választó](#nehezseg-valaszto)
-* [Önálló feladat](#onallo-feladat)
+* [Szorgalmi feladat](#szorgalmi-feladat)
     * [Játékstatisztika](#jatekstatisztika)
 
 A labor során egy többnézetes, *képkitaláló játékot* készítünk el. A játék véletlenül sorsol képeket és feliratokat a projektbe bedrótozott adatokból. A képekből egy véletlenül kivágott ("crop") részlet kerül megjelenítésre. A felhasználó feladata a képhez a helyes cím kiválasztása.
@@ -22,17 +18,13 @@ A labor során egy többnézetes, *képkitaláló játékot* készítünk el. A 
 ## Játékválasztó nézet <a id="jatekvalaszto-nezet"></a>
 > Hozzunk létre egy új `Single View App`ot `PictureGuess` névvel a `labor_05` könyvtárba!
 
-<!--  -->
 > Állítsuk a `Devices` beállítást `iPhone`-ra (`Target` beállítások, `Deployment Info` szekció).
 
-<!--  -->
-> Töröljük ki a létrejött `ViewController.swift` fájlt (*Move to Trash*), illetve a `Main.storyboard`ban lévő `View Controller`t.
+> Töröljük ki a létrejött `ViewController.swift` fájlt (*Move to Trash*), illetve a `Main.storyboard`ban lévő `View Controller`t (*Backspace*).
 
-<!--  -->
-> A `Main.storyboard` tulajdonságainál (`File Inspector`) kapcsoljuk ki a `Use Trait Variations` beállítást.
-
-<!--  -->
 > Adjunk a `Storyboard`hoz, egy `Navigation Controller`t és állítsuk be kezdő `View Controller`nek az `Attributes Inspector`ban (`Is Initial View Controller`)!
+
+> A `Main.storyboard` tulajdonságainál (`File Inspector`) kapcsoljuk ki a `Use Trait Variations` beállítást.
 
 <img src="img/01_navigation_controller.png" alt="01" style="width: 75%;"/>
 
@@ -329,6 +321,7 @@ Az `Unwind Segue`-ek olyan korábbi `View Controller`ekre tudnak visszatérni, m
 
 > Próbáljuk ki az alkalmazást!
 
+# Önálló feladatok <a id="onallo"></a>
 ## Nehézség választó <a id="nehezseg-valaszto"></a>
 > Vegyünk fel egy új property-t `GameViewController`be a nehézség meghatározásához!
 
@@ -366,53 +359,14 @@ if segue.identifier == "gameViewControllerSegue" {
 }
 ```
 
-# Önálló feladat <a id="onallo-feladat"></a>
+# Szorgalmi feladat <a id="szorgalmi-feladat"></a>
 
 ## Játékstatisztika <a id="jatekstatisztika"></a>
 > Vegyünk fel `3` új property-t `PictureManager`be, melyek eltárolják a lekért képek, a helyes és a rossz válaszok számát!
 
-```swift
-var picturesQueriedCount = 0
-var correctAnswerCount = 0
-var wrongAnswerCount = 0
-```
-
 > Módosítsuk `getRandomPicture` metódust, hogy növelje a lekért képek számát!
 
-```swift
-func getRandomPicture(picture: inout UIImage?, titles: inout [String], pictureTitleIndex: inout Int) {
-    guard let pictures = pictures else {
-      return
-    }
-
-    picturesQueriedCount += 1
-    ...
-}
-```
-
 > Módosítsuk a `GameViewController` `prepare(for:sender:)` metódusát a helyes és helytelen válaszok számának frissítésével!
-
-```swift
-override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-  if let button = sender as? UIButton {
-
-    let pictureManager = (UIApplication.shared.delegate as? AppDelegate)?.pictureManager
-
-    let resultViewController = segue.destination as! ResultsViewController
-    resultViewController.picture = baseImage
-
-    if button.tag - 1 == correctAnswer {
-      resultViewController.caption = "Talált! Ez egy \(button.titleLabel!.text!.lowercased())."
-      pictureManager?.correctAnswerCount += 1
-    }
-    else {
-      let correctButton = view.viewWithTag(correctAnswer + 1) as! UIButton
-      resultViewController.caption = "Sajnos nem talált! Ez egy \(correctButton.titleLabel!.text!.lowercased())."
-      pictureManager?.wrongAnswerCount += 1
-    }
-  }
-}
-```
 
 > A `Storyboard`ban hozzunk létre egy új `Tab Bar Controller`t és rendeljük hozzá a `Navigation Controller`t!
 
@@ -429,7 +383,7 @@ Ezt legegyszerűbben úgy tehetjük meg, hogy kiválasztjuk a `Navigation Contr
 
 <img src="img/17_statistics_vc.png" alt="17" style="width: 20%;"/>
 
-> Hozzunk létre egy új `UIViewController` leszármazott osztályt `StatsViewController` névvel és rendeljük ezt a `Storyboard`ban imént létrehozott `View Controller`hez az `Identity inspector`ban!
+> Hozzunk létre egy új osztályt `StatsViewController` névvel és rendeljük ezt imént létrehozott `View Controller`hez!
 
 <!--  -->
 > Vegyünk fel `3 Outlet`et a `3` statisztikát megjelenítő `Label`hez!
@@ -463,3 +417,9 @@ override func viewWillAppear(_ animated: Bool) {
 > Állítsuk be a két `Tab Bar Item` *Image* beállítását **game**-re és **stats**-ra.
 
 <img src="img/18_tab_bar_images.png" alt="18" style="width: 50%;"/>
+
+## A laborsegédletet összeállította
+* Varga Domonkos - varga.domonkos@autsoft.hu
+* Kelényi Imre - imre.kelenyi@aut.bme.hu
+* Kántor Tibor - tibor.kantor@autsoft.hu
+* Krassay Péter - peter.krassay@autsoft.hu
