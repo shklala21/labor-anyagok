@@ -342,7 +342,7 @@ tableView.addInteraction(UIDropInteraction(delegate: self))
 
 ## Egyedi Drag implementálása <a id="image-view-custom-drag"></a>
 
-Van a projektben még egy eddig nem használt nézet, a `FortressDragPreview` fájlban definiálva. A feladat, hogy a BrowserView `imageView`-jára engedélyezzük a draget és a drag előnézetének ezt a view-t használjuk.
+Van a projektben még egy eddig nem használt nézet, a `FortressDragPreview` fájlban definiálva. A feladat, hogy a FortressViewer `imageView`-jára engedélyezzük a draget és a drag előnézetének ezt a view-t használjuk.
 
 > Kapcsoljuk be a draget az `imageView`-ra! Nem triviális, de ahhoz, hogy egy UIImageView-n működjön a drag, az interaction rárakásán kívül engedélyezni kell a felhasználói interakciót is!
 
