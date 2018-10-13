@@ -1,478 +1,379 @@
 # `iOS` alapú szoftverfejlesztés - Labor `06`
 
-## A laborsegédletet összeállította
-* Kelényi Imre - imre.kelenyi@aut.bme.hu
-* Kántor Tibor - tibor.kantor@autsoft.hu
-* Krassay Péter - peter.krassay@autsoft.hu
-* Szücs Zoltán - szucs.zoltan@autsoft.hu
-
 ## A labor témája
 
-* [iTravel](#itravel)
-    * [Kezdeti adatok betöltése](#kezdeti-adatok-betoltese)
-    * [Utak listájának megjelenítése: dinamikus `Table View`](#dinamikus-table-view)
-    * [Utak részletezése: statikus `Table View`](#statikus-table-view)
-    * [Cellák törlése és mozgatása](#cellak-torlese-es-mozgatasa)
+* [Vezetett labor](#fortress)
+  * [Kezdőprojekt megismerése](#starter-project-overview)
+    * [Fortress](#fortress-framework),
+    * [Fortress Browser](#fortress-browser),
+    * [Fortress Viewer](#fortress-viewer).
+  * [Alkalmazások futtatása](#alkalmazasok-futtatasa)
+  * [Kezdeti adatok betöltése](#kezdeti-adatok-betoltese)
+  * [`CollectionView` elkészítése](#create-collectionview)
+  * [Drag&Drop a `Collection View`-ban](#collection-view-drag-and-drop)
 * [Önálló feladat](#onallo-feladat)
-    * [Új cella hozzáadása](#uj-cella-hozzaadasa)
+  * [FortressViewer: statikus `Table View`](#statikus-table-view)
+  * [Drop implementálása](#table-view-drop)
+* [Szorgalmi feladat](#szorgalmi-feladat)
 
-A labor célja egy utazásokat nyilvántartó alkalmazás megírása és ezzel együtt a `Table View` használatának elsajátítása.
+A labor során két egyszerű iPad alkalmazást fogunk csinálni és az egyikből a másikba Drag&Drop segítségével adatokat exportálni. A labor során elkészítünk egy `Collection View`-t, egy statikus `Table View`-t, illetve használjuk a Drag&Drop API-t. Érdekességként előkerül egy `MapView` is, de ezzel egyelőre nem kell sokat foglalkozni.
 
-# iTravel <a id="itravel"></a>
+# Fortress <a id="fortress"></a>
+
+## Kezdőprojekt megismerése <a id="starter-project-overview"></a>
+
+<img src="img/final_application.png" alt="Elkészült alkalmazások" style="width: 75%;"/>
+
+> Másoljuk a `res/Fortress` mappát a `~/Desktop/labor_06/` könyvtárba, majd nyissuk meg a `Fortress.xcworkspace` fájlt!
+
+Ez a fájltípus abban különbözik az eddig megismert `.xcodeproj` fájloktól, hogy egy workspace-en belülre több projekt is kerülhet.
+
+> Nézzük át a projektet és ismerkedjünk a meglévő kóddal!
+
+A workspace-ben 3 projekt található:
+
+* [Fortress](#fortress-framework),
+* [Fortress Browser](#fortress-browser),
+* [Fortress Viewer](#fortress-viewer).
+
+### Fortress <a id="fortress-framework"></a>
+Egy framework, amiben definiálva van a `Fortress` class és a hozzá tartozó protokollmegvalósítások, segédfüggvények. Itt találhatók továbbá a kezdeti adatok a `HungarianFortresses.plist` és az `Images.xcassets` katalógusban. A labor során ezekből az adatokból fogunk dolgozni.
+
+A `HungarianFortresses.plist`et megnyitva a következő struktúrát láthatjuk.
+
+<img src="img/hungarian_fortresses_plist.png" alt="Várak plist" style="width: 75%;"/>
+
+### FortressBrowser <a id="fortress-browser"></a>
+A képen látható bal oldali alkalmazás, a várak és a neveik egy `Collection View`-ban találhatók. Feladatunk létrehozni ezt a `Collection View`-t és feltölteni a rendelkezésre álló adatokkal, majd implementálni az átrendezés funkcionalitást, illetve azt, hogy az alkalmazásból ki lehessen húzni várakat.
+
+### FortressViewer <a id="fortress-viewer"></a>
+A képen látható jobb oldali alkalmazás, ide lehet húzni a bal oldalról a várakat, amit megjelenít. Felépítése egy statikus `Table View`, amit nekünk kell elkészíteni.
+
+## Alkalmazások futtatása <a id="alkalmazasok-futtatasa"></a>
+Ha az `Xcode workspace`-ünkben egyszerre több projekt is szerepel, akkor azokat egyesével kell build-elni és futtatni. 
+> A használni kívánt projektet válasszuk ki a `scheme selector` segítségével: 
+<img src="img/choose_scheme.png" alt="Scheme selector" style="width: 25%;"/>
+
+> A projekt kiválasztása után egyből szimulátort is választhatunk: 
+<img src="img/set_scheme.png" alt="Set scheme" style="width: 25%;"/>
 
 ## Kezdeti adatok betöltése <a id="kezdeti-adatok-betoltese"></a>
-> Hozzunk létre egy `Single View App`ot **iTravel** névvel a `labor_06` könyvtárba!
- 
-<!--  -->
-> Állítsuk a `Devices` beállítást `iPhone`-ra (`Target` beállítások, `Deployment Info` szekció). 
 
-Az egyes utak adatai egy-egy *Dictionary*-ben vannak eltárolva. Hogy mindig legyen pár adatunk a teszteléshez, egy *Property List*ből betöltünk pár kezdeti értéket.
-
-> Húzzuk be a `res/iceland.jpg` és a `res/berlin.jpg` képeket az `Assets.xcasset` katalógusba. 
-
-<!-- -->
-> Hozzunk létre egy új, **Trips** nevű *Group*ot, majd húzzuk be az `InitialTrips.plist` fájlt (fontos, hogy a `Copy items if needed` opció be legyen kapcsolva!).
-<img src="img/01_new_group.png" alt="01" style="width: 33%;"/>
-
-<img src="img/02_copy_items.png" alt="02" style="width: 33%;"/>
-
-Ezt megnyitva megnézhetjük a kezdeti adatokat.
-
-<img src="img/03_initial_trips_plist.png" alt="03" style="width: 75%;"/>
-
-> Hozzunk létre egy új, `TripsDataManager` nevű osztályt (`Swift File` template), melyben az utazások adatait fogjuk tárolni.
-
-Az osztálynak egyetlen *property*-je lesz, mely egy `AnyObject` típusú tömbben tárolja az utak adatait.
+> Nyissuk meg a Fortress.swift fájlt a `Fortress Frameworkben` és a legaljára (az osztályon kívülre) illesszük be a következő kódrészletet!
 
 ```swift
-var trips: [AnyObject]
-```
+extension Fortress {
+  // Kiegészítjuk az osztályt egy új property-vel, ami betölti a plist tartalmát. Fortress.hungarianFortresses-kent fogjuk használni.
+  public static var hungarianFortresses: [Fortress] {
+    // Szerzünk egy referenciát a HungarianFortresses.plist fájlra, majd betöltjük a memóriába adatként és Fortress tömbbé dekódoljuk.
+    guard let plistPath = fortressBundle.path(forResource: "HungarianFortresses", ofType: "plist"),
+      let data = try? Data(contentsOf: URL(fileURLWithPath: plistPath)),
+      let fortresses = try? PropertyListDecoder().decode([Fortress].self, from: data) else { return [] }
 
-> Írjuk meg az alap inicializálót, mely betölti a kezdeti utakat az `InitialTrips.plist`ből!
-
-
-```swift
-init() {
-  let filePath = Bundle.main.path(forResource: "InitialTrips", ofType: "plist")
-  trips = NSArray(contentsOfFile: filePath!)! as [AnyObject]
-}
-```
-
-> Hozzunk létre egy *property*-t `TripsDataManager`ből az `AppDelegate`-be és példányosítsuk is!
-
-```swift
-let tripsDataManager = TripsDataManager()
-```
-
-## Utak listájának megjelenítése: dinamikus `Table View` <a id="dinamikus-table-view"></a>
-> Töröljük ki a forrásfájlok közül a legenerált `ViewController`t (*Delete --> Move to Trash*)!
-
-<!-- -->
-> A `Main.storyboard` tulajdonságainál (`File inspector`) kapcsoljuk ki a `Use Trait Variations` beállítást.
-
-<!--  -->
-> Töröljük ki a `Storyboard`ban levő, generált jelenetünket!
-
-<!--  -->
-> Rakjunk be egy `Table View Controller`t! Ágyazzuk be ezt a `Table View Controller`t egy `Navigation Controller`be és állítsuk be a hozzá tartozó `Navigation Item` *Title* property-jét **Útjaim**ra! 
-
-<img src="img/04_utjaim_table_view.png" alt="04" style="width: 50%;"/>
-
-> Ne felejtsük el beállítani `Initial View Controller`nek a `Navigation Controller`t!
-
-<!-- -->
-> Hozzunk létre egy új, `UITableViewController`ből származó osztályt `TripsViewController` névvel (használjuk a `Cocoa Touch Class` *template*-et). Állítsuk be a `Storyboard`ban a `Table View Controller` osztályát az újonnan definiált osztályra!
-
-<!--  -->
-> Állítsuk át a `Table View Controller`ben lévő `Table View Cell` stílusát **Subtitle**-re és adjunk meg neki egy azonosítót: **TripsTableViewCell**!
-
-![](img/05_utjaim_table_view_cell.png)
-
-> A `TripsViewController`hez adjunk hozzá egy tagváltozót, melyen keresztül elérhetjük az utak adatait!
-
-```swift
-private var tripsDataManager: TripsDataManager?
-```
-
-> Ezt inicializáljuk a `viewDidLoad()` metódusban!
-
-```swift
-tripsDataManager = (UIApplication.shared.delegate as? AppDelegate)?.tripsDataManager
-```
-
-> Valósítsuk meg a `Table View` *Data Source* metódusait!
-
-```swift
-// MARK: - Table view data source
-
-override func numberOfSections(in tableView: UITableView) -> Int {
-  return 1
-}
-
-override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-  return tripsDataManager!.trips.count
-}
-
-override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-  let cell = tableView.dequeueReusableCell(withIdentifier: "TripsTableViewCell", for: indexPath)
-
-  let tripData = tripsDataManager!.trips[indexPath.row] as! [String: AnyObject]
-  cell.textLabel?.text = tripData["name"] as? String
-  cell.detailTextLabel?.text = tripData["location"] as? String
-
-  if let tripImageName = tripData["image-name"] as? String {
-    cell.imageView?.image = UIImage(named: tripImageName)
-  }
-
-  return cell
-}
-```
-
-A kommentben látható `MARK: - ` "kulcsszó" segítségével a metódusainkat csoportokba rendezhetjük, egy elválasztót hozhatunk létre közéjük.
-
-![](img/06_mark_explained.png)
-
-> Próbáljuk ki az alkalmazásunkat!
-
-<img src="img/07_dynamic_table.png" alt="07" style="width: 33%;"/>
-
-## Utak részletezése: statikus `Table View` <a id="statikus-table-view"></a>
-> Hozzunk létre egy új `Table View Controller`t majd állítsuk át a benne foglalt `Table View` *Content* property-jét **Static Cells**-re, és töröljük ki az automatikusan létrejött `Section Header` feliratokat.
-
-<!--  -->
-> Állítsuk be a *Sections*-t **`2`**-re, a *Style*-t pedig **Grouped**ra!
-
-![](img/08_static_table_view_settings.png)
-
-> Ezek után módosítsuk a `Table View`-t oly módon, hogy az első szekcióban `1` **Custom**, a másodikban pedig `2` **Right Detail** és `1` **Custom** stílusú cella legyen (az egyes cellák *Style* property-jét kell állítgatni).
-
-<!--  -->
-> Az első szekció cellájába adjunk hozzá egy `Image View`-t, a második szekció utolsó cellájához pedig egy `Text View`-t. Módosítsuk a feliratokat, hogy a következő képhez hasonló felületet kapjunk (a `Text View` cellájának magassága lehet nagyobb is).
-
-<img src="img/09_static_table_view_layout.png" alt="09" style="width: 50%;"/>
-
-Ha valami miatt az `Interface Builder`ben nem sikerülne beállítani az egyes cellák magasságát, akkor a `Size inspector`ban kapcsolhatjuk át **Custom**ra.
-
-<img src="img/10_table_view_cell_height.png" alt="10" style="width: 33%;"/>
-
-Bár ha nem adunk meg a nézetben egyetlen `Auto Layout` kényszert sem, akkor is működni fog, az elegáns megoldás, ha mind az `Image View`-t, mind a `Text View`-t rögzítjük a szülő nézeteikhez néhány kényszer megadásával (pl. **Standard** távolság a szülő összes oldalától vagy csupa 0, a *Constrain to margins* bekapcsolása mellett).
-
-![](img/11_image_view_pin.png)
-
-> Az `Image View` *Content Mode* property-jét állítsuk **Aspect Fit**re!
-
-![](img/12_image_view_aspect_fit.png)
-
-> A `Text View`-nak kapcsoljuk ki az *Editable* property-jét és állítsuk átlátszóra a háttérszínét!
-
-![](img/13_text_view_editable.png)
-
-<img src="img/14_text_view_background.png" alt="14" style="width: 30%;"/>
-
-> A 4 cellát kiválasztva a *Selection* property értékét állítsuk **None**-ra, hogy ne lehessen kijelölni a cellákat!
-
-![](img/15_table_view_cells_selection.png)
-
-> Hozzunk létre egy új, `UITableViewController`ből leszármazó osztályt, `TripDetailViewController` névvel, **töröljük ki a generált kódot** és állítsuk be ezt a `Storyboard`ban létrehozott `Table View Controller` osztályául.
-
-**Ezt a két metódust különösen fontos kitörölni, ugyanis ezek felülírják a Storyboardban nagy gonddal beállított táblázatunkat!**
-
-```swift
-// MARK: - Table view data source
-
-override func numberOfSections(in tableView: UITableView) -> Int {
-    // #warning Incomplete implementation, return the number of sections
-    return 0
-}
-
-override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    // #warning Incomplete implementation, return the number of rows
-    return 0
-}
-```
-
-> Vegyünk fel `Outlet`eket a `4`, adatmegjelenítésre szolgálló nézethez (minden cellából azt a nézetet válasszuk ki, mely az egyedi adat megjelenítésére szolgál, és ezeket kössük be `Outlet`ekre)!
-
-```swift
-@IBOutlet weak var tripImageView: UIImageView!
-@IBOutlet weak var tripNameLabel: UILabel!
-@IBOutlet weak var tripLocationLabel: UILabel!
-@IBOutlet weak var tripDescriptionTextView: UITextView!
-```
-
-> Vegyünk fel egy `trip` nevű, *Dictionary* típusú property-t a `TripDetailViewController`be. Ez fogja tárolni az éppen kiválasztott út adatait.
-
-```swift
-var trip: [String: AnyObject]?
-```
-
-> Definiáljuk felül a `viewWillAppear(_:)` metódust, melyben beállítjuk a nézetek kezdeti értékét a `trip` property-ben eltárolt utazás alapján!
-
-```swift
-override func viewWillAppear(_ animated: Bool) {
-  super.viewWillAppear(animated)
-
-  if let trip = trip {
-    if let tripImageName = trip["image-name"] as? String {
-      tripImageView.image = UIImage(named: tripImageName)
-    }
-
-    tripNameLabel.text = trip["name"] as? String
-    tripLocationLabel.text = trip["location"] as? String
-    tripDescriptionTextView.text = trip["description"] as? String
-
-    navigationItem.title = trip["name"] as? String
+    // A sikeres dekódolás után ha nem volt hiba, akkor visszatérünk a várakkal.
+    return fortresses
   }
 }
 ```
 
-> A `Storyboard`ban kössük be egy **Push** `Segue`-el a `Trips View Controller`ben lévő `Table View` prototípus celláját a `Detail View Controller`-re. Nevezzük el a `Segue`-t **TripDetailSegue**-nek!
-
-![](img/16_push_segue.png)
-
-![](img/17_push_segue_id.png)
-
-> Ezek után definiáljuk felül `TripsViewController`ben a `prepare(for:sender:)` metódust, hogy átadhassa az éppen kiválasztott cellához tartozó utazás adatait a megjelenő `TripDetailViewController`nek!
-
+> Nyissuk meg a `FortressCollectionViewController`t a `FortressBrowser project`ben  és `reuseIdentifier` property alá adjuk hozzá a következő property-t!
 ```swift
-//   MARK: - Navigation
-
-override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-  if segue.identifier == "TripDetailSegue" {
-    let vc = segue.destination as? TripDetailViewController
-    let row = tableView.indexPathForSelectedRow?.row
-    vc?.trip = tripsDataManager?.trips[row!] as? [String: AnyObject]
-  }
-}
+// Definiálunk egy Fortressekből álló tömböt, amibe rögtön bele is rakjuk az összes várat, amit a framework szolgáltat nekünk.
+private var fortresses = Fortress.hungarianFortresses
 ```
 
-> Teszteljük az alkalmazást!
 
-## Cellák törlése és mozgatása <a id="cellak-torlese-es-mozgatasa"></a>
-Ahhoz, hogy a `Table View` celláit törölni vagy mozgatni tudjuk, a `Table View`-t *Edit* módba kell kapcsolni. Szerencsére ennek elvégzésére van egy beépített *Edit* gomb a `Table View Controller`ben, ezt csak hozzá kell adnunk például a `Navigation Bar`hoz. 
-> Adjuk a következő sort a `TripsViewController` `viewDidLoad()` metódusához! (A generált, kikommentezett kód tartalmazza a sort, így akár a `//` törlése is elegendő lehet.) 
+## `CollectionView` elkészítése <a id="create-collectionview"></a>
 
-```swift
-navigationItem.rightBarButtonItem = editButtonItem
-```
+> Nyissuk meg a `Main.storyboard`ot és adjunk hozzá a Library-ből egy `Collection View Controller`t a `Storyboard`unkhoz!
 
-A következő metódust akkor érdemes csak felülírni, ha nem akarunk minden cellát szerkeszthetővé (törölhetővé) tenni, ugyanis alapértelmezés szerint minden cella szerkeszthető.
+<img src="img/collection_view_controller_library.png" alt="" style="width: 40%;"/>
 
-```swift
-override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-  return true
-}
-```
+<img src="img/empty_collection_view_controller.png" alt="" style="width: 100%;"/>
 
-> A törlés elvégzését viszont nekünk kell elvégezni.
+> Ágyazzuk be ezt a `Collection View Controller`t egy `Navigation Controller`be és állítsuk be a hozzá tartozó `Navigation Item` *Title* property-jét **Várak**ra! (*Embed in* gomb)
 
-```swift
-override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-  if editingStyle == .delete {
-    tripsDataManager?.trips.remove(at: indexPath.row)
-    tableView.deleteRows(at: [indexPath], with: .fade)
-  }
-}
-```
+<img src="img/embed_in_navigation_controller.png" alt="" style="width: 25%;"/>
 
-A cellák mozgatásának engedélyezése a következőképpen tehető meg. Ez a felülírás a törlés engedélyezéséhez hasonlóan felesleges, ha minden cellára engedélyezni szeretnénk. Amennyiben a `tableView(_:moveRowAt:to:)` metódus implementálva van, akkor alapértelmezetten `true` értékkel tér vissza a `tableView(_:canMoveRowAt:)` metódus.
+<!--  -->
+> Állítsuk be a `Navigation Controller`re az *Attributes inspector*ban, hogy **Is Initial View Controller**.
 
-```swift
-override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-  return true
-}
-```
+<!--  -->
+> Állítsuk be a `Collection View Controller` *Custom Class*át **FortressCollectionViewController**re az *Identity inspector*ban, illetve a *Size inspectorban* a *Cell Size*-ot **200x200**-ra!
 
-> A mozgatás folyamata, mely során az adatforrásként használt tömbben felcserélünk két elemet.
-
-```swift
-override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-  let tripsToMove = tripsDataManager?.trips[fromIndexPath.row]
-  tripsDataManager?.trips.remove(at: fromIndexPath.row)
-  tripsDataManager?.trips.insert(tripsToMove!, at: to.row)
-}
-```
-
-# Önálló feladat <a id="onallo-feladat"></a>
-
-## Új cella hozzáadása <a id="uj-cella-hozzaadasa"></a>
-> Vegyünk fel egy új `View Controller`t a `Storyboard`ba és ágyazzuk be rögtön egy szintén újonnan létrehozott `Navigation Controller`be. A cél ezután az, hogy a következő felületet állítsuk össze!
-
-<img src="img/18_edit_trip_layout.png" alt="18" style="width: 50%;"/>
-
-> 
-* Vegyünk fel egy `Image View`-t és állítsuk be a háttérszínét (*Background* attribútum) valamilyen élénk színre.
-* Vegyünk fel két `Text Field`et, és állítsunk be bennünk *Placeholder*t (**Utazás neve** és **Helyszín**).
-* Vegyünk fel egy `Text View`-t és állítsuk át a háttérszínét, valamint a kezdeti szöveget pl. **Utazás leírása**-ra.
-
-Az idő szűkössége miatt nem definiálunk `Auto Layout` kényszereket, de ne felejtsük el, hogy így az alklamzás nem fog jól mutatni más kijelzőméreteken, illetve elforgatáskor. Egy éles alkalmazásban ez nem elfogadható.
-
-> Húzzunk be `1-1` `Bar Button Item`et a `View Controller` tetején lévő `Navigation Bar`ra, majd állítsuk ezek *System Item* attributumát **Cancel**re, illetve **Save**-re
-
-![](img/19_bar_button_item.png)
-
-<img src="img/20_cancel_save.png" alt="20" style="width: 50%;"/>
-
-> Hozzunk létre egy új, `EditTripViewController` nevű, `UIViewController`ből származó osztályt, állítsuk be az újonnan létrehozott nézetünk *Class* property-jének az `Identity inspector`ban, majd írjuk felül a fájl tartalmát a következő kóddal!
-
+<!--  -->
+> Hozzunk létre egy új `Swift File`t **FortressCollectionViewCell** névvel és a tartalmát cseréljük le a következő pár sorra!
 ```swift
 import UIKit
 
-class EditTripViewController: UIViewController {
-
-    @IBOutlet weak var imageView: UIImageView!
-    @IBOutlet weak var nameTextField: UITextField!
-    @IBOutlet weak var locationTextField: UITextField!
-    @IBOutlet weak var descriptionTextView: UITextView!
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(EditTripViewController.handleImageViewTap(_:)))
-        imageView.isUserInteractionEnabled = true
-        imageView.addGestureRecognizer(tapGestureRecognizer)
-
-        descriptionTextView.delegate = self
-    }
-
-    @IBAction func didEndOnExit(_ sender: UITextField) {
-        sender.resignFirstResponder()
-    }
-
-    @IBAction func textFieldEditingDidBegin(_ sender: UITextField) {
-        UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: {
-            self.view.frame = self.view.frame.offsetBy(dx: 0, dy: -100)
-        }, completion: nil)
-    }
-
-    @IBAction func textFieldEditingDidEnd(_ sender: UITextField) {
-        sender.resignFirstResponder()
-
-        UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: {
-            self.view.frame = self.view.frame.offsetBy(dx: 0, dy: 100)
-        }, completion: nil)
-    }
-
-    @objc func handleImageViewTap(_ sender: UITapGestureRecognizer) {
-        
-    }
-
-}
-
-extension EditTripViewController: UITextViewDelegate {
-
-    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        if text == "\n" {
-            textView.resignFirstResponder()
-            return false
-        } else {
-            return true
-        }
-    }
-
-    func textViewDidBeginEditing(_ textView: UITextView) {
-        UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: {
-            self.view.frame = self.view.frame.offsetBy(dx: 0, dy: -210)
-        }, completion: nil)
-    }
-
-    func textViewDidEndEditing(_ textView: UITextView) {
-        UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: {
-            self.view.frame = self.view.frame.offsetBy(dx: 0, dy: 210)
-        }, completion: nil)
-    }
+class FortressCollectionViewCell: UICollectionViewCell {
 
 }
 ```
 
-> Végezzük el a következő módosításokat!
+> Menjünk vissza a Main.storyboardba és állítsuk be a `Collection View Cell` *Custom Class*át **FortressCollectionViewCell**re az *Identity inspector*ban és a Collection Reusable View *Identifier*ét **FortressCollectionViewCell**re az *Attributes inspector*ban.
 
-> * Kössük be a kódban definiált `Outlet`ekre az `Image View`-t, a `2` `Text Field`et és a `Text View`-t! 
-* Kössük be az alsó `Text Field` *Editing Did Begin* és *Editing Did End* eseményeit a `textFieldEditingDidBegin(_:)` és a `textFieldEditingDidEnd(_:)` metódusokra, továbbá a `didEndOnExit(_:)` metódusra is!
+<img src="img/collection_view_cell_custom_class.png" alt="" style="width: 25%;"/> <img src="img/collection_view_cell_reuse_identifier.png" alt="" style="width: 25%;"/>
 
-<!-- -->
-> Adjunk hozzá a `TripsViewController` `Navigation Bar`jához egy `Bar Button Item`et, majd ennek *System Item* attribútumát állítsuk **Add**ra!
 
-<img src="img/21_add_bar_button_item.png" alt="21" style="width: 50%;"/>
+> Húzzunk be egy `Image View`-t és **alá** egy `Label`t a `Collection View Cell`be, majd állítsunk be pár AutoLayout constraintet! (*Add New Constraints* gomb)
 
-> Kössünk rá az új gombra egy **Modal** `Segue`-t, ami az új `Navigation Controller`re mutat (ami a szerkesztő `View Controller`t tartalmazza). A `Segue`-t nevezzük el **AddTripSegue**-nek, majd teszteljük az alkalmazást!
+<img src="img/collection_view_image_view_contraints.png" alt="" style="width: 25%;"/> <img src="img/collection_view_label_constraints.png" alt="" style="width: 25%;"/>
 
-Amikor az egyelőre üres képre rákattint a felhasználó, meghívódik egy `Tap Gesture Recognizer`t kezelő metódus az `EditTripViewController`ben (`handeImageViewTap(_:)`). Itt szeretnénk megjeleníteni egy képkiválasztó rendszer `View Controller`t. 
+> Állítsuk be az `Image View` *Content Mode*-ját **Aspect Fit**re, illetve rendezzük középre a `Label`t az *Alignment* beállítással!
 
+<img src="img/collection_view_design.png" alt="" style="width: 40%;"/>
+
+<!--  -->
+> Készítsünk egy-egy `Outlet`et az **`imageView`**-ra és a **`nameLabel`**-re a `FortressCollectionViewCell`ben!
 ```swift
-@objc func handleImageViewTap(_ sender: UITapGestureRecognizer) {
-  let pickerController = UIImagePickerController()
-  pickerController.delegate = self
-  pickerController.sourceType = .savedPhotosAlbum
-  show(pickerController, sender: nil)
-}
+@IBOutlet var imageView: UIImageView!
+@IBOutlet var nameLabel: UILabel!
 ```
 
-> Majd valósítsuk meg egy `extension`ben a `imagePickerController(_:didFinishPickingMediaWithInfo:)` metódust!
+> Végül pedig menjünk át a `FortressCollectionViewController`be és valósítsuk meg a működéshez elengedhetetlen `UICollectionViewDataSource` metódusokat!
 
 ```swift
-extension EditTripViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+// MARK: UICollectionViewDataSource
 
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        let selectedImage = info[UIImagePickerControllerOriginalImage] as? UIImage
-        imageView.image = selectedImage
-        dismiss(animated: true, completion: nil)
-    }
-
-}
-```
-
-> Próbáljuk ki az alkalmazást!
-
-<!-- -->
-> A szerkesztő nézetből való kilépéshez `1-1` **Unwind** `Segue`-t fogunk használni. Ehhez először fel kell vennünk `1-1` speciális akció metódust abban a `View Controller`ben, ahova "vissza szeretnénk térni" a szerkesztő nézet bezárásakor. Ez esetünkben a `TripsViewController`, úgyhogy ehhez adjuk a következő két metódust!
-
-```swift
-@IBAction func editTripViewControllerDidSave(unwindSegue: UIStoryboardSegue) {
-  let viewController = unwindSegue.source as! EditTripViewController
-  let trip: NSDictionary = ["name": viewController.nameTextField.text ?? "",
-                           "location": viewController.locationTextField.text ?? "",
-                           "description": viewController.descriptionTextView.text,
-                           "image": viewController.imageView.image ?? UIImage()]
-  tripsDataManager?.trips.append(trip)
-  tableView.reloadData()
+override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+  // Itt mondhatjuk meg a CollectionView-nak, hogy hány eleme legyen: annyi amennyi várunk van.
+  return fortresses.count
 }
 
-@IBAction func editTripViewControllerDidCancel(unwindSegue: UIStoryboardSegue) {}
-```
+override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+  // A CollectionView-tól elkérünk egy **újrahasznált** cellát.
+  let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! FortressCollectionViewCell
 
-> A `Storyboard`ban kössük be a *Cancel* és a *Save* gombokat a kis `Exit` jelre és itt válasszuk ki `TripsViewController` megfelelő metódusait!
+  // Kikeressük az adott pozícióhoz tartozó várat és a cella property-jeit beállítjuk.
+  let fortress = fortresses[indexPath.row]
+  cell.imageView.image = fortress.image
+  cell.nameLabel.text = fortress.name
 
-<img src="img/22_unwind_segue.png" alt="22" style="width: 75%;"/>
-
-> Módosítsuk `tableView(_:cellForRowAt:)` metódusát, hogy az *image* kulcs esetén már egy kész képet olvasson ki az utazás adatait tároló dictionary-ből!
-
-```swift
-override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-  let cell = tableView.dequeueReusableCell(withIdentifier: "TripsTableViewCell", for: indexPath)
-
-  let tripData = tripsDataManager!.trips[indexPath.row] as! [String: AnyObject]
-  cell.textLabel?.text = tripData["name"] as? String
-  cell.detailTextLabel?.text = tripData["location"] as? String
-
-  if let tripImageName = tripData["image-name"] as? String {
-    cell.imageView?.image = UIImage(named: tripImageName)
-  }
-
-  if let tripImage: UIImage = tripData["image"] as? UIImage {
-    cell.imageView?.image = tripImage
-  }
-
+  // Végül pedig visszatérünk az újrahasznált cellával.
   return cell
 }
 ```
 
-> Hasonló módon, a `TripDetailViewController`ben is adjuk hozzá a már létező kódhoz a `viewWillAppear(_:)` metódusban a következő `if let` szerkezetet (közvetlenül az `image-name`-es `if let` alá)!
+A kommentben látható `MARK: ` "kulcsszó" segítségével a metódusainkat csoportokba rendezhetjük, egy elválasztót hozhatunk létre közéjük.
+
+> Futtassuk az alkalmazásunkat egy `iPad (6th generation)` szimulátoron! (Futtatás után ne zárjuk be.)
+
+<img src="img/collection_view_done.png" alt="" style="width: 75%;"/>
+
+<!--  -->
+
+## Drag&Drop a `Collection View`-ban <a id="collection-view-drag-and-drop"></a>
+A következőkben megvalósítjuk az áthelyezés lehetőségét a `Collection View`-ban drag and drop segítségével, illetve előkészítjük arra, hogy az egyes cellákat kihúzhassuk az alkalmazásból.
+
+> Első lépésként valósítsuk meg a `UICollectionViewDragDelegate`-et! Illesszük be a következő extensiont a `FortressCollectionViewController` legaljára (az osztályon kívülre)!
 
 ```swift
-if let tripImage = trip["image"] as? UIImage {
-  tripImageView.image = tripImage
+extension FortressCollectionViewController: UICollectionViewDragDelegate {
+  // MARK: UICollectionViewDragDelegate
+  // Ez a delegate egyetlen kötelező metódusa, amit mindenképpen meg kell valósítani.
+  func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
+    // Kikeressük a szóban forgó várat, amit a felhasználó Drag&Dropolni szeretne.
+    let fortress = fortresses[indexPath.row]
+
+    // Becsomagoljuk a várat egy UIDragItembe, amit ez a metódus visszatérési értékként vár.
+    let dragItem = UIDragItem(itemProvider: NSItemProvider(object: fortress))
+    dragItem.localObject = fortress
+
+    // Visszatérünk a becsomagolt várral
+    return [dragItem]
+  }
 }
 ```
 
-> Teszteljük az alkalmazást!
+> A `viewDidLoad()`-ban a `super.viewDidLoad()` sor alá írjuk be a következő sorokat!
+
+```swift
+// Itt mondjuk meg a Collection View-nak, hogy mi valósítjuk meg a drag delegate-jét, minket hívjon meg.
+collectionView.dragDelegate = self
+```
+
+> Próbáljuk ki az alkalmazást! Nyomjunk hosszan egy elemre: próbáljuk meg "felemelni" és arrébb húzni!
+
+<!--  -->
+> A következő lépésben bekapcsoljuk az átrendezés lehetőségét. Ehhez implementáljuk a `UICollectionViewDropDelegate`-et: illesszük be a következő extensiont a `FortressCollectionViewController` legaljára (az osztályon kívülre)!
+
+```swift
+extension FortressCollectionViewController: UICollectionViewDropDelegate {
+  // UICollectionViewDropDelegate
+  // Ezt a metódust hívja meg elsőször a rendszer amikor a felhasználó ráhúz valamit Collection View-ra.
+  // Itt van lehetőségünk megmondani, hogy milyen adatot akarunk fogadni.
+  func collectionView(_ collectionView: UICollectionView, canHandle session: UIDropSession) -> Bool {
+    return session.canLoadObjects(ofClass: Fortress.self)
+  }
+
+  // Ezt a metódust a rendszer nagyon gyakran meghívja, amikor a draggelt elem mozog a Collection View-n belül.
+  // Amennyiben az alkalmazáson belüli dragSessionünk van, akkor jelezzük a rendszernek, hogy mozgatni akarjuk az elemet. Egyébként nem akarunk semmit csinálni vele.
+  func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
+    guard session.localDragSession != nil else {
+      return UICollectionViewDropProposal(operation: .cancel)
+    }
+    return UICollectionViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
+  }
+
+  // A legfontosabb metódus, itt történik meg a drop, itt férünk hozzá az adathoz.
+  // Meghatározzuk (elkérjük) a kezdő és a végpozíciót, majd frissítjük az adatmodellünket és a Collection View-t.
+  func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
+    guard let dropItem = coordinator.items.last, let destinationIndexPath = coordinator.destinationIndexPath, coordinator.session.localDragSession != nil else { return }
+
+    if let sourceIndexPath = dropItem.sourceIndexPath, let fortress = dropItem.dragItem.localObject as? Fortress {
+      collectionView.performBatchUpdates({
+        fortresses.remove(at: sourceIndexPath.row)
+        fortresses.insert(fortress, at: destinationIndexPath.row)
+        collectionView.moveItem(at: sourceIndexPath, to: destinationIndexPath)
+      }, completion: nil)
+    }
+    coordinator.drop(dropItem.dragItem, toItemAt: destinationIndexPath)
+  }
+}
+```
+
+> A `viewDidLoad()`-ba az előbb beírt sor alá rakjuk be ezt!
+
+```swift
+// Itt mondjuk meg a Collection View-nak, hogy mi valósítjuk meg a drop delegate-jét, minket hívjon meg.
+collectionView.dropDelegate = self
+```
+
+> Próbáljuk ki az alkalmazást és helyezzünk át egy elemet!
+
+# Önálló feladat <a id="onallo-feladat"></a>
+
+## FortressViewer: statikus `Table View` <a id="statikus-table-view"></a>
+
+A következő feladat a vár *detail* nézetének elkészítése a `Fortress Viewer` projektben. 
+
+<img src="img/table_view_static_done.png" alt="" style="width: 75%;"/>
+
+> Hozzunk létre egy új `Table View Controller`t, embeddeljük egy `Navigation Controller`be, majd állítsuk át a benne foglalt `Table View` *Content* property-jét **Static Cells**-re, és töröljük ki az automatikusan létrejött `Section Header` feliratokat.
+
+<!--  -->
+> Állítsuk be a *Sections*-t **`3`**-ra, a *Style*-t pedig **Grouped**ra!
+
+<img src="img/table_view_static_cell_settings.png" alt="" style="width: 25%;"/>
+
+> Ezek után módosítsuk a `Table View`-t oly módon, hogy az mindhárom szekcióban `1` **Custom** stílusú cella legyen (az egyes cellák *Style* property-jét kell állítgatni vagy csak ellenőrizni).
+
+> Az első szekció cellájába adjunk hozzá egy `Image View`-t, a második szekció cellájához egy `Text View`-t, a harmadikhoz pedig egy `Map Kit View`-t. A cellák magasságát a *Size inspectorban* állítsuk **200, 150, 200**-ra, ebben a sorrendben!
+
+> Adjunk meg `Auto Layout` kényszereket az `Image View`-hoz, mind a `Text View`-hoz és a `Map View`-hoz. Rögzítsük a szülő nézeteikhez néhány kényszer megadásával (pl. **0** távolság a szülő összes oldalától, a *Constrain to margins* bekapcsolása mellett).
+
+<img src="img/table_view_cell_constraint.png" alt="" style="width: 25%;"/>
+
+> Az `Image View` *Content Mode* property-jét állítsuk **Aspect Fit**re!
+
+<!--  -->
+> A `Text View`-nak kapcsoljuk ki az *Editable* property-jét!
+
+> A `Table View`-t kiválasztva a *Selection* property értékét állítsuk **No Selection**-re, hogy ne lehessen kijelölni a cellákat!
+
+<img src="img/table_view_no_selection.png" alt="" style="width: 25%;"/>
+
+> A Library-ből húzzunk egy `Bar Button Item`et a `Navigation Item` bal oldalára, majd a *System Item* property-jét állítsuk **Trash**-re!
+
+<img src="img/table_view_bar_button_item.png" alt="" style="width: 25%;"/>
+
+> Nyissuk meg a `FortressDetailViewController`-t és vegyünk fel `Outlet`eket a `3`, adatmegjelenítésre szolgálló nézethez és a Trash gombhoz (minden cellából azt a nézetet válasszuk ki, mely az egyedi adat megjelenítésére szolgál, és ezeket kössük be `Outlet`ekre)!
+
+```swift
+@IBOutlet var trashButton: UIBarButtonItem!
+@IBOutlet var imageView: UIImageView!
+@IBOutlet var descriptionTextView: UITextView!
+@IBOutlet var mapView: MKMapView!
+```
+
+> Kössünk be egy `Action`t a kukához is `trashTapped` névvel, majd a metódusban hívjuk meg a `clearView()` metódust!
+
+> Töltsük ki a `refreshViews(with:)` metódus hiányzó részét! A hiányzó két sorban állítsuk be az `imageView` képét és a `descriptionTextView` szövegét.
+
+```swift
+private func refreshView(with fortress: Fortress) {
+  self.fortress = fortress
+  navigationItem.title = fortress.name
+
+  // Hiányzó két sor
+
+  let annotation = MKPointAnnotation()
+  annotation.title = fortress.name
+  annotation.coordinate = fortress.coordinates
+  mapView.addAnnotation(annotation)
+  mapView.setRegion(MKCoordinateRegion(center: fortress.coordinates, latitudinalMeters: 10000, longitudinalMeters: 10000), animated: true)
+}
+```
+
+> Nézzük meg hogyan néz ki üresen a `Table View`-nk!
+
+## Drop implementálása <a id="table-view-drop"></a>
+Végül utolsó lépésként készítsük fel a `Table View`-nkat `Fortress` objektumok fogadására.
+
+```swift
+extension FortressDetailViewController: UIDropInteractionDelegate {
+  // MARK: - UIDropInteractionDelegate
+  func dropInteraction(_ interaction: UIDropInteraction, canHandle session: UIDropSession) -> Bool {
+    return session.canLoadObjects(ofClass: Fortress.self)
+  }
+
+  func dropInteraction(_ interaction: UIDropInteraction, sessionDidUpdate session: UIDropSession) -> UIDropProposal {
+    return UIDropProposal(operation: .copy)
+  }
+
+  func dropInteraction(_ interaction: UIDropInteraction, performDrop session: UIDropSession) {
+    session.loadObjects(ofClass: Fortress.self) { object in
+      guard let fortress = object.last as? Fortress else { return }
+      self.refreshView(with: fortress)
+    }
+  }
+}
+```
+
+```swift
+// Drop delegate beállítása
+tableView.addInteraction(UIDropInteraction(delegate: self))
+```
+
+> Teszteljük az alkalmazást! Nyissuk meg egymás mellé a FortressBrowsert és a FortressViewert, majd a browserből húzzunk át egy várat a viewerbe!
+
+# Szorgalmi feladat <a id="szorgalmi-feladat"></a>
+
+## Egyedi Drag implementálása <a id="image-view-custom-drag"></a>
+
+Van a projektben még egy eddig nem használt nézet, a `FortressDragPreview` fájlban definiálva. A feladat, hogy a BrowserView `imageView`-jára engedélyezzük a draget és a drag előnézetének ezt a view-t használjuk.
+
+> Kapcsoljuk be a draget az `imageView`-ra! Nem triviális, de ahhoz, hogy egy UIImageView-n működjön a drag, az interaction rárakásán kívül engedélyezni kell a felhasználói interakciót is!
+
+```swift
+imageView.isUserInteractionEnabled = true
+// Interaction rárakása az imageView-ra...
+```
+
+> A `UIDragInteractionDelegate` protokoll kötelező, `dragInteraction(_:itemsForBeginning:)` implementálása után valósítsd meg a `dragInteraction(_:previewForLifting:session:)` metódust is! 
+
+```swift
+  func dragInteraction(_ interaction: UIDragInteraction, previewForLifting item: UIDragItem, session: UIDragSession) -> UITargetedDragPreview? {
+    guard let fortress = fortress, let image = fortress.image else {
+      return nil
+    }
+
+    // FortressDragPreview példányosítása egy 200x350-es téglalappal
+    // dragPreview setContent(image:name:shortDescription) metódus meghívása
+
+    return UITargetedDragPreview(view: dragPreview, parameters: UIDragPreviewParameters(), target: UIDragPreviewTarget(container: tableView, center: imageView.center))
+  }
+```
+
+> Próbáld ki az alkalmazást és indíts egy drag sessiont az `imageView`-ról!
+
+## Spring Loading <a id="spring-loading"></a>
+Keresd meg és kapcsold be a kuka gombra a *Spring Loading*ot, ami lényegében annyit csinál, hogyha a gombra draggelsz valamit és ott tartod az ujjadat, akkor automatikusan meghívja a gomb akciómetódusát.
+
+> Indíts egy drag sessiont az `imageView`-ról és húzd a kukára, majd tartsd ott az ujjad pár másodpercig!
+
+## A laborsegédletet összeállította
+* Krassay Péter - krassay.peter@autsoft.hu
+* Varga Domonkos - varga.domonkos@autsoft.hu
+* Dávid Márk Tamás - david.tamas@autsoft.hu

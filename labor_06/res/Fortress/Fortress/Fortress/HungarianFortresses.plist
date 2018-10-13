@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>name</key>
+		<string>Boldogkő</string>
+		<key>imageName</key>
+		<string>boldogko</string>
+		<key>shortDescription</key>
+		<string>A Hernád folyó völgyének keleti oldalán, egy távolról is jól látható sziklaszirtet koronáznak Boldogkő várának restaurált falai. Azon kőváraink közé tartozik, melyet tatárjárás után emeltek Árpád-házi IV. Béla király ösztönzésére, a környező vidék Tomaj nemzetségbeli földesurai.</string>
+		<key>latitude</key>
+		<real>48.344897</real>
+		<key>longitude</key>
+		<real>21.232947</real>
+	</dict>
+	<dict>
+		<key>name</key>
+		<string>Buda vára</string>
+		<key>imageName</key>
+		<string>buda</string>
+		<key>shortDescription</key>
+		<string>Az országot romba döntő 1241-42-es tatárjárás után az újjáépítést megparancsoló Árpád-házi IV. Béla király a sokkal jobban védhető Várhegyet jelölte ki egy uralkodói székhely megalapítására.</string>
+		<key>latitude</key>
+		<real>47.496503</real>
+		<key>longitude</key>
+		<real>19.039421</real>
+	</dict>
+	<dict>
+		<key>name</key>
+		<string>Buják vára</string>
+		<key>imageName</key>
+		<string>bujak</string>
+		<key>shortDescription</key>
+		<string>Nem maradt fenn írásos adat, hogy kinek a parancsára és mikor emelhették a korai vármagot. Az első okleveles említésekor, 1315-ben királyi várnagy sikerrel védelmezte meg embereivel a Csák Máté tartományúr seregét vezető Ibur fia István fegyveresei ellenében.</string>
+		<key>latitude</key>
+		<real>47.898161</real>
+		<key>longitude</key>
+		<real>19.534775</real>
+	</dict>
+	<dict>
+		<key>name</key>
+		<string>Diósgyőr</string>
+		<key>imageName</key>
+		<string>diosgyor</string>
+		<key>shortDescription</key>
+		<string>A magyar törzsek Kárpát-medencében történő letelepedését követően a Borsod nemzetség verte fel itt szállását, melynek védelmére készített faszerkezetű erődítmény alapjait megtalálták a régészek. Az 1241–42-es tatárjárás elpusztította a vidékkel együtt, helyébe 1300 körül Ákos nembeli István nádor emeltetett kőből várat.</string>
+		<key>latitude</key>
+		<real>48.098202</real>
+		<key>longitude</key>
+		<real>20.689745</real>
+	</dict>
+	<dict>
+		<key>name</key>
+		<string>Drégelyvár</string>
+		<key>imageName</key>
+		<string>dregely</string>
+		<key>shortDescription</key>
+		<string>A mongol könnyűlovasok elvonulása után, a horvát tengerpartról hazatérő Árpád-házi IV. Béla király parancsára végrehajtott várépítések idején emeltette a környező területeket birtokló Hontpázmány nemzetség.</string>
+		<key>latitude</key>
+		<real>48.016870</real>
+		<key>longitude</key>
+		<real>19.036828</real>
+	</dict>
+	<dict>
+		<key>name</key>
+		<string>Eger</string>
+		<key>imageName</key>
+		<string>eger</string>
+		<key>shortDescription</key>
+		<string>Az Árpád-házi uralkodók idejében az egri püspök menedékvárát a felsőtárkányi Várhegy hatalmas erődítménye jelentette, amit a tatárjáráskor romboltak le. Az országos újjáépítés részeként, az egri püspök parancsára vették körbe erős kőfalakkal a jelenlegi egri Várhegyet, melyet a XIV. századi krónikákban Szent János evangélista várának írtak le.</string>
+		<key>latitude</key>
+		<real>47.904282</real>
+		<key>longitude</key>
+		<real>20.380207</real>
+	</dict>
+	<dict>
+		<key>name</key>
+		<string>Esztergom</string>
+		<key>imageName</key>
+		<string>esztergom</string>
+		<key>shortDescription</key>
+		<string>A ma is látható lakóépületeket Árpád-házi III. Béla király parancsára emelték külhoni építőmesterek, ezzel kialakult a déli sziklacsúcson az uralkodó székhelye, központjában a sokszögletű lakótoronnyal és gyönyörű várkápolnával, melytől északi irányban egy kisebb dombon emelkedik a Szent Adalbert székesegyház.</string>
+		<key>latitude</key>
+		<real>47.798123</real>
+		<key>longitude</key>
+		<real>18.737247</real>
+	</dict>
+	<dict>
+		<key>name</key>
+		<string>Hollókő</string>
+		<key>imageName</key>
+		<string>holloko</string>
+		<key>shortDescription</key>
+		<string>Legkorábbi részeit, a környéket uraló Kacsics nemzetség tagjai emelték a XIII. század második felében. A XIV. század elején kitört anarchikus belháborúban kénytelenek voltak meghódolni Csák Máté tartományúr előtt, a továbbiakban őt szolgálták fegyverükkel.</string>
+		<key>latitude</key>
+		<real>47.997836</real>
+		<key>longitude</key>
+		<real>19.582360</real>
+	</dict>
+	<dict>
+		<key>name</key>
+		<string>Kőszeg vára</string>
+		<key>imageName</key>
+		<string>koszeg_var</string>
+		<key>shortDescription</key>
+		<string>Kőszeg első vára az Óvár {Óház} a hegyek között létesült valószínűleg még a tatárjárás előtti időszakban. A tatárok elvonulása után kezdődött meg az Alsóvár kiépítése a völgybeli település mellett, ami a középkorban átvette a nehezen megközelíthető Felsővár földesúri birtokközpontjának szerepét.</string>
+		<key>latitude</key>
+		<real>47.389870</real>
+		<key>longitude</key>
+		<real>16.539321</real>
+	</dict>
+	<dict>
+		<key>name</key>
+		<string>Ónod vár</string>
+		<key>imageName</key>
+		<string>onod</string>
+		<key>shortDescription</key>
+		<string>A legkorábbi oklevelek tanúsága szerint a XIV. század végén itt birtokos Czudar főnemesi család tagjai vették körbe erős kőfallal a helybeli plébániatemplomot, hogy abból uradalmi birtokközpontot létesítsenek. Férfiágon való kihalásuk után Hunyadi Mátyás király a Rozgonyi családnak adományozta a környező jobbágyfalvakat összefogó várbirtokot.</string>
+		<key>latitude</key>
+		<real>48.004515</real>
+		<key>longitude</key>
+		<real>20.923293</real>
+	</dict>
+	<dict>
+		<key>name</key>
+		<string>Sárospatak</string>
+		<key>imageName</key>
+		<string>sarospatak</string>
+		<key>shortDescription</key>
+		<string>A régészeti feltárások szerint a magyarság már a 9. században letelepedett a Bodrog mentén, ahol virágzó települést hozott létre. A korabeli legendák szerint a helyi királyi udvarházban született meg Szent Erzsébet is. 1241-ben a helységet pusztulásba döntötte a tatárjárás, házait IV. Béla hívására hospesek építették újjá. Ugyanekkor emelték az uralkodó parancsára a sátoraljaújhelyi Várhegyen azt a kővárat, amit a korabeli források Patak váraként emlegettek és egészen a 16. század közepéig állt fenn.</string>
+		<key>latitude</key>
+		<real>48.315792</real>
+		<key>longitude</key>
+		<real>21.569713</real>
+	</dict>
+	<dict>
+		<key>name</key>
+		<string>Siklós</string>
+		<key>imageName</key>
+		<string>siklosvarrajz</string>
+		<key>shortDescription</key>
+		<string>Legrégebbi épületrészeit a déli lakószárny pincéjében derítették fel a régészek, ez lehetett az egykori oklevelekben említett Kán nembeli Gyula nádor leszármazottai által emelt korai vár magja.</string>
+		<key>latitude</key>
+		<real>45.852641</real>
+		<key>longitude</key>
+		<real>18.296112</real>
+	</dict>
+	<dict>
+		<key>name</key>
+		<string>Somoskő</string>
+		<key>imageName</key>
+		<string>somosko</string>
+		<key>shortDescription</key>
+		<string>Korai vármagját a vidéken birtokos Kacsics nemzetség emeltette a XIII. század második felében. Az Árpád-házi uralkodók férfiágának kihalását követő anarchikus belháború idején a nemesi család kénytelen volt behódolni Csák Máté tartományúr előtt.</string>
+		<key>latitude</key>
+		<real>48.171532</real>
+		<key>longitude</key>
+		<real>19.857785</real>
+	</dict>
+	<dict>
+		<key>name</key>
+		<string>Szigetvár</string>
+		<key>imageName</key>
+		<string>szigetvar</string>
+		<key>shortDescription</key>
+		<string>Az első erődítmény magja a régészeti kutatások szerint egy kör alapterületű, magas öregtorony lehetett, melyet a négyzetes udvaron kőfalak kerítettek. Az évszázadok során ebből alakult ki Szigetvár erődítményrendszere, mely magába foglalta a virágzó települést is. 1474-ben Hunyadi Mátyás király Enyingi Török Imrének adományozta, akitől fia, Bálint örökölte meg.</string>
+		<key>latitude</key>
+		<real>46.053984</real>
+		<key>longitude</key>
+		<real>17.807476</real>
+	</dict>
+	<dict>
+		<key>name</key>
+		<string>Szigliget</string>
+		<key>imageName</key>
+		<string>szigliget</string>
+		<key>shortDescription</key>
+		<string>Legkorábbi részei a kettős torony között építtetett palotaszárny és az azokat övező kőfalak voltak, ami annyira megtetszett IV. Béla királyunknak, hogy felépülése után, 1262-ben cserével megszerezte magának. Később a veszprémi püspökség mondhatta magáénak, majd gyakran váltakoztak urai.</string>
+		<key>latitude</key>
+		<real>46.804501</real>
+		<key>longitude</key>
+		<real>17.436891</real>
+	</dict>
+	<dict>
+		<key>name</key>
+		<string>Tátika</string>
+		<key>imageName</key>
+		<string>tatika</string>
+		<key>shortDescription</key>
+		<string>Históriájához tartozik, hogy 1248-ban Árpád-házi IV. Béla király parancsára elkobozták a Tátika nemzetségtől a Várhegy egyik kiugró meredélyén emelt korábbi keletkezésű Alsó-Tátika várát, mivel annak tagjai erőszakkal feldúlták a veszprémi püspökség egyik közeli birtokát. A királyi döntés értelmében Alsó-Tátika várát a kárt szenvedett veszprémi püspök kapta meg, Zaland egyházfő azonban nem tartotta eléggé biztonságosnak, így a Várhegy csúcsán egy új kővárat emeltetett.</string>
+		<key>latitude</key>
+		<real>46.906397</real>
+		<key>longitude</key>
+		<real>17.260340</real>
+	</dict>
+	<dict>
+		<key>name</key>
+		<string>Várpalota</string>
+		<key>imageName</key>
+		<string>varpalota</string>
+		<key>shortDescription</key>
+		<string>A történészek kutatásai szerint közvetlen elődjének számít a tőle néhány kilométerre, a Bakony sűrűjében omladozó Pusztapalota (Bátorkő) vára, amit még a 13. század második felében emeltetett a Csák nemzetség. A 15. században azonban szükségessé vált egy könnyebben megközelíthető földesúri birtokközpont létrehozása, melyet Raholcai `Kont` Miklós leszármazottai, az Újlaki főnemesi család építtetett fel. Veszprém 1552-es eleste után, az első sorba került, falait gyakran támadták az ellenséges hadak. Az igazhitű harcosok azonban emberükre akadtak, mivel ekkoriban nevezték ki várkapitányául Thúry Györgyöt, a korszak egyik híres, legyőzhetetlen bajvívóját, a törökök rettegett ellenségét.</string>
+		<key>latitude</key>
+		<real>47.201211</real>
+		<key>longitude</key>
+		<real>18.139895</real>
+	</dict>
+	<dict>
+		<key>name</key>
+		<string>Visegrád</string>
+		<key>imageName</key>
+		<string>visegrad</string>
+		<key>shortDescription</key>
+		<string>A történelem folyamán több erődítményt is emeltek az itt lakó népek, hogy ellenőrzésük alatt tarthassák a szoroson átvezető utat. Az 1241 – 42-es tatárjárás viharai által romba dőlt ispánsági vár köveiből építtette fel az újabb veszedelem elleni félelmében IV. Béla a hatszög alakú, vastag falú lakótornyot, amit a néphagyomány később Salamon-toronynak nevezett el.</string>
+		<key>latitude</key>
+		<real>47.794284</real>
+		<key>longitude</key>
+		<real>18.980463</real>
+	</dict>
+</array>
+</plist>
