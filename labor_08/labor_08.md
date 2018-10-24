@@ -1,16 +1,13 @@
 # `iOS` alapú szoftverfejlesztés - Labor `08`
 
-## A laborsegédletet összeállította
-* Kántor Tibor - tibor.kantor@autsoft.hu
-* Krassay Péter - peter.krassay@autsoft.hu
-
 ## A labor témája
 
 * [Az `Adaptive Layout` bemutatása](#adaptive-layout-bemutatasa)
     * [iNames](#inames)
+* [Önálló feladat](#onallo)
     * [Több névnap egy napon - `UISplitViewController`](#split-vc)
     * [Nevek jelentése - `UIPopoverPresentationController`](#popover-vc)
-* [Önálló feladatok pluszpontért](#onallo-feladatok-pluszpontert)
+* [Szorgalmi feladat](#szorgalmi)
 
 A labor célja az `Adaptive Layout` használatatának a gyakorlása egy névnapos alkalmazás kezdeti képernyőin keresztül.
 
@@ -39,15 +36,17 @@ Amennyiben szeretnénk például olyan kényszereket hozzáadni a nézeteinkhez,
 Amint kiválasztunk valamit, a felhasználói felület azonnal megváltozik, az alsó sáv háttere kék színű lesz. Ezzel jelzi az `Xcode`, hogy jelenleg `Size Class`-ek alapján variáljuk a kényszereinket, illetve az egész felhasználói felületünket. Ha végeztünk a testreszabással, akkor a `Done Varying` gombra kattintva visszatérhetünk  normál módba.
 ![](img/03_vary_for_regular_width_height.png)
 
-Emlékeztetőnek két kép a [`Apple` dokumentációjából](https://developer.apple.com/reference/uikit/uitraitcollection) a gyorsabb megértéshez, illetve a `Size Class`-ek átlátáshoz.
+Emlékeztetőnek két kép a [`Apple` dokumentációjából](https://developer.apple.com/design/human-interface-guidelines/ios/visual-design/adaptivity-and-layout/) a gyorsabb megértéshez, illetve a `Size Class`-ek átlátáshoz.
 
-<img src="img/04_a_size_classes.png" alt="04a" style="width: 40%;"/> <img src="img/04_b_size_classes.png" alt="04b" style="width: 40%;"/>
+<img src="img/04_a_size_classes.png" alt="04a" style="width: 40%;"/> 
 
 <!--  -->
+> Válasszuk ki az iPhone XS modellt.
+
 > A `View` *háttérnek* állítsuk be a zöld egy árnyalatát (*RGB:* **204, 255, 204**)!
 
 > Adjunk hozzá a `View`-hoz egy sötétzöld (*RGB:* **51, 153, 0**) `View`-t és alkalmazzuk a következő `AutoLayout` kényszereket:
-> - A sötétzöld `View` két széle és a teteje legyen rögzítve **0** távolságra a **szülő nézettől**. (`Constrain to margins` legyen kikapcsolva!)
+> - A sötétzöld `View` két széle és a teteje legyen rögzítve **0** távolságra a **szülő nézettől**. (Safe area) (`Constrain to margins` legyen kikapcsolva!)
 > - A magassága legyen **200** egység.
 
 <!--  -->
@@ -122,9 +121,9 @@ Ezek után a következőt kell látnunk.
 
 <img src="img/15_label_desired_ui.png" alt="15" style="width: 20%;"/>
 
-Láthatjuk, hogy a legtöbb *portait* orientációjú `iPhone`-nál ez túl nagy betűtípus, míg `iPad` esetében túl kicsi.
+Láthatjuk, hogy a kisebb méretű, *portait* orientációjú `iPhone`-oknál ez túl nagy betűtípus, míg `iPad`ek esetében túl kicsi.
 
-> Kattintsunk a betűtípus melletti plusz ikonra és adjunk hozzá az `iPad` (**wR hR**) és a kompakt szélességű `iPhone`-ok (**wC**) esetében két hasonló stílusú, de eltérő méretű fontot (**90** és **35**).
+> Kattintsunk a betűtípus melletti plusz ikonra és adjunk hozzá az `iPad` (**wR hR**) és a kompakt szélességű `iPhone`-ok (**wC**) esetében két hasonló stílusú, de eltérő méretű fontot (**80** és **35**).
 
 <img src="img/16_adaptive_font.png" alt="16" style="width: 33%;"/>
 
@@ -158,12 +157,14 @@ Az `iPhone`-ok *landscape* orientációjában célszerűbb lenne egy magasabb k�
 
 <img src="img/20_landscape_different_image.png" alt="20" style="width: 50%;"/>
 
+# Önálló feladat <a id="onallo"></a>
+
 ## Több névnap egy napon - `UISplitViewController` <a id="split-vc"></a>
 > Adjuk hozzá a projekthez a `Names.plist` fájlt. (Hozzáadáskor figyeljünk arra, hogy a *Copy items if needed* be legyen pipálva!)
 
 <img src="img/21_copy_items_if_needed.png" alt="21" style="width: 50%;"/>
 
-> Vegyünk fel egy `NameHandler` singleton osztályt, ami az adott nap névnapjait fogja visszaadni!
+> Vegyünk fel egy `NameHandler` singleton osztályt egy új fájlban, ami az adott nap névnapjait fogja visszaadni!
 
 ```swift
 import Foundation
@@ -200,7 +201,7 @@ Ha mindent jól csináltunk, akkor a következő elrendezést kell kapnunk.
 > Az `AppDelegate.swift`-ben egészítsük ki az `application(_:didFinishLaunchingWithOptions:)`metódust!
 
 ```swift
-func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
   let splitViewController = window?.rootViewController as! UISplitViewController
   let navigationController = splitViewController.viewControllers.last as! UINavigationController
@@ -440,7 +441,7 @@ func adaptivePresentationStyle(for controller: UIPresentationController, traitCo
 
 > Teszteljük az alkalmazást ismét `iPhone`-on!
 
-# Önálló feladatok plusz pontért <a id="onallo-feladatok-pluszpontert"></a>
+# Szorgalmi feladat <a id="szorgalmi"></a>
 
 A `Split View Controller` behelyezésével bizonyos képernyőméreteken pl. `iPhone 8 Plus` *landscape*, vagy `iPad`en elromlott a labor első felében nehéz munkával elkészített layout. 
 
@@ -474,3 +475,8 @@ flowerImageView.tintColor = .white
 ```
 
 > Csodáljuk meg az eredményt! 🌺 🌸
+
+## A laborsegédletet összeállította
+* Varga Domonkos - varga.domonkos@autsoft.hu
+* Krassay Péter - peter.krassay@autsoft.hu
+* Kántor Tibor - tibor.kantor@autsoft.hu
