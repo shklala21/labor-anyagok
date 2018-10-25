@@ -46,7 +46,7 @@ Emlékeztetőnek két kép a [`Apple` dokumentációjából](https://developer.a
 > A `View` *háttérnek* állítsuk be a zöld egy árnyalatát (*RGB:* **204, 255, 204**)!
 
 > Adjunk hozzá a `View`-hoz egy sötétzöld (*RGB:* **51, 153, 0**) `View`-t és alkalmazzuk a következő `AutoLayout` kényszereket:
-> - A sötétzöld `View` két széle és a teteje legyen rögzítve **0** távolságra a **szülő nézettől**. (Safe area) (`Constrain to margins` legyen kikapcsolva!)
+> - A sötétzöld `View` két széle és a teteje legyen rögzítve **0** távolságra a **szülő nézettől**. (Superview) (`Constrain to margins` legyen kikapcsolva!)
 > - A magassága legyen **200** egység.
 
 <!--  -->
@@ -85,7 +85,7 @@ Az `iPhone` kijelzőn *landscape* módban az `Image View` indokolatlanul sok hel
 
 ![](img/09_vary_for_compact_height.png)
 
-> Jelöljük ki a sötétzöld `View`-t és töröljük ki a `Size inspector`ban a `View` magasságát és jobb oldalát (*Trailing Space*) rögzítő kényszert a `Backspace`-szel!
+> Jelöljük ki a sötétzöld `View`-t és töröljük ki a `Size inspector`ban a `View` magasságát és jobb oldalát (*Align Trailing*) rögzítő kényszert a `Backspace`-szel!
 
 <img src="img/10_compact_height_removed_constraints.png" alt="10" style="width: 33%;"/>
 
