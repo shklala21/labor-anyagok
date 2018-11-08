@@ -1,508 +1,398 @@
 # `iOS` alapú szoftverfejlesztés - Labor `09`
 
-## A laborsegédletet összeállította
-* Kelényi Imre - imre.kelenyi@aut.bme.hu
-* Krassay Péter - peter.krassay@autsoft.hu
-
 ## A labor témája
 
-* [UberNotebook](#ubernotebook)
-  * [Alkalmazás váz, Core Data alapok](#core-data-alapok)
-  * [Adatmodell definiálása](#adatmodell-definialasa)
-  * [Adatmodell osztályok](#adatmodell-osztalyok)
-  * [`Notebook`ok megjelenítése](#notebookok-megjelenitese)
-  * [Jegyzetek, `NSFetchedResultsController`](#jegyzetek-nsfetchedresultcontroller)
-  * [Jegyzetek felvétele](#jegyzetek-felvetele)
-  * [Jegyzetek törlése](#jegyzetek-torlese)
-  * [További műveletek](#tovabbi-muveletek)
-  * [`Managed Object Context` mentése](#moc-mentese)
-* [Önálló feladatok](#onallo-feladatok)
+* [Messenger](#messenger)
+    * [Üzenetek letöltése](#uzenetek-letoltese)
+    * [`JSON` feldolgozás](#json-feldolgozas)
+    * [Üzenetek feltöltése](#uzenetek-feltoltese)
+* [Önálló feladat](#onallo)
+    * [Képek feltöltése](#kepek-feltoltese)
+    * [Képek letöltése](#kepek-letoltese)
+    * [Network Activity Indicator](#network-activity-indicator)
+* [Szorgalmi feladat: Valutaváltó](#szorgalmi-feladat)
 
-## UberNotebook <a id="ubernotebook"></a>
+## Messenger <a id="messenger"></a>
 
-### Alkalmazás váz, Core Data alapok <a id="core-data-alapok"></a>
-> Hozzunk létre egy `Single View App`ot **UberNotebook** névvel a `labor_09` könyvtárba! Ne felejtsük el bekapcsolni a **Use Core Data** opciót a projekt generálásakor!
+> Másoljuk a `res` mappában lévő **`Messenger`** kezdőprojektet a `labor_09` mappánkba!
 
-<img src="img/01_use_core_data.png" alt="01" style="width: 33%;"/>
+![](img/01_start.png)
 
-> Töröljük ki a projektből a generált `ViewController.swift` fájlt és a `Main.storyboard`ból is távolítsuk el az ott létrejött jelenetet (*View Controller Scene*).
+> Próbáljuk ki az alkalmazást és nézzük át a forráskódját! 
 
-Érdemes megvizsgálni az `AppDelegate.swift`ben a `Core Data` stackhez kapcsolódó metódusokat.
+Az alkalmazás két `Table View Controller`t tartalmaz. A `Messages View Controller` az üzeneteket listázza, a `Compose Message View Controller` pedig új üzenet írására szolgál.
 
-A `persistentContainer` property fogja össze a `Core Data` stacket, definíciójában láthatjuk a nevét: **UberNotebook**. A háttérben alapértelmezetten egy `SQLite` adatbázis lesz, ami az `UberNotebook.sqlite`-ban tárolja az adatokat.
+### Üzenetek letöltése <a id="uzenetek-letoltese"></a>
 
-A `persistentContainer.viewContext` property-jének segítségével fogjuk tudni elérni a kontextust, amin keresztül a `Core Data` műveleteket elvégezhetjük.
-
-A `saveContext()` metódust használjuk a kontextus mentéséhez. Egyrészt rögtön naplózza az esetleges hibát, másrészt csak akkor fog ténylegesen menteni, ha az előző mentés óta volt valamilyen változás.
-
-### Adatmodell definiálása <a id="adatmodell-definialasa"></a>
-
-> Nyissuk meg a `UberNotebook.xcdatamodeld` fájlt és vegyünk fel:
->
-> * új entitást **`Notebook`** névvel
->   * **title** (*String*) *attribútum*mal
-> * új entitást **`Note`** névvel
->   * **content** (*String*) *attribútum*mal
->   * **creationDate** (*Date*) *attribútum*mal
-
-<!--  -->
-> Vegyünk fel a `Notebook`ba egy **notes** *relationship*et, mely a `Note`-ra hivatkozik!
-
-<!--  -->
-> Vegyünk fel a `Note`-ba egy **notebook** *relationship*et, mely a `Notebook`ra hivatkozik!
-
-<!--  -->
-> Mindkét *relationship*nél állítsuk be az inverz relációt a másikra! (Ha az egyiknél beállítottuk, akkor a másiknál jó esetben be fogja állítani automatikusan.)
-
-A `Core Data`ban relációknál mindig meg kell adnunk egy inverz relációt is. Erre azért van szükség, hogy az objektum gráf ne kerülhessen inkonzisztens állapotba, például törlés esetén (ha egy entitásra van egy reláció, de ennek a relációnak nincs inverze, akkor az entitás törlése esetén nem lehetne értesíteni a reláció tulajdonosát, hogy törlődött egy hivatkozott objektum).
-
-> Állítsuk be a **notes** reláció *típusát* **`To Many`**-re és a *törlési szabályát* **`Cascade`**-re! (Így ha törlődik a `Notebook`, a bejegyzései is törlődnek vele együtt).
-
-<img src="img/02_notes_relationshop.png" alt="02" style="width: 25%;"/> <img src="img/03_graph_editor.png" alt="03" style="width: 25%;"/>
-
-Itt az ideje az adatmodell kipróbálásának!
-
-> Az `AppDelegate.swift` `application(_:didFinisLaunchingWithOptions:)` metódusában, a `return true` sor elé hozzunk létre egy új `Notebook`ot és benne egy `Note`-ot!
+> A `MessagesViewController.swift`be vegyünk fel egy új *property*-t, mely az `URLSession` példányt tárolja! Helyben inicializáljuk is!
 
 ```swift
-let notebook = NSEntityDescription.insertNewObject(forEntityName: "Notebook", into: persistentContainer.viewContext)
-notebook.setValue("Notebook \(arc4random_uniform(10000))", forKey: "title")
-
-let note = NSEntityDescription.insertNewObject(forEntityName: "Note", into: persistentContainer.viewContext)
-note.setValue("\(arc4random_uniform(10000)) a kedvenc véletlen számom!", forKey: "content")
-note.setValue(Date(), forKey: "creationDate")
-note.setValue(notebook, forKey: "notebook")
-
-saveContext()
+private var urlSession: URLSession = {
+  let sessionConfiguration = URLSessionConfiguration.default
+  return URLSession(configuration: sessionConfiguration, delegate: nil, delegateQueue: OperationQueue.main)
+}()
 ```
 
-> A sikeres mentés esetén kérdezzük le és listázzuk ki az összes elmentett jegyzetet!
+> Valósítsuk meg a *Refresh* gomb megnyomásakor meghívódó metódust, mely elindítja az üzenetek letöltését! (Az üres metódus `refreshButtonTap(_:)` néven már ott van a kódban, és be is van kötve a gomb megfelelő eseményéhez.)
 
 ```swift
-let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Note")
-do {
-  let notes = try persistentContainer.viewContext.fetch(fetchRequest)
-  notes.forEach { note in
-   let content = note.value(forKey: "content") as! String
-   print(content)
-  }
-} catch let error as NSError {
-  print("Couldn't fetch: \(error.userInfo))")
-}
+// MARK: - Actions
 
-return true
-```
-
-Mivel az alkalmazás indításakor mindig létrehozunk egy új `Notebook`ot és benne egy `Note`-ot, a logban minden indítás után egyre hosszabb felsorolást kapunk.
-
-Figyeljük meg a `Swift` hibakezelés egyik módját, a `do-catch` párost. Bármilyen olyan metódus, ami hibával térhet vissza (`throws` kulcsszó van a végén), egy `do` blokkon belül hívható csak meg, és a hívás elé a `try` kulcsszót kell beírni. A hibát pedig a `catch` blokkban tudjuk feldolgozni.
-
-> Próbáljuk ki, hogy bár a lekérdezésben csak `Note`-okat kérünk le, a lekérdezett objektumok relációs property-jein keresztül el tudunk érni más entitásokat is (ilyen esetekben a `Core Data` automatikusan elvégzi a lekérdezést a háttérben). Esetünkben le tudjuk kérni a `Note`-hoz tartozó `Notebook`ot.
-
-```swift
-let notebook = note.value(forKey: "notebook") as! NSManagedObject
-print(notebook.value(forKey: "title") as! String)
-```
-
-> Kapcsoljuk be a `Product/Scheme/Edit Scheme` menüben, hogy a futtatáskor a konzolon megjelenjenek a `Core Data` használata közben kiadott `SQL` utasítások. Ehhez a **-com.apple.CoreData.SQLDebug 1** argumentumot kell felvenni. (A szám 1-4-ig lehet bármilyen egész, a nagyobb szám [több információt](https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/CoreData/TroubleshootingCoreData.html) fog kiírni.)
-
-<img src="img/04_sql.png" alt="04" style="width: 50%;"/>
-
-Miután kipróbáltuk az alkalmazást érdemes kikapcsolni az `SQL` loggolást.
-
-### Adatmodell osztályok <a id="adatmodell-osztalyok"></a>
-`Core Data` programozás során mindenre használhatunk `NSManagedObject` típusú objektumokat, de ennél sokkal kényelmesebb és biztonságosabb, ha az entitásoknak definiált külön osztályokat használjuk.
-
-`Xcode 8`-tól az adatmodellhez definiált összes entitáshoz alapértelmezésként automatikusan legenerálódnak az `NSManagedObject` leszármazottak. (Az entitás *Codegen* propery-je **Class Definition** értékű.)
-
-<img src="img/05_codegen.png" alt="05" style="width: 15%;"/>
-
-> Vizsgáljuk meg az automatikusan legenerált fájlokat! A `Finder`ben nyomjunk egy `⌘+⇧+G`-t és illesszük be a következő útvonalat: `~/Library/Developer/Xcode/DerivedData/`, majd kattintsunk a `Go` gombra.
-
-<img src="img/06_go_to_derived_data.png" alt="06" style="width: 50%;"/>
-
-> Miután bekerülünk abba a mappába, ahol az `Xcode` tárolja a fordítási eredményeket, keressük meg az `UberNotebook-xxxxxxxxxxxxxxxxxxxxxxxxxxxx` mappát, majd vizsgáljuk meg a tartalmát!
-
-<img src="img/07_derived_data.png" alt="07" style="width: 33%;"/>
-
-Minden `NSManagedObject` alosztályhoz két külön `Swift` fájl jön létre. Az `Entity+CoreDataProperties.swift`ben egy külön `extension`be kerülnek a generált property-k, míg maga az entitás osztály definíciója az `Entity+CoreDataClass.swift` fájlba generálódik.
-
-Érdemes ismerni még a *Codegen* további beállításait is.
-
-__Manual/None__: régi módszer, kézzel kell megírni, vagy legenerálni a szükséges fájlokat. Ehhez az `Xcode` segítséget nyújt, az adatmodellben az entitást kiválasztva, az `Editor/Create NSManagedObject Subclass...` opcióval legenerálja az osztályokat az entitásokhoz.
-
-__Category/Extension__: "félautomata" módba kapcsolja a generátort. Ilyenkor automatikusan legenerálódik az `Entity+CoreDataGeneratedProperties.swift` fájl, azonban magáról az osztály 
-deklarálásáról nekünk kell gondoskodnunk.
-
-### `Notebook`ok megjelenítése <a id="notebookok-megjelenitese"></a>
-
-> Hogy megkönnyítsük a `NSManagedObjectContext` elérését, vegyünk fel egy computed property-t az `AppDelegate.swift`be!
-
-```swift
-class var managedContext: NSManagedObjectContext {
-  return (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+@IBAction func refreshButtonTap(_ sender: Any) {
+  let url = URL(string: "http://atleast.aut.bme.hu/ait-ios/messenger/messages")
+  urlSession.dataTask(with: url!) { data, response, error in
+    if let data = data, let responseString = String(data: data, encoding: .utf8) {
+      print("\(responseString)")
+    }
+  }.resume()
 }
 ```
 
-> Hozzunk létre egy új `UITableViewController`ből származó osztályt **`NotebookViewController`** névvel!
+> Teszteljük az alkalmazást és ellenőrizzük, hogy a konzolon megjelenik-e a letöltött `JSON` formátumú válasz!
 
-> A `Main.storyboard`ban vegyünk fel egy új `Table View Controller`t és ágyazzuk be egy `Navigation Controller`be, amit jelöljünk ki a kezdeti `View Controller`nek!
+A konzolon csak a következő üzenet jelenik meg:
 
-<img src="img/08_desired_ui.png" alt="08" style="width: 33%;"/>
+`App Transport Security has blocked a cleartext HTTP (http://) resource load since it is insecure. Temporary exceptions can be configured via your app's Info.plist file.`
 
-> Továbbra is az `Interface Builder`ben válasszuk ki a `Table View Controller`t és
+Az *App Transport Security*-t (*ATS*) az `Apple` az `iOS 9`-cel mutatta be. Lényegében egy olyan biztonsági mechanizmus, ami alapértelmezetten minden, az alkalmazás által indított kapcsolatot tilt, ami nem `HTTPS` felett megy a legerősebb `TLS` használatával.
 
-> 1.  A `Navigation Item` *title*-jéhez írjunk **Notebooks**-ot.
-> 2.  Az `Identity inspector`ban változtassuk át `Table View Controller` osztályát **NotebookViewController**re.
+Természetesen egy ilyen változtatásnál időt kell adni a fejlesztőknek, hogy frissíthessék az alkalmazásokat, illetve a szervereket, ezért az `Apple` engedélyezte kivételek hozzáadását, illetve az *ATS* teljes kikapcsolását is.
 
-<!--  -->
-> Állítsuk be a prototípus cella *típusát* **Basic**re, az *azonosítóját* pedig **NotebookCell**re!
+A `2016`-os `WWDC`-n az `Apple` bejelentette, hogy `2017` januárjától az `App Store`-ba felöltött alkalmazásoknak (és az őket kiszolgáló szervereknek) adaptálniuk kell az *ATS*-t (ezt a határidőt később kitolták). Ez alól csak nagyon indokolt esetben adnak felmentést.
 
-<img src="img/09_table_view_cell.png" alt="09" style="width: 15%;"/>
+A fejlesztés idejére azonban továbbra is ki lehet kapcsolni ezt a biztonsági funkciót.
 
-> A `NotebookViewController.swift` fájlban importáljuk be a `Core Data` modult és vegyünk fel egy property-t a jegyzetfüzetek tárolására!
+> Az *ATS* kikapcsolásához az `Info.plist`ben vegyük fel az *`App Transport Security Settings`* kulcsot, majd azon belül az *`Allow Arbitrary Loads`* kulcsot **`YES`** értékkel!
 
-```swift
-import CoreData
+![](img/02_ats.png)
+
+Ezen változtatás után már meg fog jelenni a konzolon a `JSON` válasz.
+
+### `JSON` feldolgozás <a id="json-feldolgozas"></a>
+
+A szervertől kapott válasz `JSON` formátumú: egy tömbben `JSON` objektumok írják le a megjelenítendő üzeneteket. A szerver válaszát böngészőben is megvizsgálhatjuk az URL megnyitásával.
+
+[`http://atleast.aut.bme.hu/ait-ios/messenger/messages`](http://atleast.aut.bme.hu/ait-ios/messenger/messages
+)
+
+```json
+[  
+  {
+    "content": "",
+    "from_user": "Benedek",
+    "imageurl": "http://atleast.aut.bme.hu/ait-ios/messenger/message_images/aa129a2cf0d0f763af633edea014944e.jpeg",
+    "latitude": 0,
+    "longitude": 0,
+    "to_user": "László",
+    "topic": "film"
+  },
+  ...
+]
 ```
 
-```swift
-private var notebooks = [Notebook]()
-```
+`JSON` feldolgozásra a `Swift 4`-ben bevezetett `Codable`-t fogjuk használni. A `Codable` egy `typealias`, két *protocol*t fog össze: `typealias Codable = Decodable & Encodable`. A sorosítást és visszaalakítást *Encoder* és *Decoder* osztályok végzik, melyek gyakran használt formátumokhoz (pl. `JSON`, `Plist`) beépítve rendelkezésünkre állnak.
 
-> Definiáljunk egy metódust, mely lekéri a `Notebook`okat!
+> Az üzenetek tárolásához hozzunk létre egy `Message.swift` nevű fájlt, és vegyünk fel benne egy `Message` nevű `struct`ot. 
 
 ```swift
-private func fetchNotebooks() {
-  let managedObjectContext = AppDelegate.managedContext
+struct Message: Codable {
 
-  let fetchRequest: NSFetchRequest<Notebook> = Notebook.fetchRequest()
-
-  do {
-    notebooks = try managedObjectContext.fetch(fetchRequest)
-  } catch {
-    print(error.localizedDescription)
-  }
-}
-```
-
-> Hívjuk meg `fetchNotebooks()`-ot a `viewDidLoad()`-ban!
-
-```swift
-override func viewDidLoad() {
-  super.viewDidLoad()
-
-  fetchNotebooks()
-}
-```
-
-> Valósítsuk meg a `UITableViewDataSource` metódusok közül a két kötelezőt!
-
-
-```swift
-override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-  return notebooks.count
-}
-
-override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-  let cell = tableView.dequeueReusableCell(withIdentifier: "NotebookCell", for: indexPath)
-
-  let notebook = notebooks[indexPath.row]
-  cell.textLabel?.text = notebook.title
-
-  return cell
-}
-```
-
-> Ellenőrizzük le, hogy megjelennek-e a `Notebook`ok a nézetben!
-
-### Jegyzetek, `NSFetchedResultsController` <a id="jegyzetek-nsfetchedresultcontroller"></a>
-
-> A `Main.storyboard`ban hozzunk létre egy új `Table View Controller`t! Kössük be egy *Show* (*selection*) `Segue`-jel a `Notebooks View Controller` cellájáról!
-
-<img src="img/10_desired_ui.png" alt="10" style="width: 50%;"/>
-
-> Válasszuk ki a `segue`-t és *azonosítónak* adjuk meg a **ShowNotesSegue**-t.
-
-<img src="img/11_show_notes_segue.png" alt="11" style="width: 15%;"/>
-
-> Hozzunk létre egy új osztály, `NoteViewController` névvel, mely a `UITableViewController`ből származik, majd a `Storyboard`ban állítsuk be ezt az osztályt az új jelenethez!
-
-<!--  -->
-> A prototípus cella *stílusát* állítsuk **Subtitle**-re, az *azonosítóját* pedig **NoteCell**re!
-
-<img src="img/12_note_cell.png" alt="12" style="width: 15%;"/>
-
-> A `NoteViewController.swift`ben importáljuk a `Core Data` modult és vegyünk fel egy **notebook** property-t, melyben azt tároljuk el, hogy melyik `Notebook` jegyzeteit mutatja a nézet!
-
-```swift
-import CoreData
-```
-
-```swift
-var notebook: Notebook!
-```
-
-> Nyissuk meg `NotebookViewController.swift`et és definiáljuk felül a `prepare(for:sender:)` metódust, melyben átadhatjuk a megjelenő jegyzet nézetnek a kiválasztott `Notebook`ot!
-
-```swift
-// MARK: - Navigation
-
-override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-  if segue.identifier == "ShowNotesSegue" {
-    let noteViewController = segue.destination as! NoteViewController
-    noteViewController.notebook = notebooks[tableView.indexPathForSelectedRow!.row]
-  }
-}
-```
-
-> Váltsunk a `NoteViewController.swift`re és vegyünk fel egy `NSFetchedResultsController` típusú property-t!
-
-```swift
-private var fetchedResultsController: NSFetchedResultsController<Note>!
-```
-
-> A `viewDidLoad()` metódusban hozzuk létre a `Note`-okat visszaadó lekérdezést és rendeljük egy újonnan létrehozott `NSFetchedResultsController`hez!
-
-```swift
-override func viewDidLoad() {
-  super.viewDidLoad()
-
-  navigationItem.title = notebook.title
-
-  let managedObjectContext = AppDelegate.managedContext
-
-  let fetchRequest: NSFetchRequest<Note> = Note.fetchRequest()
-
-  // szűrés azon Note-okra, melyek a kiválasztott Notebookhoz tartoznak
-  let predicate = NSPredicate(format: "%K == %@", #keyPath(Note.notebook), notebook)
-  fetchRequest.predicate = predicate
-
-  // rendezés creationDate szerint csökkenő sorrendben
-  let sortDescriptor = NSSortDescriptor(key: #keyPath(Note.creationDate), ascending: false)
-  fetchRequest.sortDescriptors = [sortDescriptor]
-
-  // egyszerre max 30 Note lekérdezése
-  fetchRequest.fetchBatchSize = 30
-
-  fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest,
-                                                        managedObjectContext: managedObjectContext,
-                                                        sectionNameKeyPath: nil,
-                                                        cacheName: nil)
-
-  do {
-    try fetchedResultsController.performFetch()
-  } catch let error as NSError {
-    print("\(error.userInfo)")
-  }
-
-}
-```
-
-Ugyan `Swift 4`-ben van egy [újfajta szintaxis](https://github.com/apple/swift-evolution/blob/master/proposals/0161-key-paths.md) a *keyPath*-ek használatára, `NSPredicate`-ek esetén ezek sajnos egyelőre nem működnek.
-
-Most még nem látszik miért jobb az `NSFetchedResultsController` egy sima `Array`-be történő lekérdezéshez képest, később viszont látni fogjuk, hogy az előbbi jelzi ha bármi megváltozik a lekérdezésben érintett objektumokban: pl. ha létrehozunk vagy törlünk egy `Note`-ot.
-
-> A `UITableViewDataSource` metódusoknál töröljük ki a szekciók számát megadót, a sorok számánál pedig térjünk vissza a `NSFetchedResultsController`től elkért értékkel!
-
-```swift
-override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-  guard let sectionInfo = fetchedResultsController.sections?[section] else {
-    return 0
-  }
-
-  return sectionInfo.numberOfObjects
-}
-```
-
-> A `tableView(_:cellForRowAt:)` metódusban szintén a `NSFetchedResultsController`től kérjük el a megfelelő indexű `Note`-ot és ez alapján konfiguráljuk a cellát. Vegyünk fel egy külön metódust a cella adatainak beállításához (később még ennek hasznát vehetjük, ha már egy létező cellát akarunk frissíteni)!
-
-```swift
-func configure(cell: UITableViewCell, at indexPath: IndexPath) {
-  let note = fetchedResultsController.object(at: indexPath)
-
-  cell.textLabel?.text = note.content
-
-  let dateFormatter = DateFormatter()
-  dateFormatter.dateStyle = .medium
-  dateFormatter.timeStyle = .medium
-  cell.detailTextLabel?.text = dateFormatter.string(from: note.creationDate!)
-}
-```
-
-```swift
-override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-  let cell = tableView.dequeueReusableCell(withIdentifier: "NoteCell", for: indexPath)
-
-  configure(cell: cell, at: indexPath)
-
-  return cell
-}
-```
-
-> Próbáljuk ki az alkalmazást és ellenőrizzük, hogy megjelennek-e a `Note`-ok a `Notebook`okon belül!
-
-### Jegyzetek felvétele <a id="jegyzetek-felvetele"></a>
-
-> Definiáljunk egy `createNote(with:)` nevű metódust, mely létrehoz egy új jegyzetet és hozzárendeli az aktuális `Notebook`hoz!
-
-```swift
-private func createNote(with content: String) {
-  let managedObjectContext = AppDelegate.managedContext
-
-  let note = Note(context: managedObjectContext)
-  note.content = content
-  note.creationDate = Date()
-  note.notebook = notebook
-
-  (UIApplication.shared.delegate as! AppDelegate).saveContext()
-}
-```
-
-> A `Storyboard`ban vegyünk fel egy `Bar Button Item`et a `Note View Controller`re a `Navigation Bar` jobb szélére! (Amennyiben nem sikerülne rögtön ráhúzni a `Bar Button Item`et a jelenetünkre, valószínűleg hiányzik a `Navigation Item`. Pótoljuk, ha szükséges.)
-
-<!--  -->
-> Allítsuk be a `Bar Button Item` *System Item* property-jét **Add**ra.
-
-<img src="img/13_add_bar_button_item.png" alt="13" style="width: 33%;"/>
-
-> Kössünk be hozzá egy `addNoteButtonTap()` akció metódust, melyben jelenítsünk meg egy `Alert Controller`t az új jegyzet szövegének bekéréséhez!
-
-```swift
-@IBAction func addNoteButtonTap(_ sender: Any) {
-  let createNoteAlert = UIAlertController(title: "Create Note", message: "Enter the content", preferredStyle: .alert)
-  
-  createNoteAlert.addTextField() {
-    textField in
-    textField.placeholder = "Note content"
-  }
-  
-  let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-  createNoteAlert.addAction(cancelAction)
-  
-  let createAction = UIAlertAction(title: "Create", style: .default) {
-    action in
+  let sender: String
+  let recipient: String
+  let topic: String
     
-    let textField = createNoteAlert.textFields!.first!
-    self.createNote(with: textField.text!)      
+  enum CodingKeys: String, CodingKey {
+    case sender = "from_user"
+    case recipient = "to_user"
+    case topic
   }
-  createNoteAlert.addAction(createAction)
+    
+}
+```
+
+A `CodingKeys` `enum`ra esetünkben azért van szükség, mert bizonyos mezők eltérő néven szerepelnek a szervertől érkező adathalmazban.
+
+> A `MessagesViewController.swift` fájlban vegyünk fel és inicializáljunk egy `Message` tömböt, melyben a szerverről kapott üzeneteket fogjuk tárolni.
+
+```swift
+private var messages = [Message]()
+```
+
+> A `Data Task` befejeztekor meghívódó *closure*-ben dolgozzuk fel a kapott `JSON`-t és rendeljük az eredményt a `messages` property-hez!
+
+```swift
+// MARK: - Actions
+
+@IBAction func refreshButtonTap(_ sender: AnyObject) {
+  let url = URL(string: "http://atleast.aut.bme.hu/ait-ios/messenger/messages")
+  urlSession.dataTask(with: url!) { data, response, error in
+    if let error = error {
+      print("Error during communication: \(error.localizedDescription)")
+    } else if let data = data {
+      let decoder = JSONDecoder()
+      do {
+        self.messages = try decoder.decode(Array<Message>.self, from: data)
+        self.tableView.reloadData()
+      } catch let decodeError {
+        print("Error during JSON decoding: \(decodeError.localizedDescription)")
+      }
+    }
+  }.resume()
+}
+```
+
+> Az üzenetek megjelenítéséhez valósítsuk meg a `Table View Data Source` metódusait!
+
+```swift
+// MARK: - Table view data source
+    
+override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+  return messages.count
+}
+    
+override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+  let cell = tableView.dequeueReusableCell(withIdentifier: "MessageCell", for: indexPath) as! MessageCell
+    
+  let message = messages[indexPath.row]
+    
+  cell.recipientLabel.text = "\(message.sender) -> \(message.recipient)"
+  cell.topicLabel.text = message.topic
+    
+  return cell
+}
+```
+
+> Próbáljuk ki az alkalmazást!
+
+# Önálló feladat <a id="onallo"></a>
+
+### Üzenetek feltöltése <a id="uzenetek-feltoltese"></a>
+
+Új üzenet küldéséhez az `URL`-re egy `HTTP` `POST` kérést kell küldenünk, a következő formátumú tartalommal.
+
+```json
+{
+  "from_user": "",
+  "to_user": "",
+  "topic": "",
+  "image": "base64 kódolású JPEG kép"
+}
+```
+
+Az üzenet összeállítását és küldését a `ComposeMessageViewControllerDelegate` `composeViewControllerDidSend(_:)` metódusában végezhetjük. A *protocol*t a `Messages View Controller` valósítja meg.
+
+> Állítsuk össze az adathierarchiát, majd alakítsuk `JSON`-né (az opcionálisan megadható kép feltöltését későbbre hagyjuk). **A _`YOUR NAME`_ helyett mindenki válasszon egy egyedi nevet!**
+
+```swift
+func composeMessageViewControllerDidSend(_ viewController: ComposeMessageViewController) {
+  navigationController?.popToRootViewController(animated: true)
+  guard let recipient = viewController.recipientTextField.text, let topic = viewController.topicTextField.text else { return }
+    
+  let message = Message(sender: "YOUR NAME", recipient: recipient, topic: topic)
+  let encoder = JSONEncoder()
+    
+  guard let jsonData = try? encoder.encode(message) else { return }
+```
+
+A `POST` kérés küldéséhez egy `URLRequest`re lesz szükségünk.
+
+```swift
+let url = URL(string: "http://atleast.aut.bme.hu/ait-ios/messenger/add-message")
+var request = URLRequest(url: url!)
+request.httpMethod = "POST"
+request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+```
+
+> Indítsunk egy `Upload Task`ot, mely befejeztekor egy `Alert`et feldobva nyugtázzuk a folyamatot!
+
+```swift
+urlSession.uploadTask(with: request, from: jsonData) { data, response, error in
+  if let error = error {
+    print("Error during comminication: \(error.localizedDescription).")
+    return
+  } else if let data = data {
+    let decoder = JSONDecoder()
+    do {
+      let sendResponse = try decoder.decode(MessageSendResponse.self, from: data)
+            
+      let alert = UIAlertController(title: "Server response", message: sendResponse.result, preferredStyle: .alert)
+      let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+      alert.addAction(okAction)
+            
+      self.present(alert, animated: true, completion: nil)
+    } catch {
+      print("Error during JSON decoding: \(error.localizedDescription)")
+    }
+  }
+}.resume()
+```
+
+Ha újra letöltjük az üzeneteket, meg kell jelennie az új küldeménynek.
+
+### Képek feltöltése <a id="kepek-feltoltese"></a>
+
+> Bővítsük a `Message` `struct`ot az `image` mezővel. Ne feledkezzünk meg a `CodingKeys` `enum` bővítéséről sem! Vegyünk fel egy új *inicializáló*t is, ugyanis az `image` *property*-t később fogjuk beállítani, így az *alapértelmezett inicializáló* már nem felel meg az igényeinknek.
+
+```swift 
+struct Message: Codable {
+  ...
+  var image: String?
+  ...
+  init(sender: String, recipient: String, topic: String) {
+    self.sender = sender
+    self.recipient = recipient
+    self.topic = topic
+  }
+
+  enum CodingKeys: String, CodingKey {
+    ...
+    case image
+  }
+    
+}
+```
+
+> A szervernek elküldendő üzenetbe illesszük be a kiválasztott képet. Ehhez először lekicsinyítjük, majd a `JPEG` reprezentációját `base64` kódolással alakítjuk `String`gé! (Ügyeljünk rá, hogy az üzenetet reprezentáló lokális `message` példányunkat konstans (`let`) helyett változóként (`var`) hozzuk létre, hogy az `image` *property*-jét be tudjuk állítani!) 
+
+```swift
+var message = Message(sender: "YOUR NAME", recipient: recipient, topic: topic)
+
+if
+    let image = viewController.imageView.image,
+    let jpegImageData = image.jpegData(compressionQuality: 0.5) {
+        message.image = jpegImageData.base64EncodedString()
+}
+```
+
+### Képek letöltése <a id="kepek-letoltese"></a>
+
+A szerveren minden feltöltött kép eltárolódik, majd az üzenetek lekérdezésekor az `imageurl` kulcshoz tartozó érték alapján tudjuk letölteni őket. 
+
+> Bővítsük a `Message` `struct`ot az `imageUrl` mezővel. Ne feledkezzünk meg a `CodingKeys` `enum` és az `init` bővítéséről sem!
+
+```swift 
+struct Message: Codable {
+  ...
+  let imageUrl: String?
+   
+  init(sender: String, recipient: String, topic: String) {
+    ...
+    imageUrl = nil
+  }
   
-  present(createNoteAlert, animated: true, completion: nil)
-}
-```
-
-Ha kipróbáljuk az alkalmazást, azt láthatjuk, hogy nem jelenik meg az új jegyzet a mentés után. Ez azért van mert a `Table View` még nem értesült a kontextus módosításáról. Itt tűnik fel újra az `NSFetchedResultsController`, mely képes értesítéseket küldeni, ha megváltozik az általa figyelt lekérdezés, esetünkben azok a `Note` objektumok, amik az éppen kiválasztott `Notebook`hoz tartoznak.
-
-> Adjuk hozzá `NoteViewController`hez az `NSFetchedResultsControllerDelegate` protokolt!
-
-```swift
-extension NoteViewController: NSFetchedResultsControllerDelegate {
-
-}
-```
-
-> A `viewDidLoad()` metódusban állítsuk be a `delegate`-et!
-
-```swift
-fetchedResultsController.delegate = self
-```
-
-> Valósítsuk meg a protokoll következő **3** műveletét!
-
-```swift
-func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-  tableView.beginUpdates()
-}
-
-func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
-  switch type {
-  case .insert:
-    tableView.insertRows(at: [newIndexPath!], with: .fade)
-  default:
-    break
+  enum CodingKeys: String, CodingKey {
+    ...
+    case imageUrl = "imageurl"
   }
 }
+``` 
 
-func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-  tableView.endUpdates()
-}
-```
+Hogy ne töltsünk le feleslegesen egy képet többször, tároljuk el őket egy *dictionary*-ben, mely `URL – kép` párokat tartalmaz. 
 
-Ezek a metódusok szinte minden alkalmazásban ugyanígy néznek ki (a `.delete`, `.update`, `.move` megadásával kiegészítve, később mi is felvesszük ezeket).
-
-### Jegyzetek törlése <a id="jegyzetek-torlese"></a>
-
-> Engedélyezzük a *Swipe to delete* funkciót a `tableView(:canEditRowAt:)` metódussal!
+> Vegyünk fel egy új property-t a `MessagesViewController.swift` fájlban!
 
 ```swift
-override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-  return true
-}
+private var imageCache = [URL: UIImage]()
 ```
 
-> Majd végezzük el a törlést a `UITableViewDataSource`-ból adoptált `tableView(_:commit:forRowAt:)` metódusban!
+> Definiáljunk egy új metódust, mely az `URL`-je alapján beállít egy képet a *dictionary*-ből egy cellához, vagy letölti, ha még nincs meg, és azt követően állítja be.
 
 ```swift
-override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-  if editingStyle == .delete {
-    let managedObjectContext = AppDelegate.managedContext
-    let noteToDelete = fetchedResultsController.object(at: indexPath)
-    managedObjectContext.delete(noteToDelete)
+// MARK: - Helper methods
+
+func setImage(from url: URL, for cell: MessageCell) {
+  if let cachedImage = imageCache[url] {
+    cell.messageImageView.image = cachedImage
+  } else {
+    cell.messageImageView.image = nil
+        
+    urlSession.dataTask(with: url) { data, response, error in
+      if let data = data, let image = UIImage(data: data) {
+        self.imageCache[url] = image
+        cell.messageImageView.image = image
+      }
+    }.resume()
   }
 }
 ```
 
-A törlésről értesül a `NSFetchedResultsController` és meghívja az előbb bemutatott `delegate` metódust.
-
-> Egészítsük ki ezt, vegyük fel a törlés eseményhez, hogy a `Table View` kitörölje a megfelelő elemet!
+> A cellák konfigurálásakor (`tableView(_:cellForRowAt:)`) indítsuk el a cellához tartozó kép letöltését!
 
 ```swift
-case .delete:
-  tableView.deleteRows(at: [indexPath!], with: .automatic)
+if let imageUrlString = message.imageUrl, let imageUrl = URL(string: imageUrlString) {
+  setImage(from: imageUrl, for: cell)
+}
 ```
 
-> Próbáljuk ki a törlést!
+> Próbáljuk ki az alkalmazást!
 
-### További műveletek <a id="tovabbi-muveletek"></a>
+### Network Activity Indicator <a id="network-activity-indicator"></a>
 
-Az `NSFetchedResultsController` jelez ha bármelyik objektum módosításra kerül (pl. átírták egy attribútumát) vagy ha megváltozik a pozíciója a lekérdezésen belül. Bár ezeket a laboron nem használjuk, érdemes a standard implementációt ezekhez is felvenni.
+ Jelenítsük meg a hálózati aktivitást jelző `Network Activity Indicator`t üzenetek küldésekor, letöltésekor, valamint a képek letöltésekor, majd rejtsük el mikor a műveletek véget érnek!
 
 ```swift
-func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
-  switch type {
-  case .insert:
-    tableView.insertRows(at: [newIndexPath!], with: .automatic)
-  case .delete:
-    tableView.deleteRows(at: [indexPath!], with: .automatic)
-  case .update:
-    let cell = tableView.cellForRow(at: indexPath!)!
-    configure(cell: cell, at: indexPath!)
-  case .move:
-    tableView.deleteRows(at: [indexPath!], with: .automatic)
-    tableView.insertRows(at: [newIndexPath!], with: .automatic)
+UIApplication.shared.isNetworkActivityIndicatorVisible = true
+```
+
+```swift
+UIApplication.shared.isNetworkActivityIndicatorVisible = false
+```
+
+Azonban az `iPhone X`-hez hasonló teljes kijelzős készülékeken nem jelenik meg a `Network Activity Indicator`.  Helyette a `UIActivityIndicatorView`-val tudunk megjeleníteni aktivitás jelzést. 
+> Vegyünk fel egy új property-t.
+```swift
+let activityIndicator = UIActivityIndicatorView()
+```
+
+> A `ViewController`ünk `viewDidLoad` eseményében hívjuk meg a következő metódust, megvalósítás után:
+
+```swift
+private func createActivityIndicator() {
+    activityIndicator.center = view.center
+    activityIndicator.hidesWhenStopped = true
+    activityIndicator.style = .gray
+    activityIndicator.transform = CGAffineTransform(scaleX: 3.5, y: 3.5)
+
+    view.addSubview(activityIndicator)
+}
+```
+
+Végül a korábbi helyeken hívjuk meg a  `UIActivityIndicatorView` indítását és befejezését is:
+
+```swift
+activityIndicator.startAnimating()
+```
+
+```swift
+activityIndicator.stopAnimating()
+```
+
+## Szorgalmi feladat <a id="szorgalmi-feladat"></a>
+
+> Készítsünk egy egyszerű valutaváltó alkalmazást, a [http://fixer.io](http://fixer.io) `API`-t használva!
+>
+> ![](img/03_example_ui.png)
+>
+* Hozzunk létre egy új `Single View App`ot **iCurrency** néven!
+* Készítsünk egy egyszerű felhasználói felületet! (Szükség lesz két `Text Field`re a valutanemek és az átváltandó összeg bekérése, egy `Label`re az eredmény kiírásához, valamint egy `Button`re a folyamat indításához.)
+* Az átváltás gomb megnyomásakor indítsunk egy `HTTP` `GET` kérést (egy `Data Task`ot), mely letölti az aktuális árfolyamot. Az `URL` formátuma a következő:
+  [https://api.fixer.io/latest?base=**USD**&symbols=**HUF**](https://api.fixer.io/latest?base=USD&symbols=HUF)
+* Dolgozzuk fel a `JSON` választ (használjunk `Codable`-t!) és jelenítsük meg a váltás eredményét!
+    * A válaszban a váltási valutanem lesz az egyik kulcs érték.
+    * A második `Text Field`hez használjunk **Number Pad** billentyűzetet.
+
+```json
+{
+  "base": "USD",
+  "date": "2016-11-18",
+  "rates": {
+    "HUF": 291.18
   }
 }
 ```
-
-### `Managed Object Context` mentése <a id="moc-mentese"></a>
-
-A jelenlegi implementáció rögtön elmenti a változásokat a perzisztens tárolóba. Sok módosítás esetén (vagy ha esetleg szeretnénk érvényteleníteni a legutóbbi változtatásokat), érdemes lehet a módosításokat csak akkor menteni, mikor az alkalmazás a háttérbe kerül.
-
-> Ehhez először töröljük a `createNote(with content: String)` metódusból a következő sort!
-
-```swift
-(UIApplication.shared.delegate as! AppDelegate).saveContext()
-```
-
-> Majd módosítsuk az `applicationDidEnterBackground(_:)` metódust az `AppDelegate.swift`ben!
-
-```swift
-func applicationDidEnterBackground(_ application: UIApplication) {
-  saveContext()
-}
-```
-
-## Önálló feladatok <a id="onallo-feladatok"></a>
-
-> Építsük be `NotebookViewController`be is új `Notebook`ok felvételének és törlésének lehetőségét! (Használjuk az `NSFetchedResultController`t!)
+## A laborsegédletet összeállította
+* Varga Domonkos - varga.domonkos@autsoft.hu
+* Krassay Péter - peter.krassay@autsoft.hu
+* Szücs Zoltán - szucs.zoltan@autsoft.hu
+* Kántor Tibor - tibor.kantor@autsoft.hu
+* Kelényi Imre - imre.kelenyi@aut.bme.hu

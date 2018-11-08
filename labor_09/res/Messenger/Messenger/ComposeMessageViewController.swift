@@ -5,12 +5,12 @@
 //  Copyright © 2017. BME AUT. All rights reserved.
 //
 
-import CoreLocation
 import UIKit
 
 protocol ComposeMessageViewControllerDelegate: class {
   // Called when the user presses the Send button to issue sending the message
   func composeMessageViewControllerDidSend(_ viewController: ComposeMessageViewController)
+
 }
 
 class ComposeMessageViewController: UITableViewController {
@@ -18,13 +18,11 @@ class ComposeMessageViewController: UITableViewController {
   // MARK: - Properties
 
   weak var delegate: ComposeMessageViewControllerDelegate?
-  var location: CLLocation?
   @IBOutlet weak var imageView: UIImageView!
   @IBOutlet weak var imageViewHelpLabel: UILabel!
   @IBOutlet weak var recipientTextField: UITextField!
   @IBOutlet weak var topicTextField: UITextField!
-  @IBOutlet weak var coordinateLabel: UILabel!
-  
+
   // MARK: - View lifecycle
 
   override func viewDidLoad() {
@@ -56,8 +54,11 @@ class ComposeMessageViewController: UITableViewController {
 
 extension ComposeMessageViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
-  func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-    if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
+  func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+// Local variable inserted by Swift 4.2 migrator.
+let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
+
+    if let image = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.originalImage)] as? UIImage {
       imageView.image = image
       imageViewHelpLabel.isHidden = true
     }
@@ -65,4 +66,14 @@ extension ComposeMessageViewController: UIImagePickerControllerDelegate, UINavig
     dismiss(animated: true, completion: nil)
   }
 
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromUIImagePickerControllerInfoKeyDictionary(_ input: [UIImagePickerController.InfoKey: Any]) -> [String: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map {key, value in (key.rawValue, value)})
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromUIImagePickerControllerInfoKey(_ input: UIImagePickerController.InfoKey) -> String {
+	return input.rawValue
 }

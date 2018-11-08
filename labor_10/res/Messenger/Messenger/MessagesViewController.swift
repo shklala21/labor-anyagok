@@ -11,14 +11,27 @@ class MessagesViewController: UITableViewController {
   
   // MARK: - Properties
   
+  private var messages = [Message]()
+  
   // MARK: - Table view data source
   
   override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return 0
+    return messages.count
   }
   
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: "MessageCell", for: indexPath) as! MessageCell
+    
+    let message = messages[indexPath.row]
+    
+    cell.recipientLabel.text = "\(message.sender) -> \(message.recipient)"
+    cell.topicLabel.text = message.topic
+    
+    if let imageUrlString = message.imageUrl, let imageUrl = URL(string: imageUrlString) {
+      NetworkHelper.downloadImage(with: imageUrl) { image in
+        cell.messageImageView.image = image
+      }
+    }
     
     return cell
   }
@@ -35,11 +48,10 @@ class MessagesViewController: UITableViewController {
   // MARK: - Actions
   
   @IBAction func refreshButtonTap(_ sender: Any) {
-  }
-  
-  // MARK: - Helper methods
-  
-  func setImage(from url: URL, for cell: MessageCell) {
+    NetworkHelper.downloadMessages { messages in
+      self.messages = messages
+      self.tableView.reloadData()
+    }
   }
   
 }
@@ -50,6 +62,21 @@ extension MessagesViewController: ComposeMessageViewControllerDelegate {
   
   func composeMessageViewControllerDidSend(_ viewController: ComposeMessageViewController) {
     navigationController?.popToRootViewController(animated: true)
+    
+    guard let recipient = viewController.recipientTextField.text, let topic = viewController.topicTextField.text else { return }
+    
+    var message = Message(sender: "YOUR NAME", recipient: recipient, topic: topic)
+    if let image = viewController.imageView.image, let jpegImageData = UIImageJPEGRepresentation(image.scale(to: CGSize(width: 40, height: 40)), 0.7) {
+      message.image = jpegImageData.base64EncodedString()
+    }
+    
+    let encoder = JSONEncoder()
+    
+    guard let jsonData = try? encoder.encode(message) else { return }
+    
+    NetworkHelper.uploadMessage(jsonData: jsonData) { alert in
+      self.present(alert, animated: true, completion: nil)
+    }
   }
   
 }

@@ -2,444 +2,507 @@
 
 ## A laborsegédletet összeállította
 * Kelényi Imre - imre.kelenyi@aut.bme.hu
-* Kántor Tibor - tibor.kantor@autsoft.hu
-* Blázovics László - blazovics.laszlo@aut.bme.hu
 * Krassay Péter - peter.krassay@autsoft.hu
-* Szücs Zoltán - szucs.zoltan@autsoft.hu
 
 ## A labor témája
 
-* [PictureDownload](#picture-download)
-    * [`ViewController` inicializálása kódból](#viewcontroller-inicializalasa-kodbol)
-    * [Alamofire](#alamofire)
-    * [ECSlidingViewController](#ecslidingviewcontroller)
-    * [MBProgressHUD](#mbprogresshud)
-    * [CocoaPods](#cocoapods)
-* [Önálló feladat](#onallo-feladat)
+* [UberNotebook](#ubernotebook)
+  * [Alkalmazás váz, Core Data alapok](#core-data-alapok)
+  * [Adatmodell definiálása](#adatmodell-definialasa)
+  * [Adatmodell osztályok](#adatmodell-osztalyok)
+  * [`Notebook`ok megjelenítése](#notebookok-megjelenitese)
+  * [Jegyzetek, `NSFetchedResultsController`](#jegyzetek-nsfetchedresultcontroller)
+  * [Jegyzetek felvétele](#jegyzetek-felvetele)
+  * [Jegyzetek törlése](#jegyzetek-torlese)
+  * [További műveletek](#tovabbi-muveletek)
+  * [`Managed Object Context` mentése](#moc-mentese)
+* [Önálló feladatok](#onallo-feladatok)
 
-## PictureDownload <a id="picture-download"></a>
+## UberNotebook <a id="ubernotebook"></a>
 
-Alkalmazásunk a [fortepan.hu](http://fortepan.hu)-ról fog letölteni közepes, illetve nagy felbontású képeket. Utóbbi esetén azt is szeretnénk megmutatni a felhasználónak, hogy hogyan halad a letöltés. 
+### Alkalmazás váz, Core Data alapok <a id="core-data-alapok"></a>
+> Hozzunk létre egy `Single View App`ot **UberNotebook** névvel a `labor_12` könyvtárba! Ne felejtsük el bekapcsolni a **Use Core Data** opciót a projekt generálásakor!
 
-> Kiindulásnak hozzunk létre a `labor_12` könyvtárba egy új `Single View App`ot __`PictureDownload`__ névvel!
+<img src="img/01_use_core_data.png" alt="01" style="width: 33%;"/>
 
-<!-- -->
-> A `Target` beállítások, `Deployment Info` szekcióban állítsuk a `Devices` beállítást `iPhone`-ra, valamint töröljük ki a `Main Interface` mező tartalmát!
+> Töröljük ki a projektből a generált `ViewController.swift` fájlt és a `Main.storyboard`ból is távolítsuk el az ott létrejött jelenetet (*View Controller Scene*).
 
-<img src="img/01_deployment_info.png" alt="01" style="width: 66%;"/>
+Érdemes megvizsgálni az `AppDelegate.swift`ben a `Core Data` stackhez kapcsolódó metódusokat.
 
-### `ViewController` inicializálása kódból <a id="viewcontroller-inicializalasa-kodbol"></a>
-> Egészítsük ki a `ViewController.swift`et! Hozzunk létre egy **imageView** nevű *UIImageView* típusú property-t, hogy szükség esetén le tudjuk cserélni a benne lévő képet, illetve egy **contentUrl** és egy **imageUrl** property-t *URL* típussal.
+A `persistentContainer` property fogja össze a `Core Data` stacket, definíciójában láthatjuk a nevét: **UberNotebook**. A háttérben alapértelmezetten egy `SQLite` adatbázis lesz, ami az `UberNotebook.sqlite`-ban tárolja az adatokat.
+
+A `persistentContainer.viewContext` property-jének segítségével fogjuk tudni elérni a kontextust, amin keresztül a `Core Data` műveleteket elvégezhetjük.
+
+A `saveContext()` metódust használjuk a kontextus mentéséhez. Egyrészt rögtön naplózza az esetleges hibát, másrészt csak akkor fog ténylegesen menteni, ha az előző mentés óta volt valamilyen változás.
+
+### Adatmodell definiálása <a id="adatmodell-definialasa"></a>
+
+> Nyissuk meg a `UberNotebook.xcdatamodeld` fájlt és vegyünk fel:
+>
+> * új entitást **`Notebook`** névvel
+>   * **title** (*String*) *attribútum*mal
+> * új entitást **`Note`** névvel
+>   * **content** (*String*) *attribútum*mal
+>   * **creationDate** (*Date*) *attribútum*mal
+
+<!--  -->
+> Vegyünk fel a `Notebook`ba egy **notes** *relationship*et, mely a `Note`-ra hivatkozik!
+
+<!--  -->
+> Vegyünk fel a `Note`-ba egy **notebook** *relationship*et, mely a `Notebook`ra hivatkozik!
+
+<!--  -->
+> Mindkét *relationship*nél állítsuk be az inverz relációt a másikra! (Ha az egyiknél beállítottuk, akkor a másiknál jó esetben be fogja állítani automatikusan.)
+
+A `Core Data`ban relációknál mindig meg kell adnunk egy inverz relációt is. Erre azért van szükség, hogy az objektum gráf ne kerülhessen inkonzisztens állapotba, például törlés esetén (ha egy entitásra van egy reláció, de ennek a relációnak nincs inverze, akkor az entitás törlése esetén nem lehetne értesíteni a reláció tulajdonosát, hogy törlődött egy hivatkozott objektum).
+
+> Állítsuk be a **notes** reláció *típusát* **`To Many`**-re és a *törlési szabályát* **`Cascade`**-re! (Így ha törlődik a `Notebook`, a bejegyzései is törlődnek vele együtt).
+
+<img src="img/02_notes_relationshop.png" alt="02" style="width: 25%;"/> <img src="img/03_graph_editor.png" alt="03" style="width: 25%;"/>
+
+Itt az ideje az adatmodell kipróbálásának!
+
+> Az `AppDelegate.swift` `application(_:didFinisLaunchingWithOptions:)` metódusában, a `return true` sor elé hozzunk létre egy új `Notebook`ot és benne egy `Note`-ot!
 
 ```swift
-// MARK: - Properties
+let notebook = NSEntityDescription.insertNewObject(forEntityName: "Notebook", into: persistentContainer.viewContext)
+notebook.setValue("Notebook \(arc4random_uniform(10000))", forKey: "title")
 
-private var imageView: UIImageView!
-var imageUrl: URL?
-var contentUrl: URL?
+let note = NSEntityDescription.insertNewObject(forEntityName: "Note", into: persistentContainer.viewContext)
+note.setValue("\(arc4random_uniform(10000)) a kedvenc véletlen számom!", forKey: "content")
+note.setValue(Date(), forKey: "creationDate")
+note.setValue(notebook, forKey: "notebook")
+
+saveContext()
 ```
 
-> Majd cseréljük le a `viewDidLoad()` metódust a következő kódrészlettel, valamint vegyük fel a `downloadFile` metódust!
+> A sikeres mentés esetén kérdezzük le és listázzuk ki az összes elmentett jegyzetet!
 
 ```swift
-// MARK: - View lifecycle
+let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Note")
+do {
+  let notes = try persistentContainer.viewContext.fetch(fetchRequest)
+  notes.forEach { note in
+   let content = note.value(forKey: "content") as! String
+   print(content)
+  }
+} catch let error as NSError {
+  print("Couldn't fetch: \(error.userInfo))")
+}
 
+return true
+```
+
+Mivel az alkalmazás indításakor mindig létrehozunk egy új `Notebook`ot és benne egy `Note`-ot, a logban minden indítás után egyre hosszabb felsorolást kapunk.
+
+Figyeljük meg a `Swift` hibakezelés egyik módját, a `do-catch` párost. Bármilyen olyan metódus, ami hibával térhet vissza (`throws` kulcsszó van a végén), egy `do` blokkon belül hívható csak meg, és a hívás elé a `try` kulcsszót kell beírni. A hibát pedig a `catch` blokkban tudjuk feldolgozni.
+
+> Próbáljuk ki, hogy bár a lekérdezésben csak `Note`-okat kérünk le, a lekérdezett objektumok relációs property-jein keresztül el tudunk érni más entitásokat is (ilyen esetekben a `Core Data` automatikusan elvégzi a lekérdezést a háttérben). Esetünkben le tudjuk kérni a `Note`-hoz tartozó `Notebook`ot.
+
+```swift
+let notebook = note.value(forKey: "notebook") as! NSManagedObject
+print(notebook.value(forKey: "title") as! String)
+```
+
+> Kapcsoljuk be a `Product/Scheme/Edit Scheme` menüben, hogy a futtatáskor a konzolon megjelenjenek a `Core Data` használata közben kiadott `SQL` utasítások. Ehhez a **-com.apple.CoreData.SQLDebug 1** argumentumot kell felvenni. (A szám 1-4-ig lehet bármilyen egész, a nagyobb szám [több információt](https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/CoreData/TroubleshootingCoreData.html) fog kiírni.)
+
+<img src="img/04_sql.png" alt="04" style="width: 50%;"/>
+
+Miután kipróbáltuk az alkalmazást érdemes kikapcsolni az `SQL` loggolást.
+
+### Adatmodell osztályok <a id="adatmodell-osztalyok"></a>
+`Core Data` programozás során mindenre használhatunk `NSManagedObject` típusú objektumokat, de ennél sokkal kényelmesebb és biztonságosabb, ha az entitásoknak definiált külön osztályokat használjuk.
+
+`Xcode 8`-tól az adatmodellhez definiált összes entitáshoz alapértelmezésként automatikusan legenerálódnak az `NSManagedObject` leszármazottak. (Az entitás *Codegen* propery-je **Class Definition** értékű.)
+
+<img src="img/05_codegen.png" alt="05" style="width: 15%;"/>
+
+> Vizsgáljuk meg az automatikusan legenerált fájlokat! A `Finder`ben nyomjunk egy `⌘+⇧+G`-t és illesszük be a következő útvonalat: `~/Library/Developer/Xcode/DerivedData/`, majd kattintsunk a `Go` gombra.
+
+<img src="img/06_go_to_derived_data.png" alt="06" style="width: 50%;"/>
+
+> Miután bekerülünk abba a mappába, ahol az `Xcode` tárolja a fordítási eredményeket, keressük meg az `UberNotebook-xxxxxxxxxxxxxxxxxxxxxxxxxxxx` mappát, majd vizsgáljuk meg a tartalmát!
+
+<img src="img/07_derived_data.png" alt="07" style="width: 33%;"/>
+
+Minden `NSManagedObject` alosztályhoz két külön `Swift` fájl jön létre. Az `Entity+CoreDataProperties.swift`ben egy külön `extension`be kerülnek a generált property-k, míg maga az entitás osztály definíciója az `Entity+CoreDataClass.swift` fájlba generálódik.
+
+Érdemes ismerni még a *Codegen* további beállításait is.
+
+__Manual/None__: régi módszer, kézzel kell megírni, vagy legenerálni a szükséges fájlokat. Ehhez az `Xcode` segítséget nyújt, az adatmodellben az entitást kiválasztva, az `Editor/Create NSManagedObject Subclass...` opcióval legenerálja az osztályokat az entitásokhoz.
+
+__Category/Extension__: "félautomata" módba kapcsolja a generátort. Ilyenkor automatikusan legenerálódik az `Entity+CoreDataGeneratedProperties.swift` fájl, azonban magáról az osztály 
+deklarálásáról nekünk kell gondoskodnunk.
+
+### `Notebook`ok megjelenítése <a id="notebookok-megjelenitese"></a>
+
+> Hogy megkönnyítsük a `NSManagedObjectContext` elérését, vegyünk fel egy computed property-t az `AppDelegate.swift`be!
+
+```swift
+class var managedContext: NSManagedObjectContext {
+  return (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+}
+```
+
+> Hozzunk létre egy új `UITableViewController`ből származó osztályt **`NotebookViewController`** névvel!
+
+> A `Main.storyboard`ban vegyünk fel egy új `Table View Controller`t és ágyazzuk be egy `Navigation Controller`be, amit jelöljünk ki a kezdeti `View Controller`nek!
+
+<img src="img/08_desired_ui.png" alt="08" style="width: 33%;"/>
+
+> Továbbra is az `Interface Builder`ben válasszuk ki a `Table View Controller`t és
+
+> 1.  A `Navigation Item` *title*-jéhez írjunk **Notebooks**-ot.
+> 2.  Az `Identity inspector`ban változtassuk át `Table View Controller` osztályát **NotebookViewController**re.
+
+<!--  -->
+> Állítsuk be a prototípus cella *típusát* **Basic**re, az *azonosítóját* pedig **NotebookCell**re!
+
+<img src="img/09_table_view_cell.png" alt="09" style="width: 15%;"/>
+
+> A `NotebookViewController.swift` fájlban importáljuk be a `Core Data` modult és vegyünk fel egy property-t a jegyzetfüzetek tárolására!
+
+```swift
+import CoreData
+```
+
+```swift
+private var notebooks = [Notebook]()
+```
+
+> Definiáljunk egy metódust, mely lekéri a `Notebook`okat!
+
+```swift
+private func fetchNotebooks() {
+  let managedObjectContext = AppDelegate.managedContext
+
+  let fetchRequest: NSFetchRequest<Notebook> = Notebook.fetchRequest()
+
+  do {
+    notebooks = try managedObjectContext.fetch(fetchRequest)
+  } catch {
+    print(error.localizedDescription)
+  }
+}
+```
+
+> Hívjuk meg `fetchNotebooks()`-ot a `viewDidLoad()`-ban!
+
+```swift
 override func viewDidLoad() {
   super.viewDidLoad()
 
-  view.backgroundColor = .white
-
-  let safeArea = view.safeAreaLayoutGuide
-
-  imageView = UIImageView()
-  imageView.contentMode = .scaleAspectFit
-  imageView.backgroundColor = .black
-  view.addSubview(imageView)
-  imageView.translatesAutoresizingMaskIntoConstraints = false
-  imageView.topAnchor.constraint(equalTo: safeArea.topAnchor).isActive = true
-  imageView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor).isActive = true
-  imageView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor).isActive = true
-  imageView.heightAnchor.constraint(equalTo: safeArea.heightAnchor, multiplier: 0.5).isActive = true
-
-
-  let stackView = UIStackView()
-  stackView.axis = .vertical
-  stackView.distribution = .fillEqually
-  view.addSubview(stackView)
-  stackView.translatesAutoresizingMaskIntoConstraints = false
-  stackView.topAnchor.constraint(equalTo: imageView.bottomAnchor).isActive = true
-  stackView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor).isActive = true
-  stackView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor).isActive = true
-  stackView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor).isActive = true
-
-  let downloadButton = UIButton(type: .system)
-  downloadButton.setTitle("Download", for: .normal)
-  downloadButton.setTitleColor(.black, for: .normal)
-  downloadButton.addTarget(self, action: #selector(ViewController.downloadFile), for: .touchUpInside)
-  stackView.addArrangedSubview(downloadButton)
-
-  let displayButton = UIButton(type: .system)
-  displayButton.setTitle("Present", for: .normal)
-  displayButton.setTitleColor(.black, for: .normal)
-  stackView.addArrangedSubview(displayButton)
-}
-
-// MARK: - Actions
-
-@objc func downloadFile() {
+  fetchNotebooks()
 }
 ```
 
-> Végül adjuk hozzá az alábbi kódrészletet az `AppDelegate.swift` `application(_:didFinishLaunchingWithOptions:)` metódusához!
+> Valósítsuk meg a `UITableViewDataSource` metódusok közül a két kötelezőt!
+
 
 ```swift
-func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+  return notebooks.count
+}
 
-  window = UIWindow(frame: UIScreen.main.bounds)
+override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+  let cell = tableView.dequeueReusableCell(withIdentifier: "NotebookCell", for: indexPath)
 
-  let viewController = ViewController()
-  viewController.imageUrl = URL(string: "http://www.fortepan.hu/_photo/display/28268.jpg")
-  viewController.contentUrl = URL(string: "http://www.fortepan.hu/_photo/download/fortepan_28268.jpg")
+  let notebook = notebooks[indexPath.row]
+  cell.textLabel?.text = notebook.title
 
-  window?.rootViewController = viewController
-  window?.makeKeyAndVisible()
-
-  return true
+  return cell
 }
 ```
 
-> Teszteljük az alkalmazást!
+> Ellenőrizzük le, hogy megjelennek-e a `Notebook`ok a nézetben!
 
-### Alamofire <a id="alamofire"></a>
+### Jegyzetek, `NSFetchedResultsController` <a id="jegyzetek-nsfetchedresultcontroller"></a>
 
-Látható, hogy minden UI elem megjelenik, de a kép nem töltődik be.
+> A `Main.storyboard`ban hozzunk létre egy új `Table View Controller`t! Kössük be egy *Show* (*selection*) `Segue`-jel a `Notebooks View Controller` cellájáról!
 
-> A kép letöltéséhez használjuk az [`Alamofire`](https://github.com/Alamofire/Alamofire/archive/master.zip) nevű third-party komponenst a linkről!
+<img src="img/10_desired_ui.png" alt="10" style="width: 50%;"/>
+
+> Válasszuk ki a `segue`-t és *azonosítónak* adjuk meg a **ShowNotesSegue**-t.
+
+<img src="img/11_show_notes_segue.png" alt="11" style="width: 15%;"/>
+
+> Hozzunk létre egy új osztály, `NoteViewController` névvel, mely a `UITableViewController`ből származik, majd a `Storyboard`ban állítsuk be ezt az osztályt az új jelenethez!
 
 <!--  -->
-> Tömörítsük ki az állományt, majd az `Alamofire.xcodeproj` fájlt adjuk hozzá a projekthez. Legegyszerűbben ezt úgy tudjuk megtenni, hogy `Finder`ből áthúzzuk az `Xcode`-ba. (Előtte készítsünk egy *Alamofire* nevű *Group*ot!)
+> A prototípus cella *stílusát* állítsuk **Subtitle**-re, az *azonosítóját* pedig **NoteCell**re!
 
-<img src="img/02_alamofire_group.png" alt="02" style="width: 33%;"/>
+<img src="img/12_note_cell.png" alt="12" style="width: 15%;"/>
 
-<!--  -->
-> Ezután adjuk hozzá `Embedded Binary`-ként a megfelelő `Alamofire.framework`öt a `PictureDownload` `Target`hez! Ehhez menjünk el a projektbeállításokhoz és a megfelelő helyen nyomjuk meg a `+` gombot, majd válasszuk ki az `iOS`-re generált *framework*öt.
-
-<img src="img/03_alamofire_embedded_binary.png" alt="03" style="width: 75%;" />
-
-> Ezt követően a `ViewController.swift`ben importáljuk az `Alamofire`-t és írjuk felül a `viewWillAppear(_:)` metódust.
+> A `NoteViewController.swift`ben importáljuk a `Core Data` modult és vegyünk fel egy **notebook** property-t, melyben azt tároljuk el, hogy melyik `Notebook` jegyzeteit mutatja a nézet!
 
 ```swift
-import Alamofire
-import UIKit
+import CoreData
+```
 
-...
+```swift
+var notebook: Notebook!
+```
 
-override func viewWillAppear(_ animated: Bool) {
-  super.viewWillAppear(animated)
+> Nyissuk meg `NotebookViewController.swift`et és definiáljuk felül a `prepare(for:sender:)` metódust, melyben átadhatjuk a megjelenő jegyzet nézetnek a kiválasztott `Notebook`ot!
 
-  guard let imageUrl = imageUrl else {
-    return
-  }
+```swift
+// MARK: - Navigation
 
-  Alamofire.request(imageUrl).response { response in
-    if let error = response.error {
-      print(error.localizedDescription)
-      return
-    }
-
-    if let data = response.data, let image = UIImage(data: data) {
-      self.imageView.image = image
-    }
+override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+  if segue.identifier == "ShowNotesSegue" {
+    let noteViewController = segue.destination as! NoteViewController
+    noteViewController.notebook = notebooks[tableView.indexPathForSelectedRow!.row]
   }
 }
 ```
 
-> Ahogy már a korábbi laboroknál is előjött, engedélyezni kell az projekthez tartozó `Info.plist` fájlban a `HTTP` felett történő kommunikációt a következő két kulcs felvételével: `NSAppTransportSecurity` (`Dictionary`) és ezen belül `NSAllowsArbitraryLoads` (`BOOL`). (Vagy használhatjuk a képen látható, könnyebben megjegyezhető neveket, amire az Xcode automatikus kiegészítési lehetőségeket is ajánl.)
-
-<img src="img/04_ats.png" alt="04" style="width: 66%;" />
-
-Ha ezt elfelejtjük megtenni, akkor a már jól ismert hibaüzenetet kapjuk.
-
-*App Transport Security has blocked a cleartext HTTP (http://) resource load since it is insecure. Temporary exceptions can be configured via your app's Info.plist file.*
-
-> Futtassuk az alkalmazást, és ellenőrizzük, hogy megjelenik-e a kép!
-
-<img src="img/05_picture_downloaded.png" alt="05" style="width: 33%;" />
-
-<!-- -->
-> Implementáljuk a `downloadFile()` nevű metódust, amit a `Download` gomb eseménykezelője hív meg, és az alkalmazás `Documents` mappájába menti a képet!
+> Váltsunk a `NoteViewController.swift`re és vegyünk fel egy `NSFetchedResultsController` típusú property-t!
 
 ```swift
-// MARK: - Actions
-
-@objc func downloadFile(){
-  guard let contentUrl = contentUrl else {
-    return
-  }
-
-  let destination = Alamofire.DownloadRequest.suggestedDownloadDestination(for: .documentDirectory, in: .userDomainMask)
-  Alamofire.download(contentUrl, to: destination).downloadProgress { progress in
-    print(progress.completedUnitCount)
-  }.response { response in
-    if let error = response.error {
-      print("Error: \(error.localizedDescription)")
-    } else {
-      print("Success!")
-    }
-  }
-}
+private var fetchedResultsController: NSFetchedResultsController<Note>!
 ```
 
-### ECSlidingViewController <a id="ecslidingviewcontroller"></a>
-
-Most, hogy van már rendes tartalmunk, adjunk hozzá az alkalmazáshoz egy menüt!
-
-> Ehhez töltsük le az [`ECSlidingViewController`](https://github.com/ECSlidingViewController/ECSlidingViewController/archive/master.zip
-) thrid-party komponenst a linkről!
-
-<!--  -->
-> Csomagoljuk ki a fájlt és keressük meg az `ECSlidingViewController` mappát, majd az egész mappát adjuk hozzá a projekthez! Fontos, hogy a `Copy items if needed` és a `PictureDownload` *target* is legyen bepipálva!
-
-<img src="img/06_add_sliding_view.png" alt="06" style="width: 66%;"/>
-
-<img src="img/07_sliding_view.png" alt="07" style="width: 40%;"/>
-
-> Először hozzunk létre egy `MenuViewController` nevű `UITableViewController`ből származó osztályt egy `showMenu(_:)` metódussal (erre majd a navigáció során lesz szükségünk, hogy az `unwind segue`-t be tudjuk kötni).
+> A `viewDidLoad()` metódusban hozzuk létre a `Note`-okat visszaadó lekérdezést és rendeljük egy újonnan létrehozott `NSFetchedResultsController`hez!
 
 ```swift
-class MenuViewController: UITableViewController {
+override func viewDidLoad() {
+  super.viewDidLoad()
 
-  @IBAction func showMenu(_ segue: UIStoryboardSegue) {
+  navigationItem.title = notebook.title
 
+  let managedObjectContext = AppDelegate.managedContext
+
+  let fetchRequest: NSFetchRequest<Note> = Note.fetchRequest()
+
+  // szűrés azon Note-okra, melyek a kiválasztott Notebookhoz tartoznak
+  let predicate = NSPredicate(format: "%K == %@", #keyPath(Note.notebook), notebook)
+  fetchRequest.predicate = predicate
+
+  // rendezés creationDate szerint csökkenő sorrendben
+  let sortDescriptor = NSSortDescriptor(key: #keyPath(Note.creationDate), ascending: false)
+  fetchRequest.sortDescriptors = [sortDescriptor]
+
+  // egyszerre max 30 Note lekérdezése
+  fetchRequest.fetchBatchSize = 30
+
+  fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest,
+                                                        managedObjectContext: managedObjectContext,
+                                                        sectionNameKeyPath: nil,
+                                                        cacheName: nil)
+
+  do {
+    try fetchedResultsController.performFetch()
+  } catch let error as NSError {
+    print("\(error.userInfo)")
   }
 
 }
 ```
 
-> Nyissuk meg a `Main.storyboard`ot, töröljük ki a benne található jelenetet, majd adjunk hozzá egy `UITableViewController`t! Osztályának a `MenuViewController`t állítsuk be! 
+Ugyan `Swift 4`-ben van egy [újfajta szintaxis](https://github.com/apple/swift-evolution/blob/master/proposals/0161-key-paths.md) a *keyPath*-ek használatára, `NSPredicate`-ek esetén ezek sajnos egyelőre nem működnek.
 
-<!--  -->
-> A `Table View`-t kiválasztva állítsuk át a *Content*et **Static Cells**-re, majd adjunk hozzá `3` **Basic** stílusú cellát ahogy a képen is látható! 
+Most még nem látszik miért jobb az `NSFetchedResultsController` egy sima `Array`-be történő lekérdezéshez képest, később viszont látni fogjuk, hogy az előbbi jelzi ha bármi megváltozik a lekérdezésben érintett objektumokban: pl. ha létrehozunk vagy törlünk egy `Note`-ot.
 
-<img src="img/08_desired_ui.png" alt="08" style="width: 50%;" />
-
-> Állítsuk be a `MenuViewController` *Storyboard ID*-ját **MenuViewController**re!
-
-<img src="img/09_menu_vc_storyboard_id.png" alt="09" style="width: 50%;" />
-
-> Ezután adjunk hozzá egy újabb `View Controller`t, melynek osztálya `ECSlidingViewController` legyen. Állítsuk be, hogy ez a jelenet legyen a kezdő, azaz **Initial View Controller**!
-
-<!--  -->
-> Ágyazzunk be egy újabb `ViewController`t (az osztálya legyen `ViewController`) egy `NavigationController`be, majd adjunk hozzá a `Navigation Bar` bal oldalára egy `BarButtonItem`et **Menu** felirattal. 
-
-<!--  -->
-> Duplikáljuk kétszer egymás után a `ViewController`t és a `NavigationController`t a `⌘` + `D` billentyűkombinációval, vagy az `Edit/Duplicate` funkció használatával. (A létrejött új jeleneteket mozgassuk el egymásról.)
-
-<!--  -->
-> Az így létrejött **3** `NavigationController`t kössük be a `TableView` egyes celláihoz egy-egy **sliding** `segue`-el.
-
-<!--  -->
-> A `3` `ViewController`ben állítsuk be a *Restoration ID*-ket a celláknak megfelelően. Ha a menüben **Trabant** volt a cella szövege, akkor az ahhoz tartozó `ViewController`ben is legyen **Trabant** a *Restoration ID*!
-
-<img src="img/10_restoration_id.png" alt="10" style="width: 50%;" />
-
-> Ezután állítsuk be az `unwind segue`-eket a három `ViewController`ben a **Menu** gombhoz!
-
-<img src="img/11_unwind_segue.png" alt="11" style="width: 66%;" />
-
-> A **Wartburg**hoz tartozó `NavigationController` *Storyboard ID*-ját állítsuk **FirstViewController**re.
-
-<!--  -->
-> Végül térjünk vissza az `ECSlidingViewController`hez és adjunk hozzá két `String` típusú `User Defined Runtime Attribute`-ot (*topViewControllerStoryboardId*, *underLeftViewControllerStoryboardId*) a megfelelő értékekkel (*FirstViewController*, *MenuViewController*)!
-
-<img src="img/12_user_defined_runtime_attributes.png" alt="12" style="width: 66%;" />
-
-Ha mindent jól csináltunk, akkor valami ehhez hasonló elrendezést kell kapnunk.
-
-<img src="img/13_desired_ui.png" alt="13" style="width: 50%;" />
-
-> Teszteljük az alkalmazást!
-
-Azt láthatjuk, hogy hiába van beállítva a `Main.storyboard`ban az `Is Initial View Controller` property, továbbra is a kezdeti `ViewController` jön csak be, nem a nagy nehezen összerakott menü. 
-
-> Ahhoz, hogy a Storyboard érvényre jusson, az `AppDelegate.swift`ben az `application(_:didFinishLaunchingWithOptions:)` metódusból a `return true` sor kivételével töröljünk mindent, valamint a labor elején a `Deployment Info`nál kitörölt `Main Interface` értékét is állítsuk vissza **Main.storyboard**ra!
-
-Ezek után a menünek már szépen működnie kell, a képek viszont még nem jelennek meg.
-
-> Ezt orvosolandó, a `ViewController.swift`ben készítsünk egy `setupUrls()` segédfüggvényt!
+> A `UITableViewDataSource` metódusoknál töröljük ki a szekciók számát megadót, a sorok számánál pedig térjünk vissza a `NSFetchedResultsController`től elkért értékkel!
 
 ```swift
-// MARK: - Helper methods
-
-private func setupUrls() {
-  guard let restorationID = restorationIdentifier else {
-    return
+override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+  guard let sectionInfo = fetchedResultsController.sections?[section] else {
+    return 0
   }
 
-  switch restorationID {
-  case "Wartburg":
-    view.backgroundColor = UIColor(red:0.13, green:0.14, blue:0.15, alpha:1)
-    imageUrl = URL(string: "http://www.fortepan.hu/_photo/display/28268.jpg")
-    contentUrl = URL(string: "http://www.fortepan.hu/_photo/download/fortepan_28268.jpg")
-  case "Trabant":
-    view.backgroundColor = UIColor(red:0.95, green:0.95, blue:0.95, alpha:1)
-    imageUrl = URL(string: "http://www.fortepan.hu/_photo/display/74394.jpg")
-    contentUrl = URL(string: "http://www.fortepan.hu/_photo/download/fortepan_74394.jpg")
-  case "Moszkvics":
-    view.backgroundColor = UIColor(red:0.8, green:0, blue:0.48, alpha:1)
-    imageUrl = URL(string: "http://www.fortepan.hu/_photo/display/16022.jpg")
-    contentUrl = URL(string: "http://www.fortepan.hu/_photo/download/fortepan_16022.jpg")
+  return sectionInfo.numberOfObjects
+}
+```
+
+> A `tableView(_:cellForRowAt:)` metódusban szintén a `NSFetchedResultsController`től kérjük el a megfelelő indexű `Note`-ot és ez alapján konfiguráljuk a cellát. Vegyünk fel egy külön metódust a cella adatainak beállításához (később még ennek hasznát vehetjük, ha már egy létező cellát akarunk frissíteni)!
+
+```swift
+func configure(cell: UITableViewCell, at indexPath: IndexPath) {
+  let note = fetchedResultsController.object(at: indexPath)
+
+  cell.textLabel?.text = note.content
+
+  let dateFormatter = DateFormatter()
+  dateFormatter.dateStyle = .medium
+  dateFormatter.timeStyle = .medium
+  cell.detailTextLabel?.text = dateFormatter.string(from: note.creationDate!)
+}
+```
+
+```swift
+override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+  let cell = tableView.dequeueReusableCell(withIdentifier: "NoteCell", for: indexPath)
+
+  configure(cell: cell, at: indexPath)
+
+  return cell
+}
+```
+
+> Próbáljuk ki az alkalmazást és ellenőrizzük, hogy megjelennek-e a `Note`-ok a `Notebook`okon belül!
+
+### Jegyzetek felvétele <a id="jegyzetek-felvetele"></a>
+
+> Definiáljunk egy `createNote(with:)` nevű metódust, mely létrehoz egy új jegyzetet és hozzárendeli az aktuális `Notebook`hoz!
+
+```swift
+private func createNote(with content: String) {
+  let managedObjectContext = AppDelegate.managedContext
+
+  let note = Note(context: managedObjectContext)
+  note.content = content
+  note.creationDate = Date()
+  note.notebook = notebook
+
+  (UIApplication.shared.delegate as! AppDelegate).saveContext()
+}
+```
+
+> A `Storyboard`ban vegyünk fel egy `Bar Button Item`et a `Note View Controller`re a `Navigation Bar` jobb szélére! (Amennyiben nem sikerülne rögtön ráhúzni a `Bar Button Item`et a jelenetünkre, valószínűleg hiányzik a `Navigation Item`. Pótoljuk, ha szükséges.)
+
+<!--  -->
+> Allítsuk be a `Bar Button Item` *System Item* property-jét **Add**ra.
+
+<img src="img/13_add_bar_button_item.png" alt="13" style="width: 33%;"/>
+
+> Kössünk be hozzá egy `addNoteButtonTap()` akció metódust, melyben jelenítsünk meg egy `Alert Controller`t az új jegyzet szövegének bekéréséhez!
+
+```swift
+@IBAction func addNoteButtonTap(_ sender: Any) {
+  let createNoteAlert = UIAlertController(title: "Create Note", message: "Enter the content", preferredStyle: .alert)
+  
+  createNoteAlert.addTextField() {
+    textField in
+    textField.placeholder = "Note content"
+  }
+  
+  let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+  createNoteAlert.addAction(cancelAction)
+  
+  let createAction = UIAlertAction(title: "Create", style: .default) {
+    action in
+    
+    let textField = createNoteAlert.textFields!.first!
+    self.createNote(with: textField.text!)      
+  }
+  createNoteAlert.addAction(createAction)
+  
+  present(createNoteAlert, animated: true, completion: nil)
+}
+```
+
+Ha kipróbáljuk az alkalmazást, azt láthatjuk, hogy nem jelenik meg az új jegyzet a mentés után. Ez azért van mert a `Table View` még nem értesült a kontextus módosításáról. Itt tűnik fel újra az `NSFetchedResultsController`, mely képes értesítéseket küldeni, ha megváltozik az általa figyelt lekérdezés, esetünkben azok a `Note` objektumok, amik az éppen kiválasztott `Notebook`hoz tartoznak.
+
+> Adjuk hozzá `NoteViewController`hez az `NSFetchedResultsControllerDelegate` protokolt!
+
+```swift
+extension NoteViewController: NSFetchedResultsControllerDelegate {
+
+}
+```
+
+> A `viewDidLoad()` metódusban állítsuk be a `delegate`-et!
+
+```swift
+fetchedResultsController.delegate = self
+```
+
+> Valósítsuk meg a protokoll következő **3** műveletét!
+
+```swift
+func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+  tableView.beginUpdates()
+}
+
+func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+  switch type {
+  case .insert:
+    tableView.insertRows(at: [newIndexPath!], with: .fade)
   default:
     break
   }
 }
-```
 
-> Majd hívjuk meg a `viewDidLoad()`-ban!
-
-```swift
-override func viewDidLoad() {
-    super.viewDidLoad()
-
-    setupUrls()
-    ...
+func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+  tableView.endUpdates()
 }
 ```
 
-> Próbáljuk ki az alkalmazást!
+Ezek a metódusok szinte minden alkalmazásban ugyanígy néznek ki (a `.delete`, `.update`, `.move` megadásával kiegészítve, később mi is felvesszük ezeket).
 
-### MBProgressHUD <a id="mbprogresshud"></a>
+### Jegyzetek törlése <a id="jegyzetek-torlese"></a>
 
-Most, hogy már van mit letölteni, adjuk hozzá a projekthez az `MBProgressHUD` third-party könyvtárat, amivel különböző *progress bar*okat tudunk megjeleníteni.
-
-> Ehhez először töltsük le a [forrást](https://github.com/jdg/MBProgressHUD/archive/master.zip
-), majd csomagoljuk is ki!
-
-<!--  -->
-> Keressük meg és adjuk hozzá a projekthez az `MBProgressHUD.h` és az `MBProgressHUD.m` fájlokat (egy **MBProgressHUD** groupba)!
-
-Mivel ezek `Objective-C`-ben írt állományok, `Swift` kódból történő használatukhoz ún. *bridging header*re van szükség. A segítségével importált állományok elérhetőek és használhatóak lesznek a `Swift` fájlokból.
-
-> Amennyiben az `Xcode` nem ajánlja fel a *bridging header* létrehozását, készítsük el manuálisan! `PictureDownload-Bridging-Header.h` néven hozzunk létre egy *Header* fájlt, majd menjünk át a projektbeállításokhoz, azon belül is `Build Settings`-hez és állítsuk be az `Objective-C Brigding Header`t: **`$(PROJECT)/PictureDownload-Bridging-Header.h`** 
-
-<img src="img/14_bridging_header.png" alt="14" style="width: 75%;" />
-
-> Végül egészítsük ki a `PictureDownload-Bridging-Header.h`-t az `#import "MBProgressHUD.h"` direktívával!
-
-```smalltalk
-#import "MBProgressHUD.h"
-```
-
-> Ezután egészítsük ki a `ViewController`t, hogy letöltés közben megjelenjen a letöltés állapota. 
-Hozzunk létre egy `MBProgressHUD` típusú property-t, hogy később bárhonnan el tudjuk érni!
+> Engedélyezzük a *Swipe to delete* funkciót a `tableView(:canEditRowAt:)` metódussal!
 
 ```swift
-private var hud: MBProgressHUD!
-```
-
-> Majd inicializáljuk a `viewDidLoad()` végén!
-
-```swift
-hud = MBProgressHUD(view: view)
-view.addSubview(hud)
-```
-
-> Amikor elindul a letöltés jelenítsük meg, az egyes adatcsomagok beérkezésekor frissítsük, végül, ha a kép letöltődött, rejtsük el a HUD-ot! Ehhez a `downloadFile()` metódust kell kiegészíteni.
-
-```swift
-@objc func downloadFile() {
-  guard let contentUrl = contentUrl else {
-    return
-  }
-
-  let destination = Alamofire.DownloadRequest.suggestedDownloadDestination(for: .documentDirectory, in: .userDomainMask)
-  Alamofire.download(contentUrl, to: destination).downloadProgress { progress in
-    print(progress.completedUnitCount)
-    self.hud.progress = Float(progress.fractionCompleted)
-    self.hud.label.text = String(format: "%.2f%%", progress.fractionCompleted * 100)
-    }.response { response in
-      defer {
-        self.hud.hide(animated: true)
-      }
-      
-      if let error = response.error {
-        print("Error: \(error.localizedDescription)")
-      } else {
-        print("Success!")
-      }
-  }
-  hud.show(animated: true)
+override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+  return true
 }
 ```
 
-### CocoaPods <a id="cocoapods"></a>
-
-Végül, hogy ne kelljen minden egyes nézetváltáskor letölteni a kisméretű képeket, adjunk hozzá a projekthez egy *image cache* komponenst, mely elvégzi ezt a feladatot.
-Ehhez a [`Kingfisher`](https://github.com/onevcat/Kingfisher) nevű third-party könyvtárat fogjuk használni, amit a CocoaPods nevű függőségkezelő rendszerrel fogunk hozzáadni a projekthez.
-
-A laborgépeken már telepítve van a program, saját gépen az alábbi utasítás `Terminal`ból való végrehajtásával telepíthető:
-
-```bash
-sudo gem install cocoapods
-```
-
-> Adjunk hozzá egy üres fájt a projektünk gyökérkönyvtárába `Podfile` néven. Ezt a legegyszerűbben úgy tudjuk megtenni, hogy a projekthez magához adunk hozzá egy üres fájlt.
-
-![](img/15_project_new_file.png)
-
-<img src="img/16_empty_file.png" alt="16" style="width: 66%;" />
-
-<img src="img/17_podfile_location.png" alt="17" style="width: 66%;" />
-
-> Módosítsuk tartalmát a következőre:
-
-```ruby
-platform :ios, '11.0'
-use_frameworks!
-
-target 'PictureDownload' do
-  pod 'Alamofire'
-  pod 'Kingfisher'
-end
-```
-
-> Az `Alamofire`t azért írjuk bele, hogy a jelenlegi projekt importálást kitörölhessük az újonan generált workspace-ünkből.
-
-<!-- -->
-> Mentsük el a `Podfile`-t, majd a `Terminal`ban navigáljunk a projekt gyökérkönyvtárába, és futtassuk a következő parancsot!
-
-```bash
-pod install
-```
-
-> Ha sikerült, zárjuk be a projektet és a `Finder`ben keressük meg a projekt mellett létrejött `PictureDownload.xcworkspace` fájlt, és nyissuk meg!
-
-Valami ilyesmit kell látnunk.
-
-<img src="img/18_workspace_structure.png" alt="18" style="width: 25%;" />
-
-> Nyissuk meg a `ViewController.swift` állományunkat és kommentezzük ki a korábban írt `viewWillAppear(_:)` metódust! 
-
-Ezzel sajnos azt értük el, hogy már nem töltődnek be automatikusan a járművek képei, amikor a nézetet megjelenítjük. A következőkben módosítjuk a `ViewController`t, hogy a kép letöltését (és cache-elését) a `Kingfisher` végezze. 
-
-> A `Kingfisher`t használat előtt importáljuk!
+> Majd végezzük el a törlést a `UITableViewDataSource`-ból adoptált `tableView(_:commit:forRowAt:)` metódusban!
 
 ```swift
-import Kingfisher
-```
-
-> Végül egészítsük ki a `ViewController` `viewDidLoad()` metódusát, hogy le is töltödjön a kép. Ehhez adjunk hozzá a következő sorokat!
-
-```swift
-  override func viewDidLoad() {
-    super.viewDidLoad()
-
-    ...
-	 if let imageUrl = imageUrl {
-      imageView.kf.setImage(with: imageUrl)
-    }
+override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+  if editingStyle == .delete {
+    let managedObjectContext = AppDelegate.managedContext
+    let noteToDelete = fetchedResultsController.object(at: indexPath)
+    managedObjectContext.delete(noteToDelete)
   }
+}
 ```
 
-## Önálló feladat <a id="onallo-feladat"></a>
-> Jelenítsük meg a letöltött képet valami kreatív módon!
+A törlésről értesül a `NSFetchedResultsController` és meghívja az előbb bemutatott `delegate` metódust.
+
+> Egészítsük ki ezt, vegyük fel a törlés eseményhez, hogy a `Table View` kitörölje a megfelelő elemet!
+
+```swift
+case .delete:
+  tableView.deleteRows(at: [indexPath!], with: .automatic)
+```
+
+> Próbáljuk ki a törlést!
+
+### További műveletek <a id="tovabbi-muveletek"></a>
+
+Az `NSFetchedResultsController` jelez ha bármelyik objektum módosításra kerül (pl. átírták egy attribútumát) vagy ha megváltozik a pozíciója a lekérdezésen belül. Bár ezeket a laboron nem használjuk, érdemes a standard implementációt ezekhez is felvenni.
+
+```swift
+func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+  switch type {
+  case .insert:
+    tableView.insertRows(at: [newIndexPath!], with: .automatic)
+  case .delete:
+    tableView.deleteRows(at: [indexPath!], with: .automatic)
+  case .update:
+    let cell = tableView.cellForRow(at: indexPath!)!
+    configure(cell: cell, at: indexPath!)
+  case .move:
+    tableView.deleteRows(at: [indexPath!], with: .automatic)
+    tableView.insertRows(at: [newIndexPath!], with: .automatic)
+  }
+}
+```
+
+### `Managed Object Context` mentése <a id="moc-mentese"></a>
+
+A jelenlegi implementáció rögtön elmenti a változásokat a perzisztens tárolóba. Sok módosítás esetén (vagy ha esetleg szeretnénk érvényteleníteni a legutóbbi változtatásokat), érdemes lehet a módosításokat csak akkor menteni, mikor az alkalmazás a háttérbe kerül.
+
+> Ehhez először töröljük a `createNote(with content: String)` metódusból a következő sort!
+
+```swift
+(UIApplication.shared.delegate as! AppDelegate).saveContext()
+```
+
+> Majd módosítsuk az `applicationDidEnterBackground(_:)` metódust az `AppDelegate.swift`ben!
+
+```swift
+func applicationDidEnterBackground(_ application: UIApplication) {
+  saveContext()
+}
+```
+
+## Önálló feladatok <a id="onallo-feladatok"></a>
+
+> Építsük be `NotebookViewController`be is új `Notebook`ok felvételének és törlésének lehetőségét! (Használjuk az `NSFetchedResultController`t!)

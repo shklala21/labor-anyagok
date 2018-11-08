@@ -3,361 +3,426 @@
 ## A laborsegédletet összeállította
 * Kelényi Imre - imre.kelenyi@aut.bme.hu
 * Kántor Tibor - tibor.kantor@autsoft.hu
+* Blázovics László - blazovics.laszlo@aut.bme.hu
 * Krassay Péter - peter.krassay@autsoft.hu
-* Szücs Zoltán - szucs.zoltan@autsoft.hu
 
 ## A labor témája
 
 * [Messenger](#messenger)
-    * [Üzenetek letöltése](#uzenetek-letoltese)
-    * [`JSON` feldolgozás](#json-feldolgozas)
-    * [Üzenetek feltöltése](#uzenetek-feltoltese)
-    * [Képek feltöltése](#kepek-feltoltese)
-    * [Képek letöltése](#kepek-letoltese)
-    * [Network Activity Indicator](#network-activity-indicator)
-* [Önálló feladat: Valutaváltó](#onallo-feladat)
+    * [Pozíció lekérdezése](#pozicio-lekerdezese)
+    * [Pozíció csatolása az üzenethez](#pozicio-csatolasa-az-uzenethez)
+    * [`MapView` megjelenítés](#mapview-megjelnites)
+* [Önálló feladatok](#onallo-feladatok)
 
 ## Messenger <a id="messenger"></a>
 
-> Másoljuk a `res` mappában lévő **`Messenger`** kezdőprojektet a `labor_10` mappánkba!
+> Másoljuk a `res/` mappában lévő **`Messenger`** kezdőprojektet a `labor_10/` mappánkba! Ez lényegében az előző labor során kidolgozott projekt.
 
-![](img/01_start.png)
+<img src="img/01_start.png" alt="01" style="width: 33%;"/>
 
+A legfőbb UI-t érintő változás az előző verzióhoz képest, hogy az alkalmazásba bekerült egy `Tab Bar` két elemmel: **Messages** és **Map**. Az előbbiről a múlt órai labor képernyői érhetőek el, az utóbbit pedig ezen a laboron fogjuk elkészíteni. További különbség, hogy az `ComposeMessageViewController`en megjelent egy **Pending** feliratú `Label` (kódszinten pedig egy `CLLocation` property, ami a pozíciót fogja majd tárolni). Ez a nézet fogja jelezni, hogy sikerült-e a feladó koordinátáját lekérdezni. Végül egy fontos, motorháztető alatti átalakítás az új `NetworkHelper` osztály is, ahová ki lettek szervezve a hálózati hívások.
+
+> A `MessagesViewController`ben írjuk át a `YOUR NAME`-et a saját nevünkre!
+
+<!--  -->
 > Próbáljuk ki az alkalmazást és nézzük át a forráskódját! 
 
-Az alkalmazás két `Table View Controller`t tartalmaz. A `Messages View Controller` az üzeneteket listázza, a `Compose Message View Controller` pedig új üzenet írására szolgál.
+### Pozíció lekérdezése <a id="pozicio-lekerdezese"></a>
+> Készítsünk el egy osztályt, amely segítségével le tudjuk kérdezni az aktuális pozíciónkat. Ehhez hozzuk létre a `LocationManager` nevű, `NSObject`ből származó osztályunkat!
 
-### Üzenetek letöltése <a id="uzenetek-letoltese"></a>
+Ahhoz, hogy az osztály értesítéseket kapjon a pozícióval kapcsolatban, implementálni kell a `CLLocationManagerDelegate` *protocol*t. Ehhez először importálni kell a `CoreLocation` modult.
 
-> A `MessagesViewController.swift`be vegyünk fel egy új *property*-t, mely az `URLSession` példányt tárolja! Helyben inicializáljuk is!
-
-```swift
-private var urlSession: URLSession = {
-  let sessionConfiguration = URLSessionConfiguration.default
-  return URLSession(configuration: sessionConfiguration, delegate: nil, delegateQueue: OperationQueue.main)
-}()
-```
-
-> Valósítsuk meg a *Refresh* gomb megnyomásakor meghívódó metódust, mely elindítja az üzenetek letöltését! (Az üres metódus `refreshButtonTap(_:)` néven már ott van a kódban, és be is van kötve a gomb megfelelő eseményéhez.)
+> Hozzunk létre 
+>
+> * egy `CLLocation` típusú, **lastLocation** nevű property-t, ami a legutolsó ismert pozíciót fogja tárolni,
+> * egy `Timer` típusú, **timeoutTimer** nevű property-t,
+> * egy closure-t, **locationUpdated** névvel, hogy értesíteni tudjuk a pozícióra várakozó objektumainkat a pozíció változásáról (ennek értéket a hívó fél ad a `startLocationManager` meghívásakor),
+> * egy `CLLocationManager` típusú, **locationManager** nevű property-t!
 
 ```swift
-// MARK: - Actions
+import CoreLocation
+import Foundation
 
-@IBAction func refreshButtonTap(_ sender: Any) {
-  let url = URL(string: "http://atleast.aut.bme.hu/ait-ios/messenger/messages")
-  urlSession.dataTask(with: url!) { data, response, error in
-    if let data = data, let responseString = String(data: data, encoding: .utf8) {
-      print("\(responseString)")
-    }
-  }.resume()
+class LocationManager: NSObject {
+
+  var lastLocation: CLLocation?
+  private var timeoutTimer: Timer?
+  private var locationUpdated: (() -> Void)!
+  private var locationManager: CLLocationManager!
+
 }
 ```
 
-> Teszteljük az alkalmazást és ellenőrizzük, hogy a konzolon megjelenik-e a letöltött `JSON` formátumú válasz!
-
-A konzolon csak a következő üzenet jelenik meg:
-
-`App Transport Security has blocked a cleartext HTTP (http://) resource load since it is insecure. Temporary exceptions can be configured via your app's Info.plist file.`
-
-Az *App Transport Security*-t (*ATS*) az `Apple` az `iOS 9`-cel mutatta be. Lényegében egy olyan biztonsági mechanizmus, ami alapértelmezetten minden, az alkalmazás által indított kapcsolatot tilt, ami nem `HTTPS` felett megy a legerősebb `TLS` használatával.
-
-Természetesen egy ilyen változtatásnál időt kell adni a fejlesztőknek, hogy frissíthessék az alkalmazásokat, illetve a szervereket, ezért az `Apple` engedélyezte kivételek hozzáadását, illetve az *ATS* teljes kikapcsolását is.
-
-A `2016`-os `WWDC`-n az `Apple` bejelentette, hogy `2017` januárjától az `App Store`-ba felöltött alkalmazásoknak (és az őket kiszolgáló szervereknek) adaptálniuk kell az *ATS*-t (ezt a határidőt később kitolták). Ez alól csak nagyon indokolt esetben adnak felmentést.
-
-A fejlesztés idejére azonban továbbra is ki lehet kapcsolni ezt a biztonsági funkciót.
-
-> Az *ATS* kikapcsolásához az `Info.plist`ben vegyük fel az *`App Transport Security Settings`* kulcsot, majd azon belül az *`Allow Arbitrary Loads`* kulcsot **`YES`** értékkel!
-
-![](img/02_ats.png)
-
-Ezen változtatás után már meg fog jelenni a konzolon a `JSON` válasz.
-
-### `JSON` feldolgozás <a id="json-feldolgozas"></a>
-
-A szervertől kapott válasz `JSON` formátumú: egy tömbben `JSON` objektumok írják le a megjelenítendő üzeneteket. A szerver válaszát böngészőben is megvizsgálhatjuk az URL megnyitásával.
-
-[`http://atleast.aut.bme.hu/ait-ios/messenger/messages`](http://atleast.aut.bme.hu/ait-ios/messenger/messages
-)
-
-```json
-[  
-  {
-    "content": "",
-    "from_user": "Benedek",
-    "imageurl": "http://atleast.aut.bme.hu/ait-ios/messenger/message_images/aa129a2cf0d0f763af633edea014944e.jpeg",
-    "latitude": 0,
-    "longitude": 0,
-    "to_user": "László",
-    "topic": "film"
-  },
-  ...
-]
-```
-
-`JSON` feldolgozásra a `Swift 4`-ben bevezetett `Codable`-t fogjuk használni. A `Codable` egy `typealias`, két *protocol*t fog össze: `typealias Codable = Decodable & Encodable`. A sorosítást és visszaalakítást *Encoder* és *Decoder* osztályok végzik, melyek gyakran használt formátumokhoz (pl. `JSON`, `Plist`) beépítve rendelkezésünkre állnak.
-
-> Az üzenetek tárolásához hozzunk létre egy `Message.swift` nevű fájlt, és vegyünk fel benne egy `Message` nevű `struct`ot. 
+A pozíció lekérdezés indítását a következő metódus végzi. A `CLLocationManager` létrehozása és felparaméterezése után indít egy `Timer`t, melynek segítségével `15` másodperc után leállítjuk a pozíció lekérdezését (ha nem történik érdemi esemény).
 
 ```swift
-struct Message: Codable {
+func startLocationManager(updated: @escaping () -> Void) {
 
-  let sender: String
-  let recipient: String
-  let topic: String
-    
-  enum CodingKeys: String, CodingKey {
-    case sender = "from_user"
-    case recipient = "to_user"
-    case topic
+  locationUpdated = updated
+
+  locationManager = CLLocationManager()
+  locationManager.requestWhenInUseAuthorization()
+  locationManager.delegate = self
+  locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+
+  timeoutTimer = Timer.scheduledTimer(timeInterval: 15, target: self, selector: #selector(LocationManager.stopLocationManager), userInfo: nil, repeats: false)
+
+  locationManager.startUpdatingLocation()
+}
+```
+
+> Implementáljuk a `Timer` lejártakor meghívódó metódust!
+
+```swift
+@objc func stopLocationManager() {
+  if let timer = timeoutTimer {
+    timer.invalidate()
   }
-    
+
+  locationManager.stopUpdatingLocation()
+  locationUpdated()
 }
 ```
 
-A `CodingKeys` `enum`ra esetünkben azért van szükség, mert bizonyos mezők eltérő néven szerepelnek a szervertől érkező adathalmazban.
-
-> A `MessagesViewController.swift` fájlban vegyünk fel és inicializáljunk egy `Message` tömböt, melyben a szerverről kapott üzeneteket fogjuk tárolni.
+> Ezt követően valósítsuk meg `CLLocationManagerDelegate`-et és két metódusát.
 
 ```swift
-private var messages = [Message]()
-```
+extension LocationManager: CLLocationManagerDelegate {
 
-> A `Data Task` befejeztekor meghívódó *closure*-ben dolgozzuk fel a kapott `JSON`-t és rendeljük az eredményt a `messages` property-hez!
-
-```swift
-// MARK: - Actions
-
-@IBAction func refreshButtonTap(_ sender: AnyObject) {
-  let url = URL(string: "http://atleast.aut.bme.hu/ait-ios/messenger/messages")
-  urlSession.dataTask(with: url!) { data, response, error in
-    if let error = error {
-      print("Error during communication: \(error.localizedDescription)")
-    } else if let data = data {
-      let decoder = JSONDecoder()
-      do {
-        self.messages = try decoder.decode(Array<Message>.self, from: data)
-        self.tableView.reloadData()
-      } catch let decodeError {
-        print("Error during JSON decoding: \(decodeError.localizedDescription)")
-      }
-    }
-  }.resume()
 }
 ```
 
-> Az üzenetek megjelenítéséhez valósítsuk meg a `Table View Data Source` metódusait!
+Ha érkezik frissítés, akkor az alábbi metódus fog meghívódni és a frissítést lekezelni.
 
 ```swift
-// MARK: - Table view data source
-    
-override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-  return messages.count
-}
-    
-override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-  let cell = tableView.dequeueReusableCell(withIdentifier: "MessageCell", for: indexPath) as! MessageCell
-    
-  let message = messages[indexPath.row]
-    
-  cell.recipientLabel.text = "\(message.sender) -> \(message.recipient)"
-  cell.topicLabel.text = message.topic
-    
-  return cell
-}
-```
-
-> Próbáljuk ki az alkalmazást!
-
-### Üzenetek feltöltése <a id="uzenetek-feltoltese"></a>
-
-Új üzenet küldéséhez az `URL`-re egy `HTTP` `POST` kérést kell küldenünk, a következő formátumú tartalommal.
-
-```json
-{
-  "from_user": "",
-  "to_user": "",
-  "topic": "",
-  "image": "base64 kódolású JPEG kép"
-}
-```
-
-Az üzenet összeállítását és küldését a `ComposeMessageViewControllerDelegate` `composeViewControllerDidSend(_:)` metódusában végezhetjük. A *protocol*t a `Messages View Controller` valósítja meg.
-
-> Állítsuk össze az adathierarchiát, majd alakítsuk `JSON`-né (az opcionálisan megadható kép feltöltését későbbre hagyjuk). **A _`YOUR NAME`_ helyett mindenki válasszon egy egyedi nevet!**
-
-```swift
-func composeMessageViewControllerDidSend(_ viewController: ComposeMessageViewController) {
-  navigationController?.popToRootViewController(animated: true)
-  guard let recipient = viewController.recipientTextField.text, let topic = viewController.topicTextField.text else { return }
-    
-  let message = Message(sender: "YOUR NAME", recipient: recipient, topic: topic)
-  let encoder = JSONEncoder()
-    
-  guard let jsonData = try? encoder.encode(message) else { return }
-```
-
-A `POST` kérés küldéséhez egy `URLRequest`re lesz szükségünk.
-
-```swift
-let url = URL(string: "http://atleast.aut.bme.hu/ait-ios/messenger/add-message")
-var request = URLRequest(url: url!)
-request.httpMethod = "POST"
-request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-```
-
-> Indítsunk egy `Upload Task`ot, mely befejeztekor egy `Alert`et feldobva nyugtázzuk a folyamatot!
-
-```swift
-urlSession.uploadTask(with: request, from: jsonData) { data, response, error in
-  if let error = error {
-    print("Error during comminication: \(error.localizedDescription).")
+func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+  guard let newLocation = locations.last else {
     return
-  } else if let data = data {
-    let decoder = JSONDecoder()
-    do {
-      let sendResponse = try decoder.decode(MessageSendResponse.self, from: data)
-            
-      let alert = UIAlertController(title: "Server response", message: sendResponse.result, preferredStyle: .alert)
-      let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
-      alert.addAction(okAction)
-            
-      self.present(alert, animated: true, completion: nil)
-    } catch {
-      print("Error during JSON decoding: \(error.localizedDescription)")
+  }
+
+  if -newLocation.timestamp.timeIntervalSinceNow > 5.0 {
+    return
+  }
+
+  if newLocation.horizontalAccuracy < 0 {
+    return
+  }
+
+  if lastLocation == nil || lastLocation!.horizontalAccuracy > newLocation.horizontalAccuracy {
+    lastLocation = newLocation
+
+    if newLocation.horizontalAccuracy <= manager.desiredAccuracy {
+      stopLocationManager()
     }
   }
-}.resume()
-```
-
-Ha újra letöltjük az üzeneteket, meg kell jelennie az új küldeménynek.
-
-### Képek feltöltése <a id="kepek-feltoltese"></a>
-
-> Bővítsük a `Message` `struct`ot az `image` mezővel. Ne feledkezzünk meg a `CodingKeys` `enum` bővítéséről sem! Vegyünk fel egy új *inicializáló*t is, ugyanis az `image` *property*-t később fogjuk beállítani, így az *alapértelmezett inicializáló* már nem felel meg az igényeinknek.
-
-```swift 
-struct Message: Codable {
-  ...
-  var image: String?
-  ...
-  init(sender: String, recipient: String, topic: String) {
-    self.sender = sender
-    self.recipient = recipient
-    self.topic = topic
-  }
-
-  enum CodingKeys: String, CodingKey {
-    ...
-    case image
-  }
-    
 }
 ```
 
-> A szervernek elküldendő üzenetbe illesszük be a kiválasztott képet. Ehhez először lekicsinyítjük, majd a `JPEG` reprezentációját `base64` kódolással alakítjuk `String`gé! (Ügyeljünk rá, hogy az üzenetet reprezentáló lokális `message` példányunkat konstans (`let`) helyett változóként (`var`) hozzuk létre, hogy az `image` *property*-jét be tudjuk állítani!) 
+> Amennyiben hiba történne (a rendszer nem tudja meghatározni a pozíciónkat) állítsuk meg a frissítést.
 
 ```swift
-var message = Message(sender: "YOUR NAME", recipient: recipient, topic: topic)
-if let image = viewController.imageView.image, let jpegImageData = UIImageJPEGRepresentation(image.scale(to: CGSize(width: 40, height: 40)), 0.7) {
-  message.image = jpegImageData.base64EncodedString()
+func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+  stopLocationManager()
+  print(error.localizedDescription)
 }
 ```
 
-### Képek letöltése <a id="kepek-letoltese"></a>
+> Végül adjuk hozzá az `Info.plist` fájlban az alábbi kulcsot **Privacy - Location When In Use Usage Description** (`NSLocationWhenInUseUsageDescription`)!
 
-A szerveren minden feltöltött kép eltárolódik, majd az üzenetek lekérdezésekor az `imageurl` kulcshoz tartozó érték alapján tudjuk letölteni őket. 
+<img src="img/02_location_when_in_use.png" alt="02" style="width: 66%;"/>
 
-> Bővítsük a `Message` `struct`ot az `imageUrl` mezővel. Ne feledkezzünk meg a `CodingKeys` `enum` és az `init` bővítéséről sem!
+Értéknek bármi megadható, de vigyázzunk, mert ezt fogja a felhasználó először elolvasni, amikor engedélyt kér tőle az alkalmazás.
 
-```swift 
-struct Message: Codable {
+### Pozíció csatolása az üzenethez <a id="pozicio-csatolasa-az-uzenethez"></a>
+
+> Térjünk rá a `ComposeMessageViewController` kiegészítésére! Először vegyünk fel egy `LocationManager` típusú property-t az osztályban és inicializáljuk is!
+
+```swift
+private var locationManager = LocationManager()
+```
+
+> Ezután valósítsuk meg az aktuális pozíció tárolásáért felelős részeket. Indítsuk el, illetve állítsuk le a frissítést amikor szükséges, és implementáljuk a megfelelő closure-t a pozíció frissítéshez!
+
+```swift
+// MARK: - View Lifecycle
+
+override func viewWillAppear(_ animated: Bool) {
+  super.viewWillAppear(animated)
+
+  locationManager.startLocationManager { [weak self] in
+    if let location = self?.locationManager.lastLocation {
+      self?.location = location
+      self?.coordinateLabel.text = "\(location.coordinate.latitude) " + "\(location.coordinate.longitude)"
+    }
+  }
+  coordinateLabel.text = "Pending"
+}
+
+override func viewWillDisappear(_ animated: Bool) {
+  super.viewWillDisappear(animated)
+
+  locationManager.stopLocationManager()
+}
+```
+
+Ahhoz, hogy a koordinátákat ténylegesen fel is küldjük a szervernek, először is ki kell egészítenünk a `Message` `struct`unkat.
+
+```swift
   ...
-  let imageUrl: String?
-   
-  init(sender: String, recipient: String, topic: String) {
-    ...
-    imageUrl = nil
+  var latitude: Double?
+  var longitude: Double?
+  ...
+
+  case latitude
+  case longitude
+  ...
+```
+
+Majd a `MessagesViewController`ben a `composeMessageViewControllerDidSend(_:)` metódusban is fel kell vennünk a koordinátákat! 
+
+```swift
+if let location = viewController.location {
+  message.latitude = location.coordinate.latitude
+  message.longitude = location.coordinate.longitude
+}
+```
+
+> Teszteljük az alkalmazást!
+
+###  `MapView` megjelenítés <a id="mapview-megjelnites"></a>
+> Hogy meg is tudjuk nézni az egyes, helyhez kötött üzeneteket, hozzunk létre egy `MapViewController` nevű osztályt, ami a `UIViewController`ből származik.
+
+> A `Main.storyboard`ban a `Map` jelenetnek állítsuk be az `Identity inspector`ban a *Class* attribútumát `MapViewController`re!
+
+<!--  -->
+> `AutoLayout` kényszerek segítségével tegyünk a `MapViewController` `view`-jába egy teljes nézetet betöltő `MKMapView`-t, majd kössük be egy `Outlet`tel a `MapViewController`be **mapView** néven.
+
+![](img/03_mapview_vc.png)
+
+> Ne felejtsük el az újonnan hozzáadott `MKMapView`-nak beállítani a tartalmazó `ViewController`t, mint delegate-et!
+
+<img src="img/04_mapview_delegate.png" alt="04" style="width: 33%;"/>
+
+> Miután ez megvan, térjünk vissza az osztály forrásához és importáljuk a `MapKit` modult! Adjunk továbbá hozzá egy property-t, ami majd a megjelenítendő üzeneteinket fogja tartalmazni,  illetve jelezzük, hogy meg fogjuk valósítani az `MKMapViewDelegate`-et (`extension`)!
+
+```swift
+import MapKit
+import UIKit
+
+class MapViewController: UIViewController {
+
+  @IBOutlet weak var mapView: MKMapView!
+  
+  private var messages = [Message]()
+
+}
+
+extension MapViewController: MKMapViewDelegate {
+
+}
+```
+
+> Teszteljük az alkalmazást!
+
+Látható, hogy a térkép betöltődött, ugyanakkor nincs rajta semmi. Ahhoz, hogy bármit is meg tudjunk jeleníteni, szükségünk van az üzenetekre. Ezek ugyanazok az üzenetek, amiket a `Messages` tabon is láthatunk, így egy komolyabb alkalmazásban valamilyen központi helyen tárolnánk ezeket, pl.: `CoreData`, `Realm`, stb. A laboron most azt fogjuk csinálni, hogy a `Map` tabra navigáláskor minden alkalommal le fogjuk tölteni a friss üzeneteket és azokat jelenítjük csak meg, amikben vannak koordináták is. (Most jön jól, hogy a hálózati hívások ki lettek szervezve, nem kell kódot duplikálni.)
+
+> Töltsük le az üzeneteket a `NetworkHelper` segítségével!
+
+```swift
+override func viewWillAppear(_ animated: Bool) {
+  super.viewWillAppear(animated)
+  
+  NetworkHelper.downloadMessages { messages in
+    self.messages = messages
+  }
+}
+```
+
+A sikeres letöltés után már minden üzenet a birtokunkban lesz. Ahhoz, hogy ezeket meg is tudjuk jeleníteni a térképen egy saját osztállyal meg kell valósítani az `MKAnnotation` *protocol*t.
+
+> Hozzunk tehát létre egy új, `NSObject`ből származó osztályt `MessageAnnotation` névvel, ami megvalósítja az `MKAnnotation` *protocol*t!
+
+```swift
+import MapKit
+
+class MessageAnnotation: NSObject {
+
+  var coordinate: CLLocationCoordinate2D
+  var title: String?
+  var subtitle: String?
+
+  init(coordinate: CLLocationCoordinate2D, title: String, subtitle: String) {
+    self.coordinate = coordinate
+    self.title = title
+    self.subtitle = subtitle
+  }
+
+}
+
+extension MessageAnnotation: MKAnnotation {}
+```
+
+> Ha ez kész, akkor térjünk vissza a `MapViewController`be és azokra az üzenetekre, ahol vannak koordináta adatok, hozzunk létre új `MessageAnnotation`öket.
+
+```swift
+override func viewWillAppear(_ animated: Bool) {
+  super.viewWillAppear(animated)
+  
+  NetworkHelper.downloadMessages { messages in
+    self.messages = messages
+
+    self.messages.filter { return ($0.longitude != nil) && $0.latitude != nil }.forEach { message in
+      let coordinate = CLLocationCoordinate2D(latitude: message.latitude!, longitude: message.longitude!)
+      let title = "\(message.recipient) \(message.sender)"
+      let subtitle = message.topic
+      
+      let annotation = MessageAnnotation(coordinate: coordinate, title: title, subtitle: subtitle)
+ 
+      self.mapView.addAnnotation(annotation)
+    }
+  }
+}
+```
+
+> Azért, hogy ugyanarra a `Map View`-ra ne rakjuk ki ugyanazokat az üzeneteket minden alkalommal amikor idenavigálunk, szedjük le őket amint elhagyjuk a jelenetet. (Itt is elegánsabb lenne a valóságban a központi adatbázisból szedett üzenetek közül mindig csak az újakat rárakni a térképre és akkor nem kéne semmit levenni.)
+
+```swift
+override func viewWillDisappear(_ animated: Bool) {
+  super.viewWillDisappear(animated)
+  mapView.annotations.forEach { annotation in
+    self.mapView.removeAnnotation(annotation)
+  }
+}
+```
+
+> Futtassuk az alkalmazást!
+
+<!--  -->
+> Az annotációk mellett adjunk hozzá egy törtvonalat (`MKPolyLine`) is a térképhez úgy, hogy minden üzenet legyen egymás után sorban összekötve. Ehhez először hozzunk létre egy koordinátákat tartalmazó tömböt, amivel létrehozzuk a törtvonalat, majd adjuk hozzá a törtvonalat a `mapView`-hoz, mint *overlay*!
+
+```swift
+override func viewWillAppear(_ animated: Bool) {
+  super.viewWillAppear(animated)
+  
+  NetworkHelper.downloadMessages { messages in
+    self.messages = messages
+    
+    var coordinates = [CLLocationCoordinate2D]()
+    self.messages.filter { return ($0.longitude != nil) && $0.latitude != nil }.forEach { message in
+      let coordinate = CLLocationCoordinate2D(latitude: message.latitude!, longitude: message.longitude!)
+      let title = "\(message.recipient) \(message.sender)"
+      let subtitle = message.topic
+      
+      let annotation = MessageAnnotation(coordinate: coordinate, title: title, subtitle: subtitle)
+      self.mapView.addAnnotation(annotation)
+      
+      coordinates.append(coordinate)
+    }
+    
+    let polyline = MKPolyline(coordinates: coordinates, count: coordinates.count)
+    self.mapView.add(polyline)
+  }
+}
+```
+
+> Ezután implementáljuk a következő delegate metódust, hogy ki is legyen rajzolva a törtvonal!
+
+```swift
+func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+  guard overlay is MKPolyline else {
+    return MKPolylineRenderer()
   }
   
-  enum CodingKeys: String, CodingKey {
-    ...
-    case imageUrl = "imageurl"
+  let line = MKPolylineRenderer(overlay: overlay)
+  line.strokeColor = .blue
+  line.lineWidth = 2
+  
+  return line
+}
+```
+
+Látható, hogy most már szépen megjelennek az üzenetek és az azokat összekötő vonal.
+
+> Ehhez valósítsuk meg a következő delegate metódust, aminek a segítségével testreszabhatjuk a megjelenő annotation kinézetét és viselkedését!
+
+```swift
+func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+  if annotation is MessageAnnotation {
+    let reusableId = "MessangerAnnotationID"
+    var markerAnnotationView = mapView.dequeueReusableAnnotationView(withIdentifier: reusableId) as? MKMarkerAnnotationView
+    
+    if markerAnnotationView == nil {
+      markerAnnotationView = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: reusableId)
+      markerAnnotationView?.markerTintColor = .green
+      markerAnnotationView?.canShowCallout = true
+      
+      let calloutButton = UIButton(type: .detailDisclosure)
+      markerAnnotationView?.rightCalloutAccessoryView = calloutButton
+    } else {
+      markerAnnotationView?.annotation = annotation
+    }
+    
+    return markerAnnotationView
+  }
+  
+  return nil
+}
+```
+
+> Implementáljuk az előbb hozzáadott gomb eseménykezelőjét! 
+
+A gomb megnyomására először lekérdezzük az adott üzenet koordinátáját, majd a beépített reverse geocoding szolgáltatás segítségével megkapjuk a pontos címét is a küldés helyének.
+
+Ezután létrehozunk egy két `MKMapItem`ből álló tömböt. Az első elem az aktuális koordinátánk lesz, a második pedig előbb meghatározott helyet fogja tartalmazni.
+
+Végül ezt és egy megfelelő kulcsokat tartalmazó collectiont átadva meghívjuk a beépített `Map` alkalmazást, ami a paramétereknek megfelelően megtervezi az útvonalat az átadott pontok között.
+
+```swift
+func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+  guard let coordinate = view.annotation?.coordinate else {
+    return
+  }
+
+  let geocoder = CLGeocoder()
+  let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+
+  geocoder.reverseGeocodeLocation(location) { placemarks, error in
+    if let error = error {
+      print("Error: \(error.localizedDescription)")
+    }
+
+    guard let placemarks = placemarks, placemarks.count != 0 else {
+      return
+    }
+
+    let clPlacemark = placemarks.first!
+    let placemark = MKPlacemark(placemark: clPlacemark)
+    let mapItem = MKMapItem(placemark: placemark)
+
+    mapItem.name = view.annotation?.title!
+
+    var mapItems = [MKMapItem]()
+    mapItems.append(MKMapItem.forCurrentLocation())
+    mapItems.append(mapItem)
+
+    let launchOptions: [String: Any] = [
+      MKLaunchOptionsMapTypeKey: MKMapType.hybrid.rawValue,
+      MKLaunchOptionsDirectionsModeKey: MKLaunchOptionsDirectionsModeDriving
+    ]
+    MKMapItem.openMaps(with: mapItems, launchOptions: launchOptions)
   }
 }
-``` 
-
-Hogy ne töltsünk le feleslegesen egy képet többször, tároljuk el őket egy *dictionary*-ben, mely `URL – kép` párokat tartalmaz. 
-
-> Vegyünk fel egy új property-t a `MessagesViewController.swift` fájlban!
-
-```swift
-private var imageCache = [URL: UIImage]()
 ```
 
-> Definiáljunk egy új metódust, mely az `URL`-je alapján beállít egy képet a *dictionary*-ből egy cellához, vagy letölti, ha még nincs meg, és azt követően állítja be.
+> Futtassuk az alkalmazást!
 
-```swift
-// MARK: - Helper methods
+## Önálló feladatok <a id="onallo-feladatok"></a>
 
-func setImage(from url: URL, for cell: MessageCell) {
-  if let cachedImage = imageCache[url] {
-    cell.messageImageView.image = cachedImage
-  } else {
-    cell.messageImageView.image = nil
-        
-    urlSession.dataTask(with: url) { data, response, error in
-      if let data = data, let image = UIImage(data: data) {
-        self.imageCache[url] = image
-        cell.messageImageView.image = image
-      }
-    }.resume()
-  }
-}
-```
+-  Az üzenetek mellett jelenítsük meg a saját pozíciónkat is a térképen!
+-  Az annotation `leftCalloutAccessoryView`-jában jelenítsük meg az üzenethez tartozó képet! 
+    - A kép letöltését érdemes a `mapView(:didSelect:)`delegate metódusban elindítani.
+    - Jó ötlet lehet a `MessageAnnotation` osztályba bevenni a hozzá tartozó üzenetet.
+-  Módosítsunk a vonal kirajzolásán úgy, hogy azok az üzenetek legyenek összekötve, akiknek a szerzői üzentek már a másik félnek.
+    - `A` és `B` esetén volt már tehát `A` --> `B` és `B` --> `A` üzenet is.
+    - Több vonalra lesz szükség.
 
-> A cellák konfigurálásakor (`tableView(_:cellForRowAt:)`) indítsuk el a cellához tartozó kép letöltését!
-
-```swift
-if let imageUrlString = message.imageUrl, let imageUrl = URL(string: imageUrlString) {
-  setImage(from: imageUrl, for: cell)
-}
-```
-
-> Próbáljuk ki az alkalmazást!
-
-### Network Activity Indicator <a id="network-activity-indicator"></a>
-
-> Jelenítsük meg a hálózati aktivitást jelző `Network Activity Indicator`t üzenetek küldésekor, letöltésekor, valamint a képek letöltésekor, majd rejtsük el mikor a műveletek véget érnek!
-
-```swift
-UIApplication.shared.isNetworkActivityIndicatorVisible = true
-```
-
-```swift
-UIApplication.shared.isNetworkActivityIndicatorVisible = false
-```
-
-## Önálló feladat <a id="onallo-feladat"></a>
-
-> Készítsünk egy egyszerű valutaváltó alkalmazást, a [http://fixer.io](http://fixer.io) `API`-t használva!
->
-> ![](img/03_example_ui.png)
->
-* Hozzunk létre egy új `Single View App`ot **iCurrency** néven!
-* Készítsünk egy egyszerű felhasználói felületet! (Szükség lesz két `Text Field`re a valutanemek és az átváltandó összeg bekérése, egy `Label`re az eredmény kiírásához, valamint egy `Button`re a folyamat indításához.)
-* Az átváltás gomb megnyomásakor indítsunk egy `HTTP` `GET` kérést (egy `Data Task`ot), mely letölti az aktuális árfolyamot. Az `URL` formátuma a következő:
-  [https://api.fixer.io/latest?base=**USD**&symbols=**HUF**](https://api.fixer.io/latest?base=USD&symbols=HUF)
-* Dolgozzuk fel a `JSON` választ (használjunk `Codable`-t!) és jelenítsük meg a váltás eredményét!
-    * A válaszban a váltási valutanem lesz az egyik kulcs érték.
-    * A második `Text Field`hez használjunk **Number Pad** billentyűzetet.
-
-```json
-{
-  "base": "USD",
-  "date": "2016-11-18",
-  "rates": {
-    "HUF": 291.18
-  }
-}
-```

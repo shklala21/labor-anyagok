@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="FCV-7j-b1g">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="dO9-yh-ZEc">
     <device id="retina5_9" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -69,7 +69,7 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Messages" id="bHL-F6-0VJ">
-                        <barButtonItem key="leftBarButtonItem" systemItem="refresh" id="czo-ZL-qMf">
+                        <barButtonItem key="leftBarButtonItem" width="10" systemItem="refresh" id="czo-ZL-qMf">
                             <connections>
                                 <action selector="refreshButtonTap:" destination="hKk-ck-RFU" id="gtY-04-xSs"/>
                             </connections>
@@ -83,7 +83,23 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZJy-Jh-UGb" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="67" y="91"/>
+            <point key="canvasLocation" x="937" y="91"/>
+        </scene>
+        <!--Map-->
+        <scene sceneID="s76-7H-Nx0">
+            <objects>
+                <viewController id="qhG-4I-guX" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="QHn-nl-ZVb">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="CmG-vx-Mz4"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Map" image="Map" id="Hqe-Dp-pUH"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ClJ-vE-GEl" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="177" y="833"/>
         </scene>
         <!--New message-->
         <scene sceneID="DsN-pN-xUX">
@@ -180,6 +196,26 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="kW8-n5-riH">
+                                        <rect key="frame" x="0.0" y="352" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="kW8-n5-riH" id="sn0-xB-Jqg">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43.666666666666664"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Pending" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hRS-bB-qZK">
+                                                    <rect key="frame" x="155.66666666666666" y="11" width="62.666666666666657" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="hRS-bB-qZK" firstAttribute="centerY" secondItem="sn0-xB-Jqg" secondAttribute="centerY" id="HlD-H1-A18"/>
+                                                <constraint firstItem="hRS-bB-qZK" firstAttribute="centerX" secondItem="sn0-xB-Jqg" secondAttribute="centerX" id="cPd-eL-5eP"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
                                 </cells>
                             </tableViewSection>
                         </sections>
@@ -196,6 +232,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="coordinateLabel" destination="hRS-bB-qZK" id="rnC-Ts-r3V"/>
                         <outlet property="imageView" destination="FWN-Xc-ON5" id="c5N-rq-kWf"/>
                         <outlet property="imageViewHelpLabel" destination="ds6-wW-WuP" id="xur-bB-sVV"/>
                         <outlet property="recipientTextField" destination="abN-EU-u8D" id="57c-K5-f44"/>
@@ -209,23 +246,47 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="906.39999999999998" y="90.886699507389167"/>
+            <point key="canvasLocation" x="1724" y="91"/>
         </scene>
-        <!--Navigation Controller-->
+        <!--Messages-->
         <scene sceneID="xXn-IP-68F">
             <objects>
                 <navigationController id="FCV-7j-b1g" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Messages" image="Messages" id="qjb-Wc-wOX"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="1kK-mD-NVD">
                         <rect key="frame" x="0.0" y="44" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
-                        <segue destination="hKk-ck-RFU" kind="relationship" relationship="rootViewController" id="Jda-2L-BHw"/>
+                        <segue destination="hKk-ck-RFU" kind="relationship" relationship="rootViewController" id="7zX-vs-ZqW"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WsD-0x-RXk" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-884" y="91"/>
+            <point key="canvasLocation" x="178" y="91"/>
+        </scene>
+        <!--Tab Bar Controller-->
+        <scene sceneID="USN-cZ-NeC">
+            <objects>
+                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="dO9-yh-ZEc" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationItem key="navigationItem" id="Sn1-ob-2Jk"/>
+                    <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="mNJ-2d-jGZ">
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </tabBar>
+                    <connections>
+                        <segue destination="FCV-7j-b1g" kind="relationship" relationship="viewControllers" id="9QH-Z9-cru"/>
+                        <segue destination="qhG-4I-guX" kind="relationship" relationship="viewControllers" id="5Sv-tc-Wy4"/>
+                    </connections>
+                </tabBarController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="mbE-YU-Ayf" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-586" y="91"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="Map" width="30" height="30"/>
+        <image name="Messages" width="30" height="30"/>
+    </resources>
 </document>

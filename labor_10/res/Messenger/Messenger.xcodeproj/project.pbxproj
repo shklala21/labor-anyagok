@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C5AC733F1FC6ED7C00704B19 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5AC733E1FC6ED7C00704B19 /* Message.swift */; };
+		C5D74B471FCF318C0011FC62 /* NetworkHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5D74B461FCF318C0011FC62 /* NetworkHelper.swift */; };
 		F03A99E71FB88A5600ACF99A /* UIImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F03A99E51FB88A5600ACF99A /* UIImageExtension.swift */; };
 		F03A99E81FB88A5600ACF99A /* MessageSendResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F03A99E61FB88A5600ACF99A /* MessageSendResponse.swift */; };
 		F03A99EA1FB88AFE00ACF99A /* MessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F03A99E91FB88AFE00ACF99A /* MessageCell.swift */; };
@@ -19,6 +21,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		C5AC733E1FC6ED7C00704B19 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
+		C5D74B461FCF318C0011FC62 /* NetworkHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkHelper.swift; sourceTree = "<group>"; };
 		F03A99E51FB88A5600ACF99A /* UIImageExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImageExtension.swift; sourceTree = "<group>"; };
 		F03A99E61FB88A5600ACF99A /* MessageSendResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageSendResponse.swift; sourceTree = "<group>"; };
 		F03A99E91FB88AFE00ACF99A /* MessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCell.swift; sourceTree = "<group>"; };
@@ -64,9 +68,11 @@
 			children = (
 				F0D65B7E1FB86AEA005801F7 /* AppDelegate.swift */,
 				F09272281FB86CFF00064E2C /* ComposeMessageViewController.swift */,
+				C5AC733E1FC6ED7C00704B19 /* Message.swift */,
 				F03A99E91FB88AFE00ACF99A /* MessageCell.swift */,
 				F03A99E61FB88A5600ACF99A /* MessageSendResponse.swift */,
 				F0D65B901FB86C09005801F7 /* MessagesViewController.swift */,
+				C5D74B461FCF318C0011FC62 /* NetworkHelper.swift */,
 				F03A99E51FB88A5600ACF99A /* UIImageExtension.swift */,
 				F0D65B821FB86AEA005801F7 /* Main.storyboard */,
 				F0D65B851FB86AEA005801F7 /* Assets.xcassets */,
@@ -148,12 +154,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C5D74B471FCF318C0011FC62 /* NetworkHelper.swift in Sources */,
 				F0D65B911FB86C09005801F7 /* MessagesViewController.swift in Sources */,
 				F03A99E81FB88A5600ACF99A /* MessageSendResponse.swift in Sources */,
 				F0D65B7F1FB86AEA005801F7 /* AppDelegate.swift in Sources */,
 				F09272291FB86CFF00064E2C /* ComposeMessageViewController.swift in Sources */,
 				F03A99E71FB88A5600ACF99A /* UIImageExtension.swift in Sources */,
 				F03A99EA1FB88AFE00ACF99A /* MessageCell.swift in Sources */,
+				C5AC733F1FC6ED7C00704B19 /* Message.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -292,6 +300,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = Messenger/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = hu.bme.aut.messenger;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -306,6 +315,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = Messenger/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = hu.bme.aut.messenger;
 				PRODUCT_NAME = "$(TARGET_NAME)";

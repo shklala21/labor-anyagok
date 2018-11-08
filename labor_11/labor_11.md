@@ -5,424 +5,441 @@
 * Kántor Tibor - tibor.kantor@autsoft.hu
 * Blázovics László - blazovics.laszlo@aut.bme.hu
 * Krassay Péter - peter.krassay@autsoft.hu
+* Szücs Zoltán - szucs.zoltan@autsoft.hu
 
 ## A labor témája
 
-* [Messenger](#messenger)
-    * [Pozíció lekérdezése](#pozicio-lekerdezese)
-    * [Pozíció csatolása az üzenethez](#pozicio-csatolasa-az-uzenethez)
-    * [`MapView` megjelenítés](#mapview-megjelnites)
-* [Önálló feladatok](#onallo-feladatok)
+* [PictureDownload](#picture-download)
+    * [`ViewController` inicializálása kódból](#viewcontroller-inicializalasa-kodbol)
+    * [Alamofire](#alamofire)
+    * [ECSlidingViewController](#ecslidingviewcontroller)
+    * [MBProgressHUD](#mbprogresshud)
+    * [CocoaPods](#cocoapods)
+* [Önálló feladat](#onallo-feladat)
 
-## Messenger <a id="messenger"></a>
+## PictureDownload <a id="picture-download"></a>
 
-> Másoljuk a `res/` mappában lévő **`Messenger`** kezdőprojektet a `labor_11/` mappánkba! Ez lényegében az előző labor során kidolgozott projekt.
+Alkalmazásunk a [fortepan.hu](http://fortepan.hu)-ról fog letölteni közepes, illetve nagy felbontású képeket. Utóbbi esetén azt is szeretnénk megmutatni a felhasználónak, hogy hogyan halad a letöltés. 
 
-<img src="img/01_start.png" alt="01" style="width: 33%;"/>
+> Kiindulásnak hozzunk létre a `labor_11` könyvtárba egy új `Single View App`ot __`PictureDownload`__ névvel!
 
-A legfőbb UI-t érintő változás az előző verzióhoz képest, hogy az alkalmazásba bekerült egy `Tab Bar` két elemmel: **Messages** és **Map**. Az előbbiről a múlt órai labor képernyői érhetőek el, az utóbbit pedig ezen a laboron fogjuk elkészíteni. További különbség, hogy az `ComposeMessageViewController`en megjelent egy **Pending** feliratú `Label` (kódszinten pedig egy `CLLocation` property, ami a pozíciót fogja majd tárolni). Ez a nézet fogja jelezni, hogy sikerült-e a feladó koordinátáját lekérdezni. Végül egy fontos, motorháztető alatti átalakítás az új `NetworkHelper` osztály is, ahová ki lettek szervezve a hálózati hívások.
+<!-- -->
+> A `Target` beállítások, `Deployment Info` szekcióban állítsuk a `Devices` beállítást `iPhone`-ra, valamint töröljük ki a `Main Interface` mező tartalmát!
 
-> A `MessagesViewController`ben írjuk át a `YOUR NAME`-et a saját nevünkre!
+<img src="img/01_deployment_info.png" alt="01" style="width: 66%;"/>
 
-<!--  -->
-> Próbáljuk ki az alkalmazást és nézzük át a forráskódját! 
-
-### Pozíció lekérdezése <a id="pozicio-lekerdezese"></a>
-> Készítsünk el egy osztályt, amely segítségével le tudjuk kérdezni az aktuális pozíciónkat. Ehhez hozzuk létre a `LocationManager` nevű, `NSObject`ből származó osztályunkat!
-
-Ahhoz, hogy az osztály értesítéseket kapjon a pozícióval kapcsolatban, implementálni kell a `CLLocationManagerDelegate` *protocol*t. Ehhez először importálni kell a `CoreLocation` modult.
-
-> Hozzunk létre 
->
-> * egy `CLLocation` típusú, **lastLocation** nevű property-t, ami a legutolsó ismert pozíciót fogja tárolni,
-> * egy `Timer` típusú, **timeoutTimer** nevű property-t,
-> * egy closure-t, **locationUpdated** névvel, hogy értesíteni tudjuk a pozícióra várakozó objektumainkat a pozíció változásáról (ennek értéket a hívó fél ad a `startLocationManager` meghívásakor),
-> * egy `CLLocationManager` típusú, **locationManager** nevű property-t!
+### `ViewController` inicializálása kódból <a id="viewcontroller-inicializalasa-kodbol"></a>
+> Egészítsük ki a `ViewController.swift`et! Hozzunk létre egy **imageView** nevű *UIImageView* típusú property-t, hogy szükség esetén le tudjuk cserélni a benne lévő képet, illetve egy **contentUrl** és egy **imageUrl** property-t *URL* típussal.
 
 ```swift
-import CoreLocation
-import Foundation
+// MARK: - Properties
 
-class LocationManager: NSObject {
+private var imageView: UIImageView!
+var imageUrl: URL?
+var contentUrl: URL?
+```
 
-  var lastLocation: CLLocation?
-  private var timeoutTimer: Timer?
-  private var locationUpdated: (() -> Void)!
-  private var locationManager: CLLocationManager!
+> Majd cseréljük le a `viewDidLoad()` metódust a következő kódrészlettel, valamint vegyük fel a `downloadFile` metódust!
 
+```swift
+// MARK: - View lifecycle
+
+override func viewDidLoad() {
+  super.viewDidLoad()
+
+  view.backgroundColor = .white
+
+  let safeArea = view.safeAreaLayoutGuide
+
+  imageView = UIImageView()
+  imageView.contentMode = .scaleAspectFit
+  imageView.backgroundColor = .black
+  view.addSubview(imageView)
+  imageView.translatesAutoresizingMaskIntoConstraints = false
+  imageView.topAnchor.constraint(equalTo: safeArea.topAnchor).isActive = true
+  imageView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor).isActive = true
+  imageView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor).isActive = true
+  imageView.heightAnchor.constraint(equalTo: safeArea.heightAnchor, multiplier: 0.5).isActive = true
+
+
+  let stackView = UIStackView()
+  stackView.axis = .vertical
+  stackView.distribution = .fillEqually
+  view.addSubview(stackView)
+  stackView.translatesAutoresizingMaskIntoConstraints = false
+  stackView.topAnchor.constraint(equalTo: imageView.bottomAnchor).isActive = true
+  stackView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor).isActive = true
+  stackView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor).isActive = true
+  stackView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor).isActive = true
+
+  let downloadButton = UIButton(type: .system)
+  downloadButton.setTitle("Download", for: .normal)
+  downloadButton.setTitleColor(.black, for: .normal)
+  downloadButton.addTarget(self, action: #selector(ViewController.downloadFile), for: .touchUpInside)
+  stackView.addArrangedSubview(downloadButton)
+
+  let displayButton = UIButton(type: .system)
+  displayButton.setTitle("Present", for: .normal)
+  displayButton.setTitleColor(.black, for: .normal)
+  stackView.addArrangedSubview(displayButton)
+}
+
+// MARK: - Actions
+
+@objc func downloadFile() {
 }
 ```
 
-A pozíció lekérdezés indítását a következő metódus végzi. A `CLLocationManager` létrehozása és felparaméterezése után indít egy `Timer`t, melynek segítségével `15` másodperc után leállítjuk a pozíció lekérdezését (ha nem történik érdemi esemény).
+> Végül adjuk hozzá az alábbi kódrészletet az `AppDelegate.swift` `application(_:didFinishLaunchingWithOptions:)` metódusához!
 
 ```swift
-func startLocationManager(updated: @escaping () -> Void) {
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
 
-  locationUpdated = updated
+  window = UIWindow(frame: UIScreen.main.bounds)
 
-  locationManager = CLLocationManager()
-  locationManager.requestWhenInUseAuthorization()
-  locationManager.delegate = self
-  locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+  let viewController = ViewController()
+  viewController.imageUrl = URL(string: "http://www.fortepan.hu/_photo/display/28268.jpg")
+  viewController.contentUrl = URL(string: "http://www.fortepan.hu/_photo/download/fortepan_28268.jpg")
 
-  timeoutTimer = Timer.scheduledTimer(timeInterval: 15, target: self, selector: #selector(LocationManager.stopLocationManager), userInfo: nil, repeats: false)
+  window?.rootViewController = viewController
+  window?.makeKeyAndVisible()
 
-  locationManager.startUpdatingLocation()
-}
-```
-
-> Implementáljuk a `Timer` lejártakor meghívódó metódust!
-
-```swift
-@objc func stopLocationManager() {
-  if let timer = timeoutTimer {
-    timer.invalidate()
-  }
-
-  locationManager.stopUpdatingLocation()
-  locationUpdated()
-}
-```
-
-> Ezt követően valósítsuk meg `CLLocationManagerDelegate`-et és két metódusát.
-
-```swift
-extension LocationManager: CLLocationManagerDelegate {
-
-}
-```
-
-Ha érkezik frissítés, akkor az alábbi metódus fog meghívódni és a frissítést lekezelni.
-
-```swift
-func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-  guard let newLocation = locations.last else {
-    return
-  }
-
-  if -newLocation.timestamp.timeIntervalSinceNow > 5.0 {
-    return
-  }
-
-  if newLocation.horizontalAccuracy < 0 {
-    return
-  }
-
-  if lastLocation == nil || lastLocation!.horizontalAccuracy > newLocation.horizontalAccuracy {
-    lastLocation = newLocation
-
-    if newLocation.horizontalAccuracy <= manager.desiredAccuracy {
-      stopLocationManager()
-    }
-  }
-}
-```
-
-> Amennyiben hiba történne (a rendszer nem tudja meghatározni a pozíciónkat) állítsuk meg a frissítést.
-
-```swift
-func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-  stopLocationManager()
-  print(error.localizedDescription)
-}
-```
-
-> Végül adjuk hozzá az `Info.plist` fájlban az alábbi kulcsot **Privacy - Location When In Use Usage Description** (`NSLocationWhenInUseUsageDescription`)!
-
-<img src="img/02_location_when_in_use.png" alt="02" style="width: 66%;"/>
-
-Értéknek bármi megadható, de vigyázzunk, mert ezt fogja a felhasználó először elolvasni, amikor engedélyt kér tőle az alkalmazás.
-
-### Pozíció csatolása az üzenethez <a id="pozicio-csatolasa-az-uzenethez"></a>
-
-> Térjünk rá a `ComposeMessageViewController` kiegészítésére! Először vegyünk fel egy `LocationManager` típusú property-t az osztályban és inicializáljuk is!
-
-```swift
-private var locationManager = LocationManager()
-```
-
-> Ezután valósítsuk meg az aktuális pozíció tárolásáért felelős részeket. Indítsuk el, illetve állítsuk le a frissítést amikor szükséges, és implementáljuk a megfelelő closure-t a pozíció frissítéshez!
-
-```swift
-// MARK: - View Lifecycle
-
-override func viewWillAppear(_ animated: Bool) {
-  super.viewWillAppear(animated)
-
-  locationManager.startLocationManager { [weak self] in
-    if let location = self?.locationManager.lastLocation {
-      self?.location = location
-      self?.coordinateLabel.text = "\(location.coordinate.latitude) " + "\(location.coordinate.longitude)"
-    }
-  }
-  coordinateLabel.text = "Pending"
-}
-
-override func viewWillDisappear(_ animated: Bool) {
-  super.viewWillDisappear(animated)
-
-  locationManager.stopLocationManager()
-}
-```
-
-Ahhoz, hogy a koordinátákat ténylegesen fel is küldjük a szervernek, először is ki kell egészítenünk a `Message` `struct`unkat.
-
-```swift
-  ...
-  var latitude: Double?
-  var longitude: Double?
-  ...
-
-  case latitude
-  case longitude
-  ...
-```
-
-Majd a `MessagesViewController`ben a `composeMessageViewControllerDidSend(_:)` metódusban is fel kell vennünk a koordinátákat! 
-
-```swift
-if let location = viewController.location {
-  message.latitude = location.coordinate.latitude
-  message.longitude = location.coordinate.longitude
+  return true
 }
 ```
 
 > Teszteljük az alkalmazást!
 
-###  `MapView` megjelenítés <a id="mapview-megjelnites"></a>
-> Hogy meg is tudjuk nézni az egyes, helyhez kötött üzeneteket, hozzunk létre egy `MapViewController` nevű osztályt, ami a `UIViewController`ből származik.
+### Alamofire <a id="alamofire"></a>
 
-> A `Main.storyboard`ban a `Map` jelenetnek állítsuk be az `Identity inspector`ban a *Class* attribútumát `MapViewController`re!
+Látható, hogy minden UI elem megjelenik, de a kép nem töltődik be.
+
+> A kép letöltéséhez használjuk az [`Alamofire`](https://github.com/Alamofire/Alamofire/archive/master.zip) nevű third-party komponenst a linkről!
 
 <!--  -->
-> `AutoLayout` kényszerek segítségével tegyünk a `MapViewController` `view`-jába egy teljes nézetet betöltő `MKMapView`-t, majd kössük be egy `Outlet`tel a `MapViewController`be **mapView** néven.
+> Tömörítsük ki az állományt, majd az `Alamofire.xcodeproj` fájlt adjuk hozzá a projekthez. Legegyszerűbben ezt úgy tudjuk megtenni, hogy `Finder`ből áthúzzuk az `Xcode`-ba. (Előtte készítsünk egy *Alamofire* nevű *Group*ot!)
 
-![](img/03_mapview_vc.png)
+<img src="img/02_alamofire_group.png" alt="02" style="width: 33%;"/>
 
-> Ne felejtsük el az újonnan hozzáadott `MKMapView`-nak beállítani a tartalmazó `ViewController`t, mint delegate-et!
+<!--  -->
+> Ezután adjuk hozzá `Embedded Binary`-ként a megfelelő `Alamofire.framework`öt a `PictureDownload` `Target`hez! Ehhez menjünk el a projektbeállításokhoz és a megfelelő helyen nyomjuk meg a `+` gombot, majd válasszuk ki az `iOS`-re generált *framework*öt.
 
-<img src="img/04_mapview_delegate.png" alt="04" style="width: 33%;"/>
+<img src="img/03_alamofire_embedded_binary.png" alt="03" style="width: 75%;" />
 
-> Miután ez megvan, térjünk vissza az osztály forrásához és importáljuk a `MapKit` modult! Adjunk továbbá hozzá egy property-t, ami majd a megjelenítendő üzeneteinket fogja tartalmazni,  illetve jelezzük, hogy meg fogjuk valósítani az `MKMapViewDelegate`-et (`extension`)!
+> Ezt követően a `ViewController.swift`ben importáljuk az `Alamofire`-t és írjuk felül a `viewWillAppear(_:)` metódust.
 
 ```swift
-import MapKit
+import Alamofire
 import UIKit
 
-class MapViewController: UIViewController {
+...
 
-  @IBOutlet weak var mapView: MKMapView!
-  
-  private var messages = [Message]()
-
-}
-
-extension MapViewController: MKMapViewDelegate {
-
-}
-```
-
-> Teszteljük az alkalmazást!
-
-Látható, hogy a térkép betöltődött, ugyanakkor nincs rajta semmi. Ahhoz, hogy bármit is meg tudjunk jeleníteni, szükségünk van az üzenetekre. Ezek ugyanazok az üzenetek, amiket a `Messages` tabon is láthatunk, így egy komolyabb alkalmazásban valamilyen központi helyen tárolnánk ezeket, pl.: `CoreData`, `Realm`, stb. A laboron most azt fogjuk csinálni, hogy a `Map` tabra navigáláskor minden alkalommal le fogjuk tölteni a friss üzeneteket és azokat jelenítjük csak meg, amikben vannak koordináták is. (Most jön jól, hogy a hálózati hívások ki lettek szervezve, nem kell kódot duplikálni.)
-
-> Töltsük le az üzeneteket a `NetworkHelper` segítségével!
-
-```swift
 override func viewWillAppear(_ animated: Bool) {
   super.viewWillAppear(animated)
-  
-  NetworkHelper.downloadMessages { messages in
-    self.messages = messages
-  }
-}
-```
 
-A sikeres letöltés után már minden üzenet a birtokunkban lesz. Ahhoz, hogy ezeket meg is tudjuk jeleníteni a térképen egy saját osztállyal meg kell valósítani az `MKAnnotation` *protocol*t.
-
-> Hozzunk tehát létre egy új, `NSObject`ből származó osztályt `MessageAnnotation` névvel, ami megvalósítja az `MKAnnotation` *protocol*t!
-
-```swift
-import MapKit
-
-class MessageAnnotation: NSObject {
-
-  var coordinate: CLLocationCoordinate2D
-  var title: String?
-  var subtitle: String?
-
-  init(coordinate: CLLocationCoordinate2D, title: String, subtitle: String) {
-    self.coordinate = coordinate
-    self.title = title
-    self.subtitle = subtitle
-  }
-
-}
-
-extension MessageAnnotation: MKAnnotation {}
-```
-
-> Ha ez kész, akkor térjünk vissza a `MapViewController`be és azokra az üzenetekre, ahol vannak koordináta adatok, hozzunk létre új `MessageAnnotation`öket.
-
-```swift
-override func viewWillAppear(_ animated: Bool) {
-  super.viewWillAppear(animated)
-  
-  NetworkHelper.downloadMessages { messages in
-    self.messages = messages
-
-    self.messages.filter { return ($0.longitude != nil) && $0.latitude != nil }.forEach { message in
-      let coordinate = CLLocationCoordinate2D(latitude: message.latitude!, longitude: message.longitude!)
-      let title = "\(message.recipient) \(message.sender)"
-      let subtitle = message.topic
-      
-      let annotation = MessageAnnotation(coordinate: coordinate, title: title, subtitle: subtitle)
- 
-      self.mapView.addAnnotation(annotation)
-    }
-  }
-}
-```
-
-> Azért, hogy ugyanarra a `Map View`-ra ne rakjuk ki ugyanazokat az üzeneteket minden alkalommal amikor idenavigálunk, szedjük le őket amint elhagyjuk a jelenetet. (Itt is elegánsabb lenne a valóságban a központi adatbázisból szedett üzenetek közül mindig csak az újakat rárakni a térképre és akkor nem kéne semmit levenni.)
-
-```swift
-override func viewWillDisappear(_ animated: Bool) {
-  super.viewWillDisappear(animated)
-  mapView.annotations.forEach { annotation in
-    self.mapView.removeAnnotation(annotation)
-  }
-}
-```
-
-> Futtassuk az alkalmazást!
-
-<!--  -->
-> Az annotációk mellett adjunk hozzá egy törtvonalat (`MKPolyLine`) is a térképhez úgy, hogy minden üzenet legyen egymás után sorban összekötve. Ehhez először hozzunk létre egy koordinátákat tartalmazó tömböt, amivel létrehozzuk a törtvonalat, majd adjuk hozzá a törtvonalat a `mapView`-hoz, mint *overlay*!
-
-```swift
-override func viewWillAppear(_ animated: Bool) {
-  super.viewWillAppear(animated)
-  
-  NetworkHelper.downloadMessages { messages in
-    self.messages = messages
-    
-    var coordinates = [CLLocationCoordinate2D]()
-    self.messages.filter { return ($0.longitude != nil) && $0.latitude != nil }.forEach { message in
-      let coordinate = CLLocationCoordinate2D(latitude: message.latitude!, longitude: message.longitude!)
-      let title = "\(message.recipient) \(message.sender)"
-      let subtitle = message.topic
-      
-      let annotation = MessageAnnotation(coordinate: coordinate, title: title, subtitle: subtitle)
-      self.mapView.addAnnotation(annotation)
-      
-      coordinates.append(coordinate)
-    }
-    
-    let polyline = MKPolyline(coordinates: coordinates, count: coordinates.count)
-    self.mapView.add(polyline)
-  }
-}
-```
-
-> Ezután implementáljuk a következő delegate metódust, hogy ki is legyen rajzolva a törtvonal!
-
-```swift
-func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-  guard overlay is MKPolyline else {
-    return MKPolylineRenderer()
-  }
-  
-  let line = MKPolylineRenderer(overlay: overlay)
-  line.strokeColor = .blue
-  line.lineWidth = 2
-  
-  return line
-}
-```
-
-Látható, hogy most már szépen megjelennek az üzenetek és az azokat összekötő vonal.
-
-> Ehhez valósítsuk meg a következő delegate metódust, aminek a segítségével testreszabhatjuk a megjelenő annotation kinézetét és viselkedését!
-
-```swift
-func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-  if annotation is MessageAnnotation {
-    let reusableId = "MessangerAnnotationID"
-    var markerAnnotationView = mapView.dequeueReusableAnnotationView(withIdentifier: reusableId) as? MKMarkerAnnotationView
-    
-    if markerAnnotationView == nil {
-      markerAnnotationView = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: reusableId)
-      markerAnnotationView?.markerTintColor = .green
-      markerAnnotationView?.canShowCallout = true
-      
-      let calloutButton = UIButton(type: .detailDisclosure)
-      markerAnnotationView?.rightCalloutAccessoryView = calloutButton
-    } else {
-      markerAnnotationView?.annotation = annotation
-    }
-    
-    return markerAnnotationView
-  }
-  
-  return nil
-}
-```
-
-> Implementáljuk az előbb hozzáadott gomb eseménykezelőjét! 
-
-A gomb megnyomására először lekérdezzük az adott üzenet koordinátáját, majd a beépített reverse geocoding szolgáltatás segítségével megkapjuk a pontos címét is a küldés helyének.
-
-Ezután létrehozunk egy két `MKMapItem`ből álló tömböt. Az első elem az aktuális koordinátánk lesz, a második pedig előbb meghatározott helyet fogja tartalmazni.
-
-Végül ezt és egy megfelelő kulcsokat tartalmazó collectiont átadva meghívjuk a beépített `Map` alkalmazást, ami a paramétereknek megfelelően megtervezi az útvonalat az átadott pontok között.
-
-```swift
-func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
-  guard let coordinate = view.annotation?.coordinate else {
+  guard let imageUrl = imageUrl else {
     return
   }
 
-  let geocoder = CLGeocoder()
-  let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
-
-  geocoder.reverseGeocodeLocation(location) { placemarks, error in
-    if let error = error {
-      print("Error: \(error.localizedDescription)")
-    }
-
-    guard let placemarks = placemarks, placemarks.count != 0 else {
+  Alamofire.request(imageUrl).response { response in
+    if let error = response.error {
+      print(error.localizedDescription)
       return
     }
 
-    let clPlacemark = placemarks.first!
-    let placemark = MKPlacemark(placemark: clPlacemark)
-    let mapItem = MKMapItem(placemark: placemark)
-
-    mapItem.name = view.annotation?.title!
-
-    var mapItems = [MKMapItem]()
-    mapItems.append(MKMapItem.forCurrentLocation())
-    mapItems.append(mapItem)
-
-    let launchOptions: [String: Any] = [
-      MKLaunchOptionsMapTypeKey: MKMapType.hybrid.rawValue,
-      MKLaunchOptionsDirectionsModeKey: MKLaunchOptionsDirectionsModeDriving
-    ]
-    MKMapItem.openMaps(with: mapItems, launchOptions: launchOptions)
+    if let data = response.data, let image = UIImage(data: data) {
+      self.imageView.image = image
+    }
   }
 }
 ```
 
-> Futtassuk az alkalmazást!
+> Ahogy már a korábbi laboroknál is előjött, engedélyezni kell az projekthez tartozó `Info.plist` fájlban a `HTTP` felett történő kommunikációt a következő két kulcs felvételével: `NSAppTransportSecurity` (`Dictionary`) és ezen belül `NSAllowsArbitraryLoads` (`BOOL`). (Vagy használhatjuk a képen látható, könnyebben megjegyezhető neveket, amire az Xcode automatikus kiegészítési lehetőségeket is ajánl.)
 
-## Önálló feladatok <a id="onallo-feladatok"></a>
+<img src="img/04_ats.png" alt="04" style="width: 66%;" />
 
--  Az üzenetek mellett jelenítsük meg a saját pozíciónkat is a térképen!
--  Az annotation `leftCalloutAccessoryView`-jában jelenítsük meg az üzenethez tartozó képet! 
-    - A kép letöltését érdemes a `mapView(:didSelect:)`delegate metódusban elindítani.
-    - Jó ötlet lehet a `MessageAnnotation` osztályba bevenni a hozzá tartozó üzenetet.
--  Módosítsunk a vonal kirajzolásán úgy, hogy azok az üzenetek legyenek összekötve, akiknek a szerzői üzentek már a másik félnek.
-    - `A` és `B` esetén volt már tehát `A` --> `B` és `B` --> `A` üzenet is.
-    - Több vonalra lesz szükség.
+Ha ezt elfelejtjük megtenni, akkor a már jól ismert hibaüzenetet kapjuk.
 
+*App Transport Security has blocked a cleartext HTTP (http://) resource load since it is insecure. Temporary exceptions can be configured via your app's Info.plist file.*
+
+> Futtassuk az alkalmazást, és ellenőrizzük, hogy megjelenik-e a kép!
+
+<img src="img/05_picture_downloaded.png" alt="05" style="width: 33%;" />
+
+<!-- -->
+> Implementáljuk a `downloadFile()` nevű metódust, amit a `Download` gomb eseménykezelője hív meg, és az alkalmazás `Documents` mappájába menti a képet!
+
+```swift
+// MARK: - Actions
+
+@objc func downloadFile(){
+  guard let contentUrl = contentUrl else {
+    return
+  }
+
+  let destination = Alamofire.DownloadRequest.suggestedDownloadDestination(for: .documentDirectory, in: .userDomainMask)
+  Alamofire.download(contentUrl, to: destination).downloadProgress { progress in
+    print(progress.completedUnitCount)
+  }.response { response in
+    if let error = response.error {
+      print("Error: \(error.localizedDescription)")
+    } else {
+      print("Success!")
+    }
+  }
+}
+```
+
+### ECSlidingViewController <a id="ecslidingviewcontroller"></a>
+
+Most, hogy van már rendes tartalmunk, adjunk hozzá az alkalmazáshoz egy menüt!
+
+> Ehhez töltsük le az [`ECSlidingViewController`](https://github.com/ECSlidingViewController/ECSlidingViewController/archive/master.zip
+) thrid-party komponenst a linkről!
+
+<!--  -->
+> Csomagoljuk ki a fájlt és keressük meg az `ECSlidingViewController` mappát, majd az egész mappát adjuk hozzá a projekthez! Fontos, hogy a `Copy items if needed` és a `PictureDownload` *target* is legyen bepipálva!
+
+<img src="img/06_add_sliding_view.png" alt="06" style="width: 66%;"/>
+
+<img src="img/07_sliding_view.png" alt="07" style="width: 40%;"/>
+
+> Először hozzunk létre egy `MenuViewController` nevű `UITableViewController`ből származó osztályt egy `showMenu(_:)` metódussal (erre majd a navigáció során lesz szükségünk, hogy az `unwind segue`-t be tudjuk kötni).
+
+```swift
+class MenuViewController: UITableViewController {
+
+  @IBAction func showMenu(_ segue: UIStoryboardSegue) {
+
+  }
+
+}
+```
+
+> Nyissuk meg a `Main.storyboard`ot, töröljük ki a benne található jelenetet, majd adjunk hozzá egy `UITableViewController`t! Osztályának a `MenuViewController`t állítsuk be! 
+
+<!--  -->
+> A `Table View`-t kiválasztva állítsuk át a *Content*et **Static Cells**-re, majd adjunk hozzá `3` **Basic** stílusú cellát ahogy a képen is látható! 
+
+<img src="img/08_desired_ui.png" alt="08" style="width: 50%;" />
+
+> Állítsuk be a `MenuViewController` *Storyboard ID*-ját **MenuViewController**re!
+
+<img src="img/09_menu_vc_storyboard_id.png" alt="09" style="width: 50%;" />
+
+> Ezután adjunk hozzá egy újabb `View Controller`t, melynek osztálya `ECSlidingViewController` legyen. Állítsuk be, hogy ez a jelenet legyen a kezdő, azaz **Initial View Controller**!
+
+<!--  -->
+> Ágyazzunk be egy újabb `ViewController`t (az osztálya legyen `ViewController`) egy `NavigationController`be, majd adjunk hozzá a `Navigation Bar` bal oldalára egy `BarButtonItem`et **Menu** felirattal. 
+
+<!--  -->
+> Duplikáljuk kétszer egymás után a `ViewController`t és a `NavigationController`t a `⌘` + `D` billentyűkombinációval, vagy az `Edit/Duplicate` funkció használatával. (A létrejött új jeleneteket mozgassuk el egymásról.)
+
+<!--  -->
+> Az így létrejött **3** `NavigationController`t kössük be a `TableView` egyes celláihoz egy-egy **sliding** `segue`-el.
+
+<!--  -->
+> A `3` `ViewController`ben állítsuk be a *Restoration ID*-ket a celláknak megfelelően. Ha a menüben **Trabant** volt a cella szövege, akkor az ahhoz tartozó `ViewController`ben is legyen **Trabant** a *Restoration ID*!
+
+<img src="img/10_restoration_id.png" alt="10" style="width: 50%;" />
+
+> Ezután állítsuk be az `unwind segue`-eket a három `ViewController`ben a **Menu** gombhoz!
+
+<img src="img/11_unwind_segue.png" alt="11" style="width: 66%;" />
+
+> A **Wartburg**hoz tartozó `NavigationController` *Storyboard ID*-ját állítsuk **FirstViewController**re.
+
+<!--  -->
+> Végül térjünk vissza az `ECSlidingViewController`hez és adjunk hozzá két `String` típusú `User Defined Runtime Attribute`-ot (*topViewControllerStoryboardId*, *underLeftViewControllerStoryboardId*) a megfelelő értékekkel (*FirstViewController*, *MenuViewController*)!
+
+<img src="img/12_user_defined_runtime_attributes.png" alt="12" style="width: 66%;" />
+
+Ha mindent jól csináltunk, akkor valami ehhez hasonló elrendezést kell kapnunk.
+
+<img src="img/13_desired_ui.png" alt="13" style="width: 50%;" />
+
+> Teszteljük az alkalmazást!
+
+Azt láthatjuk, hogy hiába van beállítva a `Main.storyboard`ban az `Is Initial View Controller` property, továbbra is a kezdeti `ViewController` jön csak be, nem a nagy nehezen összerakott menü. 
+
+> Ahhoz, hogy a Storyboard érvényre jusson, az `AppDelegate.swift`ben az `application(_:didFinishLaunchingWithOptions:)` metódusból a `return true` sor kivételével töröljünk mindent, valamint a labor elején a `Deployment Info`nál kitörölt `Main Interface` értékét is állítsuk vissza **Main.storyboard**ra!
+
+Ezek után a menünek már szépen működnie kell, a képek viszont még nem jelennek meg.
+
+> Ezt orvosolandó, a `ViewController.swift`ben készítsünk egy `setupUrls()` segédfüggvényt!
+
+```swift
+// MARK: - Helper methods
+
+private func setupUrls() {
+  guard let restorationID = restorationIdentifier else {
+    return
+  }
+
+  switch restorationID {
+  case "Wartburg":
+    view.backgroundColor = UIColor(red:0.13, green:0.14, blue:0.15, alpha:1)
+    imageUrl = URL(string: "http://www.fortepan.hu/_photo/display/28268.jpg")
+    contentUrl = URL(string: "http://www.fortepan.hu/_photo/download/fortepan_28268.jpg")
+  case "Trabant":
+    view.backgroundColor = UIColor(red:0.95, green:0.95, blue:0.95, alpha:1)
+    imageUrl = URL(string: "http://www.fortepan.hu/_photo/display/74394.jpg")
+    contentUrl = URL(string: "http://www.fortepan.hu/_photo/download/fortepan_74394.jpg")
+  case "Moszkvics":
+    view.backgroundColor = UIColor(red:0.8, green:0, blue:0.48, alpha:1)
+    imageUrl = URL(string: "http://www.fortepan.hu/_photo/display/16022.jpg")
+    contentUrl = URL(string: "http://www.fortepan.hu/_photo/download/fortepan_16022.jpg")
+  default:
+    break
+  }
+}
+```
+
+> Majd hívjuk meg a `viewDidLoad()`-ban!
+
+```swift
+override func viewDidLoad() {
+    super.viewDidLoad()
+
+    setupUrls()
+    ...
+}
+```
+
+> Próbáljuk ki az alkalmazást!
+
+### MBProgressHUD <a id="mbprogresshud"></a>
+
+Most, hogy már van mit letölteni, adjuk hozzá a projekthez az `MBProgressHUD` third-party könyvtárat, amivel különböző *progress bar*okat tudunk megjeleníteni.
+
+> Ehhez először töltsük le a [forrást](https://github.com/jdg/MBProgressHUD/archive/master.zip
+), majd csomagoljuk is ki!
+
+<!--  -->
+> Keressük meg és adjuk hozzá a projekthez az `MBProgressHUD.h` és az `MBProgressHUD.m` fájlokat (egy **MBProgressHUD** groupba)!
+
+Mivel ezek `Objective-C`-ben írt állományok, `Swift` kódból történő használatukhoz ún. *bridging header*re van szükség. A segítségével importált állományok elérhetőek és használhatóak lesznek a `Swift` fájlokból.
+
+> Amennyiben az `Xcode` nem ajánlja fel a *bridging header* létrehozását, készítsük el manuálisan! `PictureDownload-Bridging-Header.h` néven hozzunk létre egy *Header* fájlt, majd menjünk át a projektbeállításokhoz, azon belül is `Build Settings`-hez és állítsuk be az `Objective-C Brigding Header`t: **`$(PROJECT)/PictureDownload-Bridging-Header.h`** 
+
+<img src="img/14_bridging_header.png" alt="14" style="width: 75%;" />
+
+> Végül egészítsük ki a `PictureDownload-Bridging-Header.h`-t az `#import "MBProgressHUD.h"` direktívával!
+
+```smalltalk
+#import "MBProgressHUD.h"
+```
+
+> Ezután egészítsük ki a `ViewController`t, hogy letöltés közben megjelenjen a letöltés állapota. 
+Hozzunk létre egy `MBProgressHUD` típusú property-t, hogy később bárhonnan el tudjuk érni!
+
+```swift
+private var hud: MBProgressHUD!
+```
+
+> Majd inicializáljuk a `viewDidLoad()` végén!
+
+```swift
+hud = MBProgressHUD(view: view)
+view.addSubview(hud)
+```
+
+> Amikor elindul a letöltés jelenítsük meg, az egyes adatcsomagok beérkezésekor frissítsük, végül, ha a kép letöltődött, rejtsük el a HUD-ot! Ehhez a `downloadFile()` metódust kell kiegészíteni.
+
+```swift
+@objc func downloadFile() {
+  guard let contentUrl = contentUrl else {
+    return
+  }
+
+  let destination = Alamofire.DownloadRequest.suggestedDownloadDestination(for: .documentDirectory, in: .userDomainMask)
+  Alamofire.download(contentUrl, to: destination).downloadProgress { progress in
+    print(progress.completedUnitCount)
+    self.hud.progress = Float(progress.fractionCompleted)
+    self.hud.label.text = String(format: "%.2f%%", progress.fractionCompleted * 100)
+    }.response { response in
+      defer {
+        self.hud.hide(animated: true)
+      }
+      
+      if let error = response.error {
+        print("Error: \(error.localizedDescription)")
+      } else {
+        print("Success!")
+      }
+  }
+  hud.show(animated: true)
+}
+```
+
+### CocoaPods <a id="cocoapods"></a>
+
+Végül, hogy ne kelljen minden egyes nézetváltáskor letölteni a kisméretű képeket, adjunk hozzá a projekthez egy *image cache* komponenst, mely elvégzi ezt a feladatot.
+Ehhez a [`Kingfisher`](https://github.com/onevcat/Kingfisher) nevű third-party könyvtárat fogjuk használni, amit a CocoaPods nevű függőségkezelő rendszerrel fogunk hozzáadni a projekthez.
+
+A laborgépeken már telepítve van a program, saját gépen az alábbi utasítás `Terminal`ból való végrehajtásával telepíthető:
+
+```bash
+sudo gem install cocoapods
+```
+
+> Adjunk hozzá egy üres fájt a projektünk gyökérkönyvtárába `Podfile` néven. Ezt a legegyszerűbben úgy tudjuk megtenni, hogy a projekthez magához adunk hozzá egy üres fájlt.
+
+![](img/15_project_new_file.png)
+
+<img src="img/16_empty_file.png" alt="16" style="width: 66%;" />
+
+<img src="img/17_podfile_location.png" alt="17" style="width: 66%;" />
+
+> Módosítsuk tartalmát a következőre:
+
+```ruby
+platform :ios, '11.0'
+use_frameworks!
+
+target 'PictureDownload' do
+  pod 'Alamofire'
+  pod 'Kingfisher'
+end
+```
+
+> Az `Alamofire`t azért írjuk bele, hogy a jelenlegi projekt importálást kitörölhessük az újonan generált workspace-ünkből.
+
+<!-- -->
+> Mentsük el a `Podfile`-t, majd a `Terminal`ban navigáljunk a projekt gyökérkönyvtárába, és futtassuk a következő parancsot!
+
+```bash
+pod install
+```
+
+> Ha sikerült, zárjuk be a projektet és a `Finder`ben keressük meg a projekt mellett létrejött `PictureDownload.xcworkspace` fájlt, és nyissuk meg!
+
+Valami ilyesmit kell látnunk.
+
+<img src="img/18_workspace_structure.png" alt="18" style="width: 25%;" />
+
+> Nyissuk meg a `ViewController.swift` állományunkat és kommentezzük ki a korábban írt `viewWillAppear(_:)` metódust! 
+
+Ezzel sajnos azt értük el, hogy már nem töltődnek be automatikusan a járművek képei, amikor a nézetet megjelenítjük. A következőkben módosítjuk a `ViewController`t, hogy a kép letöltését (és cache-elését) a `Kingfisher` végezze. 
+
+> A `Kingfisher`t használat előtt importáljuk!
+
+```swift
+import Kingfisher
+```
+
+> Végül egészítsük ki a `ViewController` `viewDidLoad()` metódusát, hogy le is töltödjön a kép. Ehhez adjunk hozzá a következő sorokat!
+
+```swift
+  override func viewDidLoad() {
+    super.viewDidLoad()
+
+    ...
+	 if let imageUrl = imageUrl {
+      imageView.kf.setImage(with: imageUrl)
+    }
+  }
+```
+
+## Önálló feladat <a id="onallo-feladat"></a>
+> Jelenítsük meg a letöltött képet valami kreatív módon!
