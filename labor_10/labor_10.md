@@ -1,18 +1,13 @@
 # `iOS` alapú szoftverfejlesztés - Labor `10`
 
-## A laborsegédletet összeállította
-* Kelényi Imre - imre.kelenyi@aut.bme.hu
-* Kántor Tibor - tibor.kantor@autsoft.hu
-* Blázovics László - blazovics.laszlo@aut.bme.hu
-* Krassay Péter - peter.krassay@autsoft.hu
-
 ## A labor témája
 
 * [Messenger](#messenger)
     * [Pozíció lekérdezése](#pozicio-lekerdezese)
     * [Pozíció csatolása az üzenethez](#pozicio-csatolasa-az-uzenethez)
-    * [`MapView` megjelenítés](#mapview-megjelnites)
 * [Önálló feladatok](#onallo-feladatok)
+    * [`MapView` megjelenítés](#mapview-megjelnites)
+* [Szorgalmi feladatok](#szorgalmi-feladatok)
 
 ## Messenger <a id="messenger"></a>
 
@@ -189,13 +184,15 @@ if let location = viewController.location {
 
 > Teszteljük az alkalmazást!
 
+## Önálló feladatok <a id="onallo-feladatok"></a>
+
 ###  `MapView` megjelenítés <a id="mapview-megjelnites"></a>
 > Hogy meg is tudjuk nézni az egyes, helyhez kötött üzeneteket, hozzunk létre egy `MapViewController` nevű osztályt, ami a `UIViewController`ből származik.
 
 > A `Main.storyboard`ban a `Map` jelenetnek állítsuk be az `Identity inspector`ban a *Class* attribútumát `MapViewController`re!
 
 <!--  -->
-> `AutoLayout` kényszerek segítségével tegyünk a `MapViewController` `view`-jába egy teljes nézetet betöltő `MKMapView`-t, majd kössük be egy `Outlet`tel a `MapViewController`be **mapView** néven.
+> `AutoLayout` kényszerek segítségével tegyünk a `MapViewController` `view`-jába egy teljes nézetet betöltő `Map Kit View`-t, majd kössük be egy `Outlet`tel a `MapViewController`be **mapView** néven.
 
 ![](img/03_mapview_vc.png)
 
@@ -320,7 +317,7 @@ override func viewWillAppear(_ animated: Bool) {
     }
     
     let polyline = MKPolyline(coordinates: coordinates, count: coordinates.count)
-    self.mapView.add(polyline)
+    self.mapView.addOverlay(polyline)
   }
 }
 ```
@@ -416,7 +413,7 @@ func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, callou
 
 > Futtassuk az alkalmazást!
 
-## Önálló feladatok <a id="onallo-feladatok"></a>
+## Szorgalmi feladatok <a id="szorgalmi-feladatok"></a>
 
 -  Az üzenetek mellett jelenítsük meg a saját pozíciónkat is a térképen!
 -  Az annotation `leftCalloutAccessoryView`-jában jelenítsük meg az üzenethez tartozó képet! 
@@ -426,3 +423,9 @@ func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, callou
     - `A` és `B` esetén volt már tehát `A` --> `B` és `B` --> `A` üzenet is.
     - Több vonalra lesz szükség.
 
+## A laborsegédletet összeállította
+* Varga Domonkos - varga.domonkos@autsoft.hu
+* Krassay Péter - peter.krassay@autsoft.hu
+* Blázovics László - blazovics.laszlo@aut.bme.hu
+* Kántor Tibor - tibor.kantor@autsoft.hu
+* Kelényi Imre - imre.kelenyi@aut.bme.hu

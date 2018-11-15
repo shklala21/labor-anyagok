@@ -66,7 +66,7 @@ extension MessagesViewController: ComposeMessageViewControllerDelegate {
     guard let recipient = viewController.recipientTextField.text, let topic = viewController.topicTextField.text else { return }
     
     var message = Message(sender: "YOUR NAME", recipient: recipient, topic: topic)
-    if let image = viewController.imageView.image, let jpegImageData = UIImageJPEGRepresentation(image.scale(to: CGSize(width: 40, height: 40)), 0.7) {
+    if let image = viewController.imageView.image, let jpegImageData = image.scale(to: CGSize(width: 40, height: 40)).jpegData(compressionQuality: 0.7) {
       message.image = jpegImageData.base64EncodedString()
     }
     
