@@ -1,21 +1,15 @@
 # `iOS` alapú szoftverfejlesztés - Labor `11`
 
-## A laborsegédletet összeállította
-* Kelényi Imre - imre.kelenyi@aut.bme.hu
-* Kántor Tibor - tibor.kantor@autsoft.hu
-* Blázovics László - blazovics.laszlo@aut.bme.hu
-* Krassay Péter - peter.krassay@autsoft.hu
-* Szücs Zoltán - szucs.zoltan@autsoft.hu
-
 ## A labor témája
 
 * [PictureDownload](#picture-download)
     * [`ViewController` inicializálása kódból](#viewcontroller-inicializalasa-kodbol)
     * [Alamofire](#alamofire)
+* [Önálló feladat](#onallo-feladat)
     * [ECSlidingViewController](#ecslidingviewcontroller)
     * [MBProgressHUD](#mbprogresshud)
     * [CocoaPods](#cocoapods)
-* [Önálló feladat](#onallo-feladat)
+* [Szorgalmi feladat](#szorgalmi-feladat)
 
 ## PictureDownload <a id="picture-download"></a>
 
@@ -77,11 +71,6 @@ override func viewDidLoad() {
   downloadButton.setTitleColor(.black, for: .normal)
   downloadButton.addTarget(self, action: #selector(ViewController.downloadFile), for: .touchUpInside)
   stackView.addArrangedSubview(downloadButton)
-
-  let displayButton = UIButton(type: .system)
-  displayButton.setTitle("Present", for: .normal)
-  displayButton.setTitleColor(.black, for: .normal)
-  stackView.addArrangedSubview(displayButton)
 }
 
 // MARK: - Actions
@@ -93,18 +82,17 @@ override func viewDidLoad() {
 > Végül adjuk hozzá az alábbi kódrészletet az `AppDelegate.swift` `application(_:didFinishLaunchingWithOptions:)` metódusához!
 
 ```swift
-func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    window = UIWindow(frame: UIScreen.main.bounds)
 
-  window = UIWindow(frame: UIScreen.main.bounds)
+    let viewController = ViewController()
+    viewController.imageUrl = URL(string: "http://www.fortepan.hu/_photo/display/28268.jpg")
+    viewController.contentUrl = URL(string: "http://www.fortepan.hu/_photo/download/fortepan_28268.jpg")
 
-  let viewController = ViewController()
-  viewController.imageUrl = URL(string: "http://www.fortepan.hu/_photo/display/28268.jpg")
-  viewController.contentUrl = URL(string: "http://www.fortepan.hu/_photo/download/fortepan_28268.jpg")
+    window?.rootViewController = viewController
+    window?.makeKeyAndVisible()
 
-  window?.rootViewController = viewController
-  window?.makeKeyAndVisible()
-
-  return true
+    return true
 }
 ```
 
@@ -124,7 +112,9 @@ Látható, hogy minden UI elem megjelenik, de a kép nem töltődik be.
 <!--  -->
 > Ezután adjuk hozzá `Embedded Binary`-ként a megfelelő `Alamofire.framework`öt a `PictureDownload` `Target`hez! Ehhez menjünk el a projektbeállításokhoz és a megfelelő helyen nyomjuk meg a `+` gombot, majd válasszuk ki az `iOS`-re generált *framework*öt.
 
-<img src="img/03_alamofire_embedded_binary.png" alt="03" style="width: 75%;" />
+<img src="img/03a_alamofire_embedded_binary.png" alt="03" style="width: 75%;" />
+
+<img src="img/03b_alamofire_embedded_binary.png" alt="03" style="width: 75%;" />
 
 > Ezt követően a `ViewController.swift`ben importáljuk az `Alamofire`-t és írjuk felül a `viewWillAppear(_:)` metódust.
 
@@ -190,6 +180,8 @@ Ha ezt elfelejtjük megtenni, akkor a már jól ismert hibaüzenetet kapjuk.
 }
 ```
 
+## Önálló feladat <a id="onallo-feladat"></a>
+
 ### ECSlidingViewController <a id="ecslidingviewcontroller"></a>
 
 Most, hogy van már rendes tartalmunk, adjunk hozzá az alkalmazáshoz egy menüt!
@@ -198,7 +190,7 @@ Most, hogy van már rendes tartalmunk, adjunk hozzá az alkalmazáshoz egy menü
 ) thrid-party komponenst a linkről!
 
 <!--  -->
-> Csomagoljuk ki a fájlt és keressük meg az `ECSlidingViewController` mappát, majd az egész mappát adjuk hozzá a projekthez! Fontos, hogy a `Copy items if needed` és a `PictureDownload` *target* is legyen bepipálva!
+> Csomagoljuk ki a fájlt és keressük meg az `ECSlidingViewController` mappát, majd az egész mappát adjuk hozzá a projekthez! Fontos, hogy a `Copy items if needed`, `Create groups` és a `PictureDownload` *target* is legyen bepipálva!
 
 <img src="img/06_add_sliding_view.png" alt="06" style="width: 66%;"/>
 
@@ -435,11 +427,19 @@ import Kingfisher
     super.viewDidLoad()
 
     ...
-	 if let imageUrl = imageUrl {
+    if let imageUrl = imageUrl {
       imageView.kf.setImage(with: imageUrl)
     }
   }
 ```
 
-## Önálló feladat <a id="onallo-feladat"></a>
+## Szorgalmi feladat <a id="szorgalmi-feladat"></a>
 > Jelenítsük meg a letöltött képet valami kreatív módon!
+
+## A laborsegédletet összeállította
+* Varga Domonkos - varga.domonkos@autsoft.hu
+* Krassay Péter - peter.krassay@autsoft.hu
+* Szücs Zoltán - szucs.zoltan@autsoft.hu
+* Blázovics László - blazovics.laszlo@aut.bme.hu
+* Kántor Tibor - tibor.kantor@autsoft.hu
+* Kelényi Imre - imre.kelenyi@aut.bme.hu
