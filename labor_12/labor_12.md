@@ -1,9 +1,5 @@
 # `iOS` alapú szoftverfejlesztés - Labor `12`
 
-## A laborsegédletet összeállította
-* Kelényi Imre - imre.kelenyi@aut.bme.hu
-* Krassay Péter - peter.krassay@autsoft.hu
-
 ## A labor témája
 
 * [UberNotebook](#ubernotebook)
@@ -11,12 +7,13 @@
   * [Adatmodell definiálása](#adatmodell-definialasa)
   * [Adatmodell osztályok](#adatmodell-osztalyok)
   * [`Notebook`ok megjelenítése](#notebookok-megjelenitese)
+* [Önálló feladatok](#onallo-feladatok)
   * [Jegyzetek, `NSFetchedResultsController`](#jegyzetek-nsfetchedresultcontroller)
   * [Jegyzetek felvétele](#jegyzetek-felvetele)
   * [Jegyzetek törlése](#jegyzetek-torlese)
   * [További műveletek](#tovabbi-muveletek)
   * [`Managed Object Context` mentése](#moc-mentese)
-* [Önálló feladatok](#onallo-feladatok)
+* [Szorgalmi feladatok](#szorgalmi-feladatok)
 
 ## UberNotebook <a id="ubernotebook"></a>
 
@@ -66,10 +63,10 @@ Itt az ideje az adatmodell kipróbálásának!
 
 ```swift
 let notebook = NSEntityDescription.insertNewObject(forEntityName: "Notebook", into: persistentContainer.viewContext)
-notebook.setValue("Notebook \(arc4random_uniform(10000))", forKey: "title")
+notebook.setValue("Notebook \(Int.random(in: 0..<10000))", forKey: "title")
 
 let note = NSEntityDescription.insertNewObject(forEntityName: "Note", into: persistentContainer.viewContext)
-note.setValue("\(arc4random_uniform(10000)) a kedvenc véletlen számom!", forKey: "content")
+note.setValue("\(Int.random(in: 0..<10000)) a kedvenc véletlen számom!", forKey: "content")
 note.setValue(Date(), forKey: "creationDate")
 note.setValue(notebook, forKey: "notebook")
 
@@ -215,6 +212,8 @@ override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexP
 ```
 
 > Ellenőrizzük le, hogy megjelennek-e a `Notebook`ok a nézetben!
+
+## Önálló feladatok <a id="onallo-feladatok"></a>
 
 ### Jegyzetek, `NSFetchedResultsController` <a id="jegyzetek-nsfetchedresultcontroller"></a>
 
@@ -444,7 +443,7 @@ override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexP
 > Majd végezzük el a törlést a `UITableViewDataSource`-ból adoptált `tableView(_:commit:forRowAt:)` metódusban!
 
 ```swift
-override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
   if editingStyle == .delete {
     let managedObjectContext = AppDelegate.managedContext
     let noteToDelete = fetchedResultsController.object(at: indexPath)
@@ -503,6 +502,11 @@ func applicationDidEnterBackground(_ application: UIApplication) {
 }
 ```
 
-## Önálló feladatok <a id="onallo-feladatok"></a>
+## Szorgalmi feladatok <a id="szorgalmi-feladatok"></a>
 
 > Építsük be `NotebookViewController`be is új `Notebook`ok felvételének és törlésének lehetőségét! (Használjuk az `NSFetchedResultController`t!)
+
+## A laborsegédletet összeállította
+* Varga Domonkos - varga.domonkos@autsoft.hu
+* Krassay Péter - peter.krassay@autsoft.hu
+* Kelényi Imre - imre.kelenyi@aut.bme.hu
