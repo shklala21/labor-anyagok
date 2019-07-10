@@ -369,14 +369,14 @@ activityIndicator.stopAnimating()
 
 ## Szorgalmi feladat <a id="szorgalmi-feladat"></a>
 
-> Készítsünk egy egyszerű valutaváltó alkalmazást, a [http://fixer.io](http://fixer.io) `API`-t használva!
+> Készítsünk egy egyszerű valutaváltó alkalmazást, a [https://exchangeratesapi.io](https://exchangeratesapi.io) `API`-t használva!
 >
 > ![](img/03_example_ui.png)
 >
 * Hozzunk létre egy új `Single View App`ot **iCurrency** néven!
 * Készítsünk egy egyszerű felhasználói felületet! (Szükség lesz két `Text Field`re a valutanemek és az átváltandó összeg bekérése, egy `Label`re az eredmény kiírásához, valamint egy `Button`re a folyamat indításához.)
 * Az átváltás gomb megnyomásakor indítsunk egy `HTTP` `GET` kérést (egy `Data Task`ot), mely letölti az aktuális árfolyamot. Az `URL` formátuma a következő:
-  [https://api.fixer.io/latest?base=**USD**&symbols=**HUF**](https://api.fixer.io/latest?base=USD&symbols=HUF)
+  [https://api.exchangeratesapi.io/latest?base=**USD**&symbols=**HUF**](https://api.exchangeratesapi.io/latest?base=USD&symbols=HUF)
 * Dolgozzuk fel a `JSON` választ (használjunk `Codable`-t!) és jelenítsük meg a váltás eredményét!
     * A válaszban a váltási valutanem lesz az egyik kulcs érték.
     * A második `Text Field`hez használjunk **Number Pad** billentyűzetet.
