@@ -16,13 +16,13 @@
 - [https://www.raywenderlich.com/73967/swift-cheat-sheet-and-quick-reference](https://www.raywenderlich.com/73967/swift-cheat-sheet-and-quick-reference)
 
 ### *Style guide*
-Egy lehetséges *style guide* és kódolólási konvenció szabályzat (nem szentírás!):
-[The Official raywenderlich.com Swift Style Guide](https://github.com/raywenderlich/swift-style-guide)
+* Egy lehetséges *style guide* és kódolólási konvenció szabályzat (nem szentírás!): [The Official raywenderlich.com Swift Style Guide](https://github.com/raywenderlich/swift-style-guide)
+* Folyamatban van egy hivatalos style guide és formatter kidolgozása is, egyelőre még tervezés alatt: [SE-0250](https://github.com/apple/swift-evolution/blob/master/proposals/0250-swift-style-guide-and-formatter.md)
 
 ## `Swift` alapismeretek <a id="swift-alapismeretek"></a>
 > Hozzunk létre egy új `Labor2.playground` fájlt a `labor_02` mappán belül!
 
-A `playground` egy interaktív fejlesztőkörnyezet, melyben minden sor/kifejezés értéke automatikusan kiértékelődik és megjelenik a jobb szélső panelen. Bár úgy tűnhet mintha egy interpretált nyelvvel dolgoznánk, valójában minden módosítás után újrafordul a teljes `playground`.
+A `playground` egy interaktív fejlesztőkörnyezet, melyben minden sor/kifejezés értéke automatikusan kiértékelődik és megjelenik a jobb szélső panelen. Bár úgy tűnhet mintha egy interpretált nyelvvel dolgoznánk, valójában minden módosítás után újrafordul a teljes `playground`. A stabil futás és gyorsabb teljesítmény érdekében most kapcsoljuk ki az automatikus fordítást, mert ekkor félregépelés vagy hiányos implementáció esetén is elkezdhet fordulni, ami hibát fog eredményezni, valamint lassíthatja az `Xcode`-ot.
 
 A következőkben kipróbáljuk a `Swift` legfontosabb funkcióit.
 
@@ -37,9 +37,9 @@ class GameCharacter {
 }
 ```
 
-Hibát kapunk, mert az osztálynak nincs minden property-je inicializálva. A `Swift` fordító kötelezően előírja, hogy az osztály példányosításakor minden property inicializálva legyen. (`struct`-ok esetén nem kapnánk hibát a *memberwise initializer* miatt.)
+Hibát kapunk, mert az osztálynak nincs minden property-je inicializálva. A `Swift` fordító kötelezően előírja, hogy az osztály példányosításakor minden property inicializálva legyen. (`struct`ok esetén nem kapnánk hibát a [*memberwise initializer*](https://docs.swift.org/swift-book/LanguageGuide/Initialization.html) miatt.)
 
-> Hozzunk létre egy új inicializálót, mely bekéri a karakter nevét és szintjét.
+> Hozzunk létre egy új inicializálót az osztályban, mely bekéri a karakter nevét és szintjét.
 
 ```swift
 init(name: String, level: Int) {
@@ -50,10 +50,10 @@ init(name: String, level: Int) {
 
 Fontos kiemelni, hogy a `self` általában elhagyható, azonban itt most mind az inicializáló paramétereinek, mind az osztály property-jeinek ugyanaz a neve, ezért muszáj kiírni, ha a property-kre szeretnénk hivatkozni!
 
-> Hozzunk létre egy új hőst a `GameCharacter` osztály példányosításával.
+> Hozzunk létre egy új hőst a `GameCharacter` osztály példányosításával, az osztály scope-ján kívül.
 
 ```swift
-let hero1 = GameCharacter(name: "Harcos Huba", level: 1)
+let hero1 = GameCharacter(name: "Force Chainer", level: 1)
 ```
 
 > Figyeljük meg a következőket.
@@ -81,7 +81,7 @@ init?(name: String, level: Int) {
 > Nézzük meg, hogy mi történik, ha rossz értéket adunk meg a példányosításkor!
 
 ```swift
-let hero1 = GameCharacter(name: "Harcos Huba", level: -2)
+let hero1 = GameCharacter(name: "Force Chainer", level: -2)
 ```
 
 - `⌥+Click`el megnézve `hero1` típusa már nem `GameCharacter`, hanem `GameCharacter?` vagyis egy `GameCharacter` **Optional**
@@ -90,13 +90,13 @@ let hero1 = GameCharacter(name: "Harcos Huba", level: -2)
 > Állítsuk vissza `hero1`-nél az inicializálónál használt "szintet" egy érvényes értékre!
 
 ```swift
-let hero1 = GameCharacter(name: "Harcos Huba", level: 0)
+let hero1 = GameCharacter(name: "Force Chainer", level: 0)
 ```
 
 > Hozzunk létre még egy hőst és próbáljuk meg módosítani egy property-jét!
 
 ```swift
-let hero2 = GameCharacter(name: "Varázsló Vilmos", level: 3)
+let hero2 = GameCharacter(name: "Wrap Binder", level: 3)
 hero2.level = 30 // HIBA
 ```
 
@@ -104,7 +104,7 @@ A hiba oka, hogy opcionális típusokon közvetlenül nem hívhatjuk meg a becso
 
 Ezt többféleképpen is megtehetjük.
 
-#### `force unwrap`
+#### `Force unwrap`
 Mindig ellenőrizzük le az `Optional` tartalmát a `!`: `force unwrap` operátor használata előtt!
 
 ```swift
@@ -139,36 +139,37 @@ unwrappedHero.level = 30
 ```
 
 ### Generikus tárolók, metódusok és osztályhierarchiák <a id="gen"></a>
-> Hozzunk létre egy `Party` nevű osztályt, mely egy _csapatnyi játékost_ gyűjt össze!
+> Hozzunk létre egy `Team` nevű osztályt, mely egy _csapatnyi játékost_ gyűjt össze!
 
 ```swift
-class Party {
+class Team {
   private var members = [GameCharacter]()
 
-  func add(member: GameCharacter) {
+  func add(_ member: GameCharacter) {
     members.append(member)
   }
 }
 ```
 
 * A csapatba tartozó karaktereket a `members` property tárolja, melynek típusa `[GameCharacter]` vagyis egy tömb, mely `GameCharacter` példányokat tartalmaz. Ennek a property-nek kezdeti értéket adunk: egy üres tömböt.
-* Az `add(member:)` metódus felvesz egy új karaktert a csapatba.
+* Az `add(_ member:)` metódus felvesz egy új karaktert a csapatba.
 * Ha egy osztály minden változójának adunk egy kezdeti értéket és emellett egyetlen `init` függvényt sem írunk, a `Swift` _default initializer_ t hoz létre.
 
-*A `private` láthatóság `Swift 4`-ben azt jelenti, hogy csak az adott __scope-on belül__ (enclosing declaration) és annak **ugyanabban a fájlban található extensionjeiben** érhető el az így megjelölt elem. `Swift 2`-ben még az adott __forrásfájlban__, `Swift 3`-ban pedig csak az adott scope-on belül volt érhető. A `Swift 2`-es jelentésre `Swift 3`-ban megjelent az új, `fileprivate` kulcsszó.*
+*A `private` láthatóság `Swift 4`-től kezdve azt jelenti, hogy csak az adott __scope-on belül__ (enclosing declaration) és annak **ugyanabban a fájlban található extensionjeiben** érhető el az így megjelölt elem. (`Swift 2`-ben még az adott __forrásfájlban__, `Swift 3`-ban pedig csak az adott scope-on belül volt érhető. A `Swift 2`-es jelentésre `Swift 3`-ban megjelent az új, `fileprivate` kulcsszó.*)
 
 > Private access restricts the use of an entity to the enclosing declaration, and to extensions of that declaration that are in the same file. Use private access to hide the implementation details of a specific piece of functionality when those details are used only within a single declaration. ([Access Control](https://developer.apple.com/library/content/documentation/Swift/Conceptual/Swift_Programming_Language/AccessControl.html))
 <!--  -->
 
-> Csináljunk egy csapatot és adjuk hozzá a hőseinket!
+> Csináljunk egy csapatot és adjuk hozzá a hőseinket! 
+*Figyeljük meg, hogy itt is `optional force unwrap`-et használunk, mivel az `add` metódus nem `optional` paramétert vár.*
 
 ```swift
-let heroes = Party()
-heroes.add(member: hero1!)
-heroes.add(member: hero2!)
+let heroes = Team()
+heroes.add(hero1!)
+heroes.add(hero2!)
 ```
 
-> Készítsünk egy metódust, mely végigiterál a csapaton és kiírja a nevüket!
+> Készítsünk egy metódust a *Team* osztályban, mely végigiterál a csapaton és kiírja a nevüket!
 
 ```swift
 func printMembers() {
@@ -190,7 +191,7 @@ func printMembers() {
 }
 ```
 
-> Hozzunk létre a `Party`-ban egy új metódus, mely megmondja, hogy egy adott karakter tagja-e a csapatnak!
+> Hozzunk létre a `Team`-ben egy új metódus, mely megmondja, hogy egy adott karakter tagja-e a csapatnak!
 
 ```swift
 func has(member: GameCharacter) -> Bool {
@@ -208,7 +209,7 @@ Esetünkben lényegében referencia szerinti azonosságot szeretnénk vizsgálni
 class GameCharacter: NSObject {...}
 ```
 
-Továbbá az inicializálóban a saját property-k beállítása után hívjuk meg az ősosztály (`NSObject`) konstruktorát is (`two-phase initialization`).
+Továbbá az inicializálóban a saját property-k beállítása után hívjuk meg az ősosztály (`NSObject`) konstruktorát is ([two-phase initialization](https://docs.swift.org/swift-book/LanguageGuide/Initialization.html#ID216)).
 
 ```swift
 init?(name: String, level: Int) {
@@ -236,7 +237,7 @@ if heroes.has(member: hero1!) {
 > Vegyünk fel egy új property-t a `GameCharacter`hez a karakterek életerejének tárolására és inicializáljuk `100`-ra!
 
 ```swift
-var hitPoints = 100
+var healthPoint = 100
 ```
 
 > Ezen felül készítsünk egy **`computed property`**-t, mely gyorsan megadja, hogy a karakter még az élők sorát gazdagítja-e!
@@ -244,7 +245,7 @@ var hitPoints = 100
 ```swift
 var isDead: Bool {
   get {
-    return hitPoints <= 0
+    return healthPoint <= 0
   }
 }
 ```
@@ -253,7 +254,7 @@ var isDead: Bool {
 
 ```swift
 var isDead: Bool {
-  return hitPoints <= 0
+  return healthPoint <= 0
 }
 ```
 
@@ -300,52 +301,47 @@ override var power: Int {
 `Swift`ben a metódusok és a property-k (legyen akár `stored` akár `computed` property) egyaránt felüldefiniáhatók a leszármazott osztályokban (kivéve ha `final`ként vannak megjelölve). Felüldefiniáláskor azonban az `override` kulcsszó kiírása kötelező.
 
 ### Protokollok <a id="protokollok"></a>
-> Írjunk egy protokollt (más nyelvekben interfész), mely tartalmazza a "harcoláshoz" szükséges metódus és property sablonokat. Lényegében azt szeretnénk elérni, hogy minden olyan osztály, mely megvalósítja ezt a protokollt, részt vehessen egy csatában.
+> Írjunk egy protokollt (más nyelvekben interfész), mely tartalmazza a "harcoláshoz" szükséges metódus és property sablonokat. Lényegében azt szeretnénk elérni, hogy minden olyan osztály, mely megvalósítja ezt a protokollt, részt vehessen egy csatában. Valamint készítsünk elő egy metódust, amivel a karakternek ki tudjuk írni az aktuális életét.
 
 ```swift
 protocol Fightable {
-  var isDead: Bool { get }
-  var power: Int { get }
-  
-  func takeDamage(from enemy: Fightable)
-}
-```
+    var isDead: Bool { get }
+    var power: Int { get }
+    var name: String { get }
 
-> Írjunk egy függvényt, mely lejátszik egy ütközetet két "harcoló fél" között. A két fél addig támadja egymást felváltva, míg az egyik fél el nem esik (`isDead` property `true`-val tér vissza). A metódus térjen vissza a győztessel, vagy `nil`lel, ha mindkét fél elesett az utolsó körben!
-
-```swift
-func fight(fighter1: Fightable, fighter2: Fightable) -> Fightable? {
-  while !fighter1.isDead && !fighter2.isDead {
-    fighter1.takeDamage(from: fighter2)
-    fighter2.takeDamage(from: fighter1)
-  }
-
-  if !fighter1.isDead {
-    return fighter1
-  }
-
-  if !fighter2.isDead {
-    return fighter2
-  }
-
-  return nil
+    func takeDamage(from enemy: Fightable)
+    func printHealth()
 }
 ```
 
 > Valósítsuk meg a `Fightable` protokollt `GameCharacter` osztállyal egy `extension`ben!
 
 ```swift
-extension GameCharacter: Fightable { }
+extension GameCharacter: Fightable {}
 ```
 
-Hibát kapunk, mert még nem definiáltuk a protokollban felsorolt összes metódust vagy property-t. Ténylegesen csak a `takeDamage(from:)` metódus hiányzik.
+Hibát kapunk, mert még nem definiáltuk a protokollban felsorolt összes metódust vagy property-t. Ténylegesen csak a `takeDamage(from:)` és a `printHealth()` metódus hiányzik.
 
 > Implementáljuk a `takeDamage(from:)` metódust!
 
 ```swift
 extension GameCharacter: Fightable {
   func takeDamage(from enemy: Fightable) {
-    hitPoints -= enemy.power
+    print("\(name) took \(enemy.power) damages from \(enemy.name)")
+    healthPoint -= enemy.power
+  }
+}
+```
+
+> Implementáljuk a `printHealth()` metódust!
+
+```swift
+extension GameCharacter: Fightable {
+  
+  ...
+
+  func printHealth() {
+      print("\(name): \(healthPoint) ❤️ \n")
   }
 }
 ```
@@ -355,8 +351,10 @@ extension GameCharacter: Fightable {
 
 ```swift
 func takeDamage(from enemy: Fightable) {
+  print("\(name) took \(enemy.power) damages from \(enemy.name)")
+
   let attackRating = Double.random(in: 0...10) / 10
-  hitPoints -= Int(Double(enemy.power) * attackRating)
+  healthPoint -= Int(Double(enemy.power) * attackRating)
 }
 ```
 
@@ -364,17 +362,60 @@ func takeDamage(from enemy: Fightable) {
 Mindez még az eltérő bitszámú vagy nemnegatív/előjeles egész számokra is igaz, tehát pl. `UInt32` és `Int` típusok között is konvertálni kell!
 
 ## Önálló feladatok <a id="onallo"></a>
-> Írjunk egy `Monster` nevű osztályt, mely megvalósítja a `Fightable` protokollt! A `Monster`rel szemben támasztott elvárásaink a következőek:
 
-> * A szörnynek legyen egy neve (`name`), hogy fényes győzelme után büszkén a világba kiálthassa az eredményt.
-> * Rendelkezzen egy egész szám típusú `headCount` property-vel, mely a szörny, még meglévő fejeinek számát reprezentálja.
-> * Támadóereje (`power`) mindig az aktuális fejeinek száma szorozva `20`-al.
+> Írjunk egy `Arena` nevű osztályt, amivel egy küzdelmet tudunk szimulálni. Az osztály inicializálásakor paraméterként adjuk át a játékosokat, akik később megmérkőznek egymással.
+
+```swift
+class Arena {
+    var players: [Fightable]
+
+    init(with players: [Fightable]) {
+        self.players = players
+    }
+}
+```
+
+> Írjunk egy `startBrawl()` metódust Az `Arena` osztályban, amivel egy *battle royal* stílusú kört le tudunk játszani, tehát addig tartson, amíg már csak egy ember nem él.
+
+```swift
+    func startBrawl() {
+        while players.count > 1 {            
+            // Keverjük össze a tömb elemeit, hogy összecsapásonként más legyen az első és utolsó elem.
+            players.shuffle()
+            if let firstPlayer = players.first, let secondPlayer = players.last {
+                // Az egyik játékos kapjon ütést a másiktól és írjuk ki az életét utána.
+                firstPlayer.takeDamage(from: secondPlayer)
+                firstPlayer.printHealth()
+
+                // Ha az ütést kapott karakter meghalt, akkor töröljük a listából.
+                if firstPlayer.isDead {
+                   print("☠️ \(firstPlayer.name) died. ☠️")
+                   players.removeFirst()
+                }
+            }
+        }
+
+        // Ha már csak a győztes szerepel a játékosok között, akkor írjuk ki a nevét.
+        if players.count == 1, let winner = players.first {
+            print("👑 The winner is \(winner.name)! 👑")
+        }
+    }
+```
+
+Hozzunk létre néhány játékost és arénát, majd indítsunk egy játékot.
 
 ## Szorgalmi feladatok <a id="szorgalmi"></a>
-> Folytassuk tovább az önálló feladatot az alábbiakkal:
 
+> Hogy lássuk a harc lefolyását lépésenként, tegyünk be egy késleltetést a megfelelő helyre a `sleep(:)` metódus segítségével.
+
+> Írjunk egy `Monster` nevű osztályt, mely megvalósítja a `Fightable` protokollt! A `Monster`rel szemben támasztott elvárásaink a következőek:
+
+> * Rendelkezzen egy `name` property-vel.
+> * Rendelkezzen egy egész szám típusú `headCount` property-vel, mely a szörny, még meglévő fejeinek számát reprezentálja.
+> * Támadóereje (`power`) mindig az aktuális fejeinek száma szorozva `20`-al.
+> * Ha támadás éri, akkor 50% eséllyel elveszt egy fejet.
+> * Életpontok kiírása helyett, a fejének számát írjuk ki.
 > * Akkor hal meg a szörny ha már egy feje sem marad.
-> * Mikor a szörnyet megtámadják, `power` / `10` eséllyel leesik egy feje (tehát `1`-es `power` esetén `10%`, `10`-es vagy nagyobb power esetén `100%`)
 
 ---
 
@@ -387,7 +428,6 @@ Mindez még az eltérő bitszámú vagy nemnegatív/előjeles egész számokra i
 ![](img/01_macskafogo.png)
 
 ## A laborsegédletet összeállította
+* Kántor Tibor
 * Varga Domonkos - varga.domonkos@autsoft.hu
-* Krassay Péter - peter.krassay@autsoft.hu
-* Kántor Tibor - tibor.kantor@autsoft.hu
-* Kelényi Imre - imre.kelenyi@aut.bme.hu
+* Kelényi Imre
