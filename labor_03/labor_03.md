@@ -9,6 +9,7 @@
 * [Önálló feladatok](#onallo)
     * [Több számológép művelet támogatása](#tobb-szamologep-muvelet)
     * [Alkalmazás ikon beállítása](#app_icon)
+* [Swift Coding Challenge](#scc)
 * [Szorgalmi feladatok](#szorgalmi)
     * [Korábbi számítások (*`History` nézet*)](#korabbi-szamitasok)
 
@@ -313,6 +314,23 @@ Ha nem adunk meg az egyik típushoz ikont, akkor a rendszer megpróbálja azt a 
 ---
 
 > A szimulátorban ellenőrizzük, hogy megjelenik-e az új alkalmazás ikon!
+
+# Swift Coding Challenge <a id="scc"></a>
+A labor következő részében egy kódolási feladatot fogunk megoldani a Swift nyelv használatával Xcode Playgroundban. A következő laborok végén is szerepelni fog egy-egy ilyen feladat, hogy megismerhessünk több fontos nyelvi elemet is. A megoldások során törekedjünk a legrövidebb megoldásokra. Ehhez hasonló programozási fejtörők sokszor szerepelnek állásinterjúkon is, ezért érdemes gyakorolni őket.
+
+A megvalósított feladatok után írjunk mindegyikre egy-egy példát, a labor ellenőrzéséhez.
+
+> Hozzunk lére egy új Playgroundot, SwiftChallenges névvel a labor_03 könyvtárba!
+
+### Palindróm <a id="palindrome"></a>
+
+Írj egy `function`t, ami egy `String`et vár paraméterül és `true`-val tér vissza ha a szó visszafele olvasva megegyezik önmagával.
+
+```Swift
+func challenge1(input: String) -> Bool {
+   return true
+}
+```
 
 # Szorgalmi feladatok <a id="szorgalmi"></a>
 
