@@ -9,6 +9,7 @@
     * [Színválasztó nézet](#szinvalaszto-nezet)
 * [Önálló feladatok](#onallo-feladatok)
     * [Legutóbb rajzolt kör átméretezése](#legutobb-rajzolt-kor-atmeretezese)
+    * [Swift Coding Challenge](#scc)
 * [Szorgalmi feladatok](#szorgalmi-feladatok)
     * [Ecsetméret állítása](#ecsetmeret-allitasa)
     * [Swipe to delete](#swipe-to-delete)
@@ -345,6 +346,20 @@ Láthatjuk, hogy nagyításkor egy "maszatos" átskálázott képet kapunk. Ez a
 
 ```swift
 ellipse.contentMode = .redraw
+```
+
+# Swift Coding Challenge <a id="scc"></a>
+> Hozzunk lére egy új Playgroundot, SwiftChallenges névvel a labor_04 könyvtárba!
+
+### Egyedi betűk <a id="words"></a>
+
+Írj egy functiont, ami egy Stringet vár paraméterül és átalakítja azt úgy, hogy minden betű, csak egyszer szerepeljen benne.
+
+```Swift
+func challenge(input: String) -> String {
+  ...
+  return input
+}
 ```
 
 # Szorgalmi feladatok <a id="szorgalmi-feladatok"></a>
