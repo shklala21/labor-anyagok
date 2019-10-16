@@ -8,6 +8,7 @@
     * [Eredmény nézet](#eredmeny-nezet)
 * [Önálló feladatok](#onallo)
     * [Nehézség választó](#nehezseg-valaszto)
+    * [Swift Coding Challenge](#scc)
 * [Szorgalmi feladat](#szorgalmi-feladat)
     * [Játékstatisztika](#jatekstatisztika)
 
@@ -356,6 +357,20 @@ Majd a kódban tudjuk ellenőrizni, hogy melyik az épp bekövetkező `Segue`.
 ```swift
 if segue.identifier == "gameViewControllerSegue" {
   ...
+}
+```
+
+# Swift Coding Challenge <a id="scc"></a>
+> Hozzunk lére egy új Playgroundot, SwiftChallenges névvel a labor_05 könyvtárba!
+
+### Szóköz összevonás <a id="words"></a>
+
+Írj egy functiont, ami egy Stringet vár paraméterül és redukálja a duplikált szóközöket minden esetben amikor benne egymás mellett több szerepel.
+
+```Swift
+func challenge(input: String) -> String {
+  ...
+  return input
 }
 ```
 
