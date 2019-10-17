@@ -1,7 +1,9 @@
-# Házi feladat tudnivalók `2018` ősz
+# Házi feladat tudnivalók `2019` ősz
 
 ## A házi feladatról
 A házi feladat egy önállóan elkészített `iOS` alkalmazás. Házi feladat készítése nem kötelező, a tárgykövetelményeket házi feladat beadás nélkül is lehet teljesíteni. A házi feladatra megajánlott jegyet adunk, amellyel kiváltható a vizsgázás.
+
+**A leírt határidők szigorúak, ezek nem betartásával elvész a megajánlott jegy lehetősége!**
 
 Minden, házi feladattal kapcsolatos interakció a `GitHub`on történik, a `labor-username` repository-khoz hasonlóan mindenki létre tud magának hozni egy `hazi-feladat-username` repository-t a **[linkre](https://classroom.github.com/a/Fw794ECW)** kattintva.
 
@@ -11,9 +13,10 @@ A házi feladat célja, hogy a hallgató bizonyítsa vele, hogy elsajátította 
 Minimális követelmények a házifeladat-alkalmazáshoz:
 
 * Natív, `Swift`ben írt alkalmazás (a projekt tartalmazhat `Objective-C` kódot is, de a nagyobb részét `Swift`ben kell megírni).
-* Több `View Controller`ből álló felhasználói felülettel rendelkezzen.
+* Több `View Controller`ből álló felhasználói felülettel rendelkezzen. `SwiftUI` esetén több `View` legyen.
 * Ha nem játék vagy speciális felhasználói felülettel rendelkező alkalmazás, akkor használjon `Auto Layout`ot (alapvetően elég, ha egy alkalmazás vagy csak `iPhone`-ra vagy csak `iPad`re van optimalizálva, de az univerzális alkalmazásokat plusz munkaként értékeljük)!
 * A felhasználói felületen túl használjon **legalább hármat**, az alábbi funkciókból (irányszám):
+    * `Accessibility` (tesztelve van `VoiceOver`rel, támogat dinamikus font méretet, `Accessibility Inspector` nem dob warningot, stb.),
     * Perzisztens adattárolás a program adataihoz (`Core Data`, `SQLite`, sima fájlok),
     * Hálózati kommunikáció, adatok küldése hálózatra vagy adatok fogadása és prezentálása,
     * `MapKit` használata,
@@ -21,12 +24,14 @@ Minimális követelmények a házifeladat-alkalmazáshoz:
     * `CoreMotion` kihasználása,
     * `CoreLocation` kihasználása,
     * Játéklogika és/vagy `SpriteKit` használata,
-    * `ARKit`,
+    * `ARKit` és/vagy `RealityKit`,
     * `Metal`,
     * `iCloud` támogatás,
     * `App Extension` írása (pl. `Home Screen Extension` ~ `Widget`),
     * `Adaptive Layout` vagy univerzális alkalmazás egyedi `iPhone` + `iPad` felülettel,
-    * Multimédia: videó vagy hang lejátszás/rögzítés.
+    * Multimédia: videó vagy hang lejátszás/rögzítés,
+    * `Core Bluetooth` vagy `Core NFC`,
+    * `SwiftUI`.
 
 **A megadott szempontok csak irányvonalak, bármilyen egyéb, kellően komplex alkalmazás beadható (konzultálj a laborvezetőddel)!**
 
@@ -34,20 +39,20 @@ Minimális követelmények a házifeladat-alkalmazáshoz:
 
 Az első lépés a házi feladat specifikáció feltöltése és elfogadtatása. A specifikáció egy rövid, néhány mondatos leírás vagy felsorolás (maximum `1` A4-es oldal), mely tartalmazza a program célját és megvalósítandó funkciókat, valamint a felhasználandó technológiákat. A házi specifikációkat minden esetben átnézzük és egyenként elfogadjuk/visszautasítjuk. Ha valakinek nem fogadjuk el a specifikációját, arról issue-t fogunk kiírni a `GitHub` repository-jába. Elfogadás esetén a tényt rögzítjük a `README.md` fájlban.
 
-**A specifikáció feltöltésének határideje a 9. oktatási hét vége, vasárnap éjfél: 2018. november 04. 23:59** A feltöltés a `GitHub`ra történik a `hazi-feladat-username` repository `README.md` fájljába a sablonnak megfelelően.
+**A specifikáció feltöltésének határideje a 9. oktatási hét vége, vasárnap éjfél: 2019. november 03. 23:59** A feltöltés a `GitHub`ra történik a `hazi-feladat-username` repository `README.md` fájljába a sablonnak megfelelően.
 
 <p align="center">
     <b>A specifikációt <a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet">Markdown</a> formátumban várjuk!</b>
 </p>
 
 ## Beadás
-__A házi feladatot 2018. december 6. 12:00-ig kell feltölteni a saját `GitHub` repository-ba.__ A feltöltött projekt mellett mindenkitől várunk a `README.md` fájlba egy nagyjából egy oldalas projekt leírást is __Markdown__ formátumban. Ennek az alkalmazás rövid leírását kell tartalmaznia `3` db jellemző képernyőkép mellett.
+__A házi feladatot 2019. december 12. 12:00-ig kell feltölteni a saját `GitHub` repository-ba.__ A feltöltött projekt mellett mindenkitől várunk a `README.md` fájlba egy nagyjából egy oldalas projekt leírást is __Markdown__ formátumban. Ennek az alkalmazás rövid leírását kell tartalmaznia `3` db jellemző képernyőkép mellett.
 
 ### Bemutatás
-A házi feladatot az utolsó labor idejében (december 6. 12-14 vagy 14-16) a laborvezetőnek kell bemutatni **személyesen**. Ez feltétele a házi feladat elfogadásának.
+A házi feladatot az utolsó labor idejében (december 12. 12-14 vagy 14-16) a laborvezetőnek kell bemutatni **személyesen**. Ez feltétele a házi feladat elfogadásának.
 
 ### Késedelmes beadás
-Késedelmes beadás esetén a vizsgaidőszak utolsó vizsgája előtti napig lehet bemutatni a házit a laborvezetővel előre egyeztett időpontban. A határidőn túli házi beadás pótdíját a Neptunon keresztül kell befizetni. Ha valaki késedelmes beadással szeretne élni, ezt legkésőbb az utolsó előtti labor végéig jelezze a laborvezetőjének és a tárgy előadóinak **írásos formában**.
+Késedelmes beadás esetén a pótlási hét utolsó napjáig (december 20.) lehet bemutatni a házit a laborvezetővel előre egyeztett időpontban. A határidőn túli házi beadás pótdíját a Neptunon keresztül kell befizetni. Ha valaki késedelmes beadással szeretne élni, ezt legkésőbb az **utolsó előtti labor végéig** jelezze a laborvezetőjének és a tárgy előadóinak **írásos formában**.
 
 ### Megajánlott jegy
 Aki megajánlott jegyet szerzett, fel kell vennie egy vizsgát, különben a jegyet nem tudjuk beírni. A vizsgára nem kell eljönnie.
