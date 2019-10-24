@@ -6,19 +6,19 @@
 
 ## Házi feladat
 
-* [Tudnivalók](homework/homework.md)
+* [Tudnivalók](homework/)
 
 ## Laborok
 
-* [1. labor](labor_01/labor_01.md)
-* [2. labor](labor_02/labor_02.md)
-* [3. labor](labor_03/labor_03.md)
-* [4. labor](labor_04/labor_04.md)
-* [5. labor](labor_05/labor_05.md)
-* [6. labor](labor_06/labor_06.md)
-* [7. labor](labor_07/labor_07.md)
-* [8. labor](labor_08/labor_08.md)
-* [9. labor](labor_09/labor_09.md)
-* [10. labor](labor_10/labor_10.md)
-* [11. labor](labor_11/labor_11.md)
-* [12. labor](labor_12/labor_12.md)
+* [1. labor](labor_01/)
+* [2. labor](labor_02/)
+* [3. labor](labor_03/)
+* [4. labor](labor_04/)
+* [5. labor](labor_05/)
+* [6. labor](labor_06/)
+* [7. labor](labor_07/)
+* [8. labor](labor_08/)
+* [9. labor](labor_09/)
+* [10. labor](labor_10/)
+* [11. labor](labor_11/)
+* [12. labor](labor_12/)

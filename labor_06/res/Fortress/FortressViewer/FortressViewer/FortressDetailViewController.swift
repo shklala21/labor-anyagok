@@ -4,44 +4,50 @@ import UIKit
 
 class FortressDetailViewController: UITableViewController {
 
-  private let animationDuration = 0.2
-  private var fortress: Fortress?
+    private let animationDuration = 0.2
+    private var fortress: Fortress?
 
-  override func viewDidLoad() {
-    super.viewDidLoad()
+    override func viewDidLoad() {
+        super.viewDidLoad()
 
-    // Drop delegate beállítása
+        // Trash gomb létrehozása
 
-    positionMapViewToHungary()
-  }
+        // Szorgalmi: Spring Loading beállítása a Trash gombra
 
-  private func refreshView(with fortress: Fortress) {
-    self.fortress = fortress
-    navigationItem.title = fortress.name
+        // Szorgalmi: Drag interaction hozzáadása az Image View-hoz
 
-    // Hiányzó két sor
+        // Drop delegate beállítása
 
-    let annotation = MKPointAnnotation()
-    annotation.title = fortress.name
-    annotation.coordinate = fortress.coordinates
-    mapView.addAnnotation(annotation)
-    mapView.setRegion(MKCoordinateRegion(center: fortress.coordinates, latitudinalMeters: 10000, longitudinalMeters: 10000), animated: true)
-  }
+        positionMapViewToHungary()
+    }
 
-  private func clearView() {
-    fortress = nil
+    private func refreshView(with fortress: Fortress) {
+        self.fortress = fortress
+        navigationItem.title = fortress.name
 
-    navigationItem.title = nil
-    imageView.image = nil
-    descriptionTextView.text = nil
+        // Hiányzó két sor
 
-    mapView.removeAnnotations(mapView.annotations)
-    positionMapViewToHungary()
-  }
+        let annotation = MKPointAnnotation()
+        annotation.title = fortress.name
+        annotation.coordinate = fortress.coordinates
+        mapView.addAnnotation(annotation)
+        mapView.setRegion(MKCoordinateRegion(center: fortress.coordinates, latitudinalMeters: 10000, longitudinalMeters: 10000), animated: true)
+    }
 
-  // Moves center of the MapView to Hungary 🇭🇺
-  private func positionMapViewToHungary() {
-    let hungaryCoordinates = CLLocationCoordinate2D(latitude: 47, longitude: 19)
-    mapView.setRegion(MKCoordinateRegion(center: hungaryCoordinates, latitudinalMeters: 400000, longitudinalMeters: 400000), animated: true)
-  }
+    @objc private func clearView() {
+        fortress = nil
+
+        navigationItem.title = nil
+        imageView.image = nil
+        descriptionTextView.text = nil
+
+        mapView.removeAnnotations(mapView.annotations)
+        positionMapViewToHungary()
+    }
+
+    // Moves center of the MapView to Hungary 🇭🇺
+    private func positionMapViewToHungary() {
+        let hungaryCoordinates = CLLocationCoordinate2D(latitude: 47, longitude: 19)
+        mapView.setRegion(MKCoordinateRegion(center: hungaryCoordinates, latitudinalMeters: 400000, longitudinalMeters: 400000), animated: true)
+    }
 }

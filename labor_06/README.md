@@ -22,11 +22,11 @@ A labor során két egyszerű iPad alkalmazást fogunk csinálni és az egyikbő
 
 ## Kezdőprojekt megismerése <a id="starter-project-overview"></a>
 
-<img src="img/final_application.png" alt="Elkészült alkalmazások" style="width: 75%;"/>
+<img src="img/final_application.png" alt="Elkészült alkalmazások" style="width: 100%;"/>
 
-> Másoljuk a `res/Fortress` mappát a `~/Desktop/labor_06/` könyvtárba, majd nyissuk meg a `Fortress.xcworkspace` fájlt!
+> Másoljuk a `res/Fortress` mappát a `~/Developer/labor-'GitHub username'/labor_06/` könyvtárba, majd nyissuk meg a `Fortress.xcworkspace` fájlt!
 
-Ez a fájltípus abban különbözik az eddig megismert `.xcodeproj` fájloktól, hogy egy workspace-en belülre több projekt is kerülhet.
+Ez a fájltípus abban különbözik az eddig megismert `.xcodeproj` fájloktól, hogy egy *workspace*-en belülre több projekt is kerülhet.
 
 > Nézzük át a projektet és ismerkedjünk a meglévő kóddal!
 
@@ -37,11 +37,11 @@ A workspace-ben 3 projekt található:
 * [Fortress Viewer](#fortress-viewer).
 
 ### Fortress <a id="fortress-framework"></a>
-Egy framework, amiben definiálva van a `Fortress` class és a hozzá tartozó protokollmegvalósítások, segédfüggvények. Itt találhatók továbbá a kezdeti adatok a `HungarianFortresses.plist` és az `Images.xcassets` katalógusban. A labor során ezekből az adatokból fogunk dolgozni.
+Egy *framework*, amiben definiálva van a `Fortress` class és a hozzá tartozó protokollmegvalósítások, segédfüggvények. Itt találhatók továbbá a kezdeti adatok a `HungarianFortresses.plist` és az `Images.xcassets` katalógusban. A labor során ezekből az adatokból fogunk dolgozni.
 
 A `HungarianFortresses.plist`et megnyitva a következő struktúrát láthatjuk.
 
-<img src="img/hungarian_fortresses_plist.png" alt="Várak plist" style="width: 75%;"/>
+<img src="img/hungarian_fortresses_plist.png" alt="Várak plist" style="width: 100%;"/>
 
 ### FortressBrowser <a id="fortress-browser"></a>
 A képen látható bal oldali alkalmazás, a várak és a neveik egy `Collection View`-ban találhatók. Feladatunk létrehozni ezt a `Collection View`-t és feltölteni a rendelkezésre álló adatokkal, majd implementálni az átrendezés funkcionalitást, illetve azt, hogy az alkalmazásból ki lehessen húzni várakat.
@@ -52,10 +52,12 @@ A képen látható jobb oldali alkalmazás, ide lehet húzni a bal oldalról a v
 ## Alkalmazások futtatása <a id="alkalmazasok-futtatasa"></a>
 Ha az `Xcode workspace`-ünkben egyszerre több projekt is szerepel, akkor azokat egyesével kell build-elni és futtatni. 
 > A használni kívánt projektet válasszuk ki a `scheme selector` segítségével: 
-<img src="img/choose_scheme.png" alt="Scheme selector" style="width: 25%;"/>
 
-> A projekt kiválasztása után egyből szimulátort is választhatunk: 
-<img src="img/set_scheme.png" alt="Set scheme" style="width: 25%;"/>
+<img src="img/choose_scheme.png" alt="Scheme selector" style="width: 75%;"/>
+
+> A projekt kiválasztása után egyből szimulátort is választhatunk:
+
+<img src="img/set_scheme.png" alt="Set scheme" style="width: 50%;"/>
 
 ## Kezdeti adatok betöltése <a id="kezdeti-adatok-betoltese"></a>
 
@@ -63,31 +65,34 @@ Ha az `Xcode workspace`-ünkben egyszerre több projekt is szerepel, akkor azoka
 
 ```swift
 extension Fortress {
-  // Kiegészítjuk az osztályt egy új property-vel, ami betölti a plist tartalmát. Fortress.hungarianFortresses-kent fogjuk használni.
-  public static var hungarianFortresses: [Fortress] {
-    // Szerzünk egy referenciát a HungarianFortresses.plist fájlra, majd betöltjük a memóriába adatként és Fortress tömbbé dekódoljuk.
-    guard let plistPath = fortressBundle.path(forResource: "HungarianFortresses", ofType: "plist"),
-      let data = try? Data(contentsOf: URL(fileURLWithPath: plistPath)),
-      let fortresses = try? PropertyListDecoder().decode([Fortress].self, from: data) else { return [] }
+    // Kiegészítjuk az osztályt egy új property-vel, ami betölti a plist tartalmát. Fortress.hungarianFortresses-kent fogjuk használni.
+    public static var hungarianFortresses: [Fortress] {
+        // Szerzünk egy referenciát a HungarianFortresses.plist fájlra, majd betöltjük a memóriába adatként és Fortress tömbbé dekódoljuk.
+        guard let plistPath = fortressBundle.path(forResource: "HungarianFortresses", ofType: "plist"),
+            let data = try? Data(contentsOf: URL(fileURLWithPath: plistPath)),
+            let fortresses = try? PropertyListDecoder().decode([Fortress].self, from: data) else {
+                fatalError("HungarianFortresses.plist file couldn't be found or damaged!")
+        }
 
-    // A sikeres dekódolás után ha nem volt hiba, akkor visszatérünk a várakkal.
-    return fortresses
-  }
+        // A sikeres dekódolás után ha nem volt hiba, akkor visszatérünk a várakkal.
+        return fortresses
+    }
 }
+
 ```
 
 > Nyissuk meg a `FortressCollectionViewController`t a `FortressBrowser project`ben  és `reuseIdentifier` property alá adjuk hozzá a következő property-t!
+
 ```swift
 // Definiálunk egy Fortressekből álló tömböt, amibe rögtön bele is rakjuk az összes várat, amit a framework szolgáltat nekünk.
 private var fortresses = Fortress.hungarianFortresses
 ```
 
-
 ## `CollectionView` elkészítése <a id="create-collectionview"></a>
 
-> Nyissuk meg a `Main.storyboard`ot és adjunk hozzá a Library-ből egy `Collection View Controller`t a `Storyboard`unkhoz!
+> Nyissuk meg a `Main.storyboard`ot és adjunk hozzá a *Library*-ből (`⌘+⇧+L`) egy `Collection View Controller`t a `Storyboard`unkhoz!
 
-<img src="img/collection_view_controller_library.png" alt="" style="width: 40%;"/>
+<img src="img/collection_view_controller_library.png" alt="" style="width: 80%;"/>
 
 <img src="img/empty_collection_view_controller.png" alt="" style="width: 100%;"/>
 
@@ -95,14 +100,16 @@ private var fortresses = Fortress.hungarianFortresses
 
 <img src="img/embed_in_navigation_controller.png" alt="" style="width: 25%;"/>
 
-<!--  -->
 > Állítsuk be a `Navigation Controller`re az *Attributes inspector*ban, hogy **Is Initial View Controller**.
 
-<!--  -->
-> Állítsuk be a `Collection View Controller` *Custom Class*át **FortressCollectionViewController**re az *Identity inspector*ban, illetve a *Size inspectorban* a *Cell Size*-ot **200x200**-ra!
+> Állítsuk be a `Collection View Controller` *Custom Class*át **FortressCollectionViewController**re az *Identity inspector*ban. 
 
-<!--  -->
+> A *Document Outline*-ban a **Collection View**-t kiválasztva a *Size inspectorban* állítsuk a *Cell Size*-ot **200x200**-ra, illetve az *Estimate Size*-ot **None**-ra. Ezt követően a *Document Outline*-ban válasszuk ki a *Collection View Cell*t, és ellenőrizzük, hogy a *Size inspectorban* a *Size* **Custom**ra van-e állítva **200x200**-as mérettel!
+
+<img src="img/collection_view_cell_size.png" alt="" style="width: 30%;"/>
+
 > Hozzunk létre egy új `Swift File`t **FortressCollectionViewCell** névvel és a tartalmát cseréljük le a következő pár sorra!
+
 ```swift
 import UIKit
 
@@ -113,19 +120,30 @@ class FortressCollectionViewCell: UICollectionViewCell {
 
 > Menjünk vissza a Main.storyboardba és állítsuk be a `Collection View Cell` *Custom Class*át **FortressCollectionViewCell**re az *Identity inspector*ban és a Collection Reusable View *Identifier*ét **FortressCollectionViewCell**re az *Attributes inspector*ban.
 
-<img src="img/collection_view_cell_custom_class.png" alt="" style="width: 25%;"/> <img src="img/collection_view_cell_reuse_identifier.png" alt="" style="width: 25%;"/>
+<img src="img/collection_view_cell_custom_class.png" alt="" style="width: 30%;"/> <img src="img/collection_view_cell_reuse_identifier.png" alt="" style="width: 30%;"/>
 
-
-> Húzzunk be egy `Image View`-t és **alá** egy `Label`t a `Collection View Cell`be, majd állítsunk be pár AutoLayout constraintet! (*Add New Constraints* gomb)
+> Húzzunk be egy `Image View`-t, és **alá** egy `Label`t a `Collection View Cell`be, majd állítsunk be pár AutoLayout constraintet! (*Add New Constraints* gomb)
 
 <img src="img/collection_view_image_view_contraints.png" alt="" style="width: 25%;"/> <img src="img/collection_view_label_constraints.png" alt="" style="width: 25%;"/>
 
-> Állítsuk be az `Image View` *Content Mode*-ját **Aspect Fit**re, illetve rendezzük középre a `Label`t az *Alignment* beállítással!
+> Állítsuk be az `Image View` *Content Mode*-ját **Aspect Fit**re (iOS 13-ban ez alapértelmezetten így van), illetve rendezzük középre a `Label`t az *Alignment* beállítással!
 
-<img src="img/collection_view_design.png" alt="" style="width: 40%;"/>
+Mivel mind az `Image View` mind a `Label` vertikális *Content Compression Resistance Priority* értéke alapértelmezés szerint *750*, ezért az AutoLayout nem tudja egyértelműen eldönteni, hogy melyiket részesítse előnyben futási időben. Elképzelhető például, hogy az `Image View`-t akkora méretűre fogja állítani, hogy a `Label`nek már nem marad hely. Azért, hogy ez ne történhessen meg, explicit jelezzük, hogy a `Label`t mindig látni szeretnénk.
+
+> Állítsuk a `Label` vertikális *Content Compression Resistance Priority* értékét **751**-re a *Size inspector*ban!
+
+A PSPDFKit által készített [PDF Viewer](https://apps.apple.com/us/app/pdf-viewer-annotation-expert/id1120099014) alkalmazást a [statisztikák szerint](https://pspdfkit.com/blog/2018/improving-dynamic-type-support/) a felhasználók körülbelül 27% nem a default betűmérettel használja. Tegyünk mi is egy minimális erőfeszítést és támogassuk a *Dynamic Type*-ot!
+
+> A `Label`-t kiválasztva az *Attributes inspector*ban állítsuk be a *Font*ot **Title 2**-re, illetve pipáljuk be az **Automatically Adjust Font** property-t!
+
+<img src="img/dynamic_type.png" alt="" style="width: 30%;"/>
+
+Az elkészült cellának valahogy így kell kinéznie.
+<img src="img/collection_view_design.png" alt="" style="width: 75%;"/>
 
 <!--  -->
 > Készítsünk egy-egy `Outlet`et az **`imageView`**-ra és a **`nameLabel`**-re a `FortressCollectionViewCell`ben!
+
 ```swift
 @IBOutlet var imageView: UIImageView!
 @IBOutlet var nameLabel: UILabel!
@@ -157,11 +175,9 @@ override func collectionView(_ collectionView: UICollectionView, cellForItemAt i
 
 A kommentben látható `MARK: ` "kulcsszó" segítségével a metódusainkat csoportokba rendezhetjük, egy elválasztót hozhatunk létre közéjük.
 
-> Futtassuk az alkalmazásunkat egy `iPad (6th generation)` szimulátoron! (Futtatás után ne zárjuk be.)
+> Futtassuk az alkalmazásunkat egy tetszőleges iPad szimulátoron, pl.: az `iPad (7th generation)`-ön! (Futtatás után ne zárjuk be.)
 
-<img src="img/collection_view_done.png" alt="" style="width: 75%;"/>
-
-<!--  -->
+<img src="img/collection_view_done.png" alt="" style="width: 100%;"/>
 
 ## Drag&Drop a `Collection View`-ban <a id="collection-view-drag-and-drop"></a>
 A következőkben megvalósítjuk az áthelyezés lehetőségét a `Collection View`-ban drag and drop segítségével, illetve előkészítjük arra, hogy az egyes cellákat kihúzhassuk az alkalmazásból.
@@ -195,13 +211,12 @@ collectionView.dragDelegate = self
 
 > Próbáljuk ki az alkalmazást! Nyomjunk hosszan egy elemre: próbáljuk meg "felemelni" és arrébb húzni!
 
-<!--  -->
 > A következő lépésben bekapcsoljuk az átrendezés lehetőségét. Ehhez implementáljuk a `UICollectionViewDropDelegate`-et: illesszük be a következő extensiont a `FortressCollectionViewController` legaljára (az osztályon kívülre)!
 
 ```swift
 extension FortressCollectionViewController: UICollectionViewDropDelegate {
   // UICollectionViewDropDelegate
-  // Ezt a metódust hívja meg elsőször a rendszer amikor a felhasználó ráhúz valamit Collection View-ra.
+  // Ezt a metódust hívja meg először a rendszer amikor a felhasználó ráhúz valamit Collection View-ra.
   // Itt van lehetőségünk megmondani, hogy milyen adatot akarunk fogadni.
   func collectionView(_ collectionView: UICollectionView, canHandle session: UIDropSession) -> Bool {
     return session.canLoadObjects(ofClass: Fortress.self)
@@ -221,10 +236,9 @@ extension FortressCollectionViewController: UICollectionViewDropDelegate {
   func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
     guard let dropItem = coordinator.items.last, let destinationIndexPath = coordinator.destinationIndexPath, coordinator.session.localDragSession != nil else { return }
 
-    if let sourceIndexPath = dropItem.sourceIndexPath, let fortress = dropItem.dragItem.localObject as? Fortress {
+    if let sourceIndexPath = dropItem.sourceIndexPath {
       collectionView.performBatchUpdates({
-        fortresses.remove(at: sourceIndexPath.row)
-        fortresses.insert(fortress, at: destinationIndexPath.row)
+        fortresses.swapAt(sourceIndexPath.row, destinationIndexPath.row)
         collectionView.moveItem(at: sourceIndexPath, to: destinationIndexPath)
       }, completion: nil)
     }
@@ -248,14 +262,13 @@ collectionView.dropDelegate = self
 
 A következő feladat a vár *detail* nézetének elkészítése a `Fortress Viewer` projektben. 
 
-<img src="img/table_view_static_done.png" alt="" style="width: 75%;"/>
+<img src="img/table_view_static_done.png" alt="" style="width: 100%;"/>
 
-> Hozzunk létre egy új `Table View Controller`t, embeddeljük egy `Navigation Controller`be, majd állítsuk át a benne foglalt `Table View` *Content* property-jét **Static Cells**-re, és töröljük ki az automatikusan létrejött `Section Header` feliratokat.
+> A `Fortress Viewer` `Main.storyboard` fájljában hozzunk létre egy új `Table View Controller`t, embeddeljük egy `Navigation Controller`be (nem megfeledkezve az **Is Initial View Controller** bepipálásáról), majd állítsuk át a benne foglalt `Table View` *Content* property-jét **Static Cells**-re, és töröljük ki az automatikusan létrejött `Section Header` feliratokat.
 
-<!--  -->
-> Állítsuk be a *Sections*-t **`3`**-ra, a *Style*-t pedig **Grouped**ra!
+> Állítsuk be a *Sections*-t **`3`**-ra, a *Style*-t pedig **Grouped**ra vagy **Inset Grouped**ra!
 
-<img src="img/table_view_static_cell_settings.png" alt="" style="width: 25%;"/>
+<img src="img/table_view_static_cell_settings.png" alt="" style="width: 30%;"/>
 
 > Ezek után módosítsuk a `Table View`-t oly módon, hogy az mindhárom szekcióban `1` **Custom** stílusú cella legyen (az egyes cellák *Style* property-jét kell állítgatni vagy csak ellenőrizni).
 
@@ -268,28 +281,32 @@ A következő feladat a vár *detail* nézetének elkészítése a `Fortress Vie
 > Az `Image View` *Content Mode* property-jét állítsuk **Aspect Fit**re!
 
 <!--  -->
-> A `Text View`-nak kapcsoljuk ki az *Editable* property-jét!
+> A `Text View`-nak kapcsoljuk ki az *Editable* property-jét és töröljük ki a *Lorem ipsum* szövegét!
 
 > A `Table View`-t kiválasztva a *Selection* property értékét állítsuk **No Selection**-re, hogy ne lehessen kijelölni a cellákat!
 
-<img src="img/table_view_no_selection.png" alt="" style="width: 25%;"/>
+<img src="img/table_view_no_selection.png" alt="" style="width: 30%;"/>
 
-> A Library-ből húzzunk egy `Bar Button Item`et a `Navigation Item` bal oldalára, majd a *System Item* property-jét állítsuk **Trash**-re!
+> Az elkészült Table View-nk *Identity inspector*ában állítsuk be a *Class*t **`FortressDetailViewController`**re!
 
-<img src="img/table_view_bar_button_item.png" alt="" style="width: 25%;"/>
-
-> Nyissuk meg a `FortressDetailViewController`-t és vegyünk fel `Outlet`eket a `3`, adatmegjelenítésre szolgálló nézethez és a Trash gombhoz (minden cellából azt a nézetet válasszuk ki, mely az egyedi adat megjelenítésére szolgál, és ezeket kössük be `Outlet`ekre)!
+> Nyissuk meg a `FortressDetailViewController`t és vegyünk fel `Outlet`eket a `3`, adatmegjelenítésre szolgáló nézethez! Minden cellából azt a nézetet válasszuk ki, mely az egyedi adat megjelenítésére szolgál, és ezeket kössük be `Outlet`ekre!
 
 ```swift
-@IBOutlet var trashButton: UIBarButtonItem!
 @IBOutlet var imageView: UIImageView!
 @IBOutlet var descriptionTextView: UITextView!
 @IBOutlet var mapView: MKMapView!
 ```
 
-> Kössünk be egy `Action`t a kukához is `trashTapped` névvel, majd a metódusban hívjuk meg a `clearView()` metódust!
+Készítsünk egy kuka `Bar Button Item`et is a Navigation Bar jobb sarkába!
 
-> Töltsük ki a `refreshViews(with:)` metódus hiányzó részét! A hiányzó két sorban állítsuk be az `imageView` képét és a `descriptionTextView` szövegét.
+> A `FortressDetailViewController` `viewDidLoad()` metódusában adjuk hozzá a következő sorokat!
+
+```swift
+// Trash gomb létrehozása
+navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(clearView))
+```
+
+> Írjuk meg a `refreshView(with:)` metódust a `viewDidLoad()` alatt!
 
 ```swift
 private func refreshView(with fortress: Fortress) {
@@ -331,12 +348,18 @@ extension FortressDetailViewController: UIDropInteractionDelegate {
 }
 ```
 
+> Utolsó lépésként ne felejtsük beállítani a drop delegate-et a `viewDidLoad()`-ban!
+
 ```swift
 // Drop delegate beállítása
 tableView.addInteraction(UIDropInteraction(delegate: self))
 ```
 
 > Teszteljük az alkalmazást! Nyissuk meg egymás mellé a FortressBrowsert és a FortressViewert, majd a browserből húzzunk át egy várat a viewerbe!
+
+Hmmm... úgy látszik, hogy drop esetében csak a navigation title értéke változik, illetve a térképre kerül fel a megfelelő POI.
+
+> Keressük meg és pótoljuk a `// Hiányzó két sor`-t úgy, hogy megjelenjen a vár képe az `Image View`-ban és a hozzá tartozó rövid leírás a `Text View`-ban!
 
 # Szorgalmi feladat <a id="szorgalmi-feladat"></a>
 
@@ -354,16 +377,16 @@ imageView.isUserInteractionEnabled = true
 > A `UIDragInteractionDelegate` protokoll kötelező, `dragInteraction(_:itemsForBeginning:)` implementálása után valósítsd meg a `dragInteraction(_:previewForLifting:session:)` metódust is! 
 
 ```swift
-  func dragInteraction(_ interaction: UIDragInteraction, previewForLifting item: UIDragItem, session: UIDragSession) -> UITargetedDragPreview? {
+func dragInteraction(_ interaction: UIDragInteraction, previewForLifting item: UIDragItem, session: UIDragSession) -> UITargetedDragPreview? {
     guard let fortress = fortress, let image = fortress.image else {
-      return nil
+        return nil
     }
 
     // FortressDragPreview példányosítása egy 200x350-es téglalappal
     // dragPreview setContent(image:name:shortDescription) metódus meghívása
 
     return UITargetedDragPreview(view: dragPreview, parameters: UIDragPreviewParameters(), target: UIDragPreviewTarget(container: tableView, center: imageView.center))
-  }
+}
 ```
 
 > Próbáld ki az alkalmazást és indíts egy drag sessiont az `imageView`-ról!
