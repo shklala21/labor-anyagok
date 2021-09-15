@@ -1,625 +1,433 @@
 # `iOS` alapú szoftverfejlesztés - Labor `01`
 
 ## A labor témája
+* [`Swift` alapismeretek](#swift-alapismeretek)
+    * [Osztályok definiálása és példányosítása](#osztalyok-def-es-peld)
+    * [`Optional`ök és a `failable initializer`](#optionals-and-failable-init)
+    * [Generikus tárolók, metódusok és osztályhierarchiák](#gen)
+    * [Öröklés és Castolás](#orokles-es-castolas)
+    * [Protokollok](#protokollok)
+    * [A `Swift` erősen típusos (`strongly typed`) nyelv](#strongly-typed)
+* [Önálló feladatok](#onallo)
+* [Szorgalmi feladatok](#szorgalmi)
 
-- [Bemutatkozás](#bemutatkozas)
-- [`macOS` felhasználói alapismeretek](#mac_knowings)
-    - [Billentyűzet](#billentyuzet)
-    - [Egér](#eger)
-    - [Unix gyökerek](#unix-gyokerek)
-    - [Fájlkezelés](#fajlkezeles)
-- [Terminal alapismeretek](#terminal_alapismeretek)
-    - [Unix fájlrendszer](#unix-filesystem)
-    - [Mountolás](#mountolas)
-    - [Navigálás a fájlrendszerben](#fajlrendszer_navigalas)
-    - [Fájlrendszer manipulálása](#filesystem_manipulation)
-- [Git alapismeretek](#git_tutorial)
-    - [Verzió](#git_version)
-    - [Verziókezelés](#git_version_control)
-    - [Elosztott rendszer](#git_distributed_system)
-    - [Git felépítése](#git_parts)
-- [Git alapműveletei](#git_commands) 
-    - [További segédletek](#git_readings)
-- [Swift kód fordítása és futtatása Terminalbol](#swift_compile_terminal)
-    - [Hello world](#hello_world)
-    - [Fordítás menete, futtatás](#compiling_running)
-- [Önálló feladatok](#onallo)
-    - [Git gyakorlás](#git_self_test)
-    - [1. Feladat](#1st_task)
-    - [2. Feladat](#2nd_task)    
-- [Szorgalmi feladatok](#szorgalmi)
-    - [Celsius ↔ Fahrenheit](#celsius_task)
-- [Labor feltöltése GitHub-ra](#git_upload)
+### Cheat sheets
+- [https://github.com/iwasrobbed/Swift-CheatSheet](https://github.com/iwasrobbed/Swift-CheatSheet)
+- [https://www.raywenderlich.com/73967/swift-cheat-sheet-and-quick-reference](https://www.raywenderlich.com/73967/swift-cheat-sheet-and-quick-reference)
 
-## Bemutatkozás <a id="bemutatkozas"></a>
-* A laborok `60%`-án kötelező a részvétel. (Idén ez `8` labort jelent.) Minden labor végén fel kell tölteni a `GitHub`ra az elkészült laborfeladatot, aki ezt nem teszi meg, annak érvénytelen a laborja. A laborfeladatok végén találhatóak szorgalmi feladatok, amik elvégzésével plusz pontot szerezhető, ami beleszámít az év végi jegybe (+1 pont laboronként).
-* Rendszeresen látogassátok a [tárgy honlapját](https://www.aut.bme.hu/Course/ios), ide kerül fel minden információ. (Van RSS feed is.)
-* A tárgyból a legkönnyebben házi feladat beadásával lehet megszerezni a félév végi jegyet. A beadott házikat a laborvezetők fogják értékelni. A házi feladat beadás rendjéről a tárgy honlapján fogunk a későbbiekben információkat közzétenni.
-* A laborokkal kapcsolatban mindenkitől örömmel fogadunk hibajelentéseket vagy bármilyen egyéb, _építő jellegű_ kritikát.
+### *Style guide*
+* Egy lehetséges *style guide* és kódolólási konvenció szabályzat (nem szentírás!): [The Official raywenderlich.com Swift Style Guide](https://github.com/raywenderlich/swift-style-guide)
+* Folyamatban van egy hivatalos style guide és formatter kidolgozása is, egyelőre még tervezés alatt: [SE-0250](https://github.com/apple/swift-evolution/blob/master/proposals/0250-swift-style-guide-and-formatter.md)
 
-## `macOS` felhasználói alapismeretek <a id="mac_knowings"></a>
+## `Swift` alapismeretek <a id="swift-alapismeretek"></a>
+> Hozzunk létre egy új `Labor2.playground` fájlt a `labor_02` mappán belül!
 
-### Billentyűzet <a id="billentyuzet"></a>
-A Macekhez külön Apple billentyűzetek léteznek, melyeken némiképp különbözőek a funkcióbillentyűk, és található rajtuk néhány extra gomb. Ezeken túl azonban a billentyűkiosztás megegyezik a standard PC-s billentyűzetekkel. A laborokban PC-s billentyűzetek vannak rákötve a Mac-ekre, melyeken elérhető minden szükséges gomb, azonban van néhány eltérés a Windows-os használathoz képest.
+A `playground` egy interaktív fejlesztőkörnyezet, melyben minden sor/kifejezés értéke automatikusan kiértékelődik és megjelenik a jobb szélső panelen. Bár úgy tűnhet mintha egy interpretált nyelvvel dolgoznánk, valójában minden módosítás után újrafordul a teljes `playground`. A stabil futás és gyorsabb teljesítmény érdekében most kapcsoljuk ki az automatikus fordítást, mert ekkor félregépelés vagy hiányos implementáció esetén is elkezdhet fordulni, ami hibát fog eredményezni, valamint lassíthatja az `Xcode`-ot.
 
-A legfontosabb különbség, hogy Mac-en `Command` (`⌘`) gomb van Windows gomb helyett. Ez a **PC-s billentyűzeten alapesetben pont a Windows gombra** képződik le. A `Control` (`⌃`), `Alt` és `Alt Gr` (Right Alt), Mac-en is ugyanúgy használatos. Mac-en az `Alt`ot `Option`nek (`⌥`) hívjuk.
+A következőkben kipróbáljuk a `Swift` legfontosabb funkcióit.
 
----
+### Osztályok definiálása és példányosítása <a id="osztalyok-def-es-peld"></a>
 
-Az eredeti Mac-es billentyűzetkiosztást használva nem csak a funkcióbillentyűk, hanem a különböző szimbólumok (mint például `{, }, [, ], ...`) billentyűkombinációi nem azonosak a Windows használata során megszokottakkal, azonban a gördülékeny órai munka érdekében **a laborgépeket úgy konfiguráltuk, hogy a kiosztás megegyezzen a Windows-on megszokottal, egyetlen fő különbséggel:** *Mac-en, a Windows rendszerben megszokott billentyűparancsok nem a `Control`, hanem a `Command` billentyűvel válthatók ki, tehát `⌃+C` helyett `⌘+C`-t használunk!* 
-
----
-
-![](img/01_keyboard.png)
-
-| A legfontosabb általános billentyűkombinációk                 | |
-| --- | --- |
-| `⌘+C`         | Copy                                          |
-| `⌘+V`         | Paste                                         |
-| `⌘+X`         | Cut                                           |
-| `⌘+Z`         | Undo                                          |
-| `⌘+⇧+Z`       | Redo                                          |
-| `⌘+F`         | Keresés szövegben                             |
-| `⌘+G`         | Következő találat kereséskor                  |
-| `⌘+W`         | Ablak bezárása                                |
-| `⌘+Q`         | Kilépés az alkalmazásból                      |
-| `⌘+Space`     | *Spotlight* (gyorskereső, alkalmazásindítás)  |
-| `⌘+→`         | Ugrás a sor végére (`End` helyett)            |
-| `⌘+←`         | Ugrás a sor elejére (`Home` helyett)          |
-| `⌘+↹`         | Futó alkalmazások közötti váltás              |
-
----
-
-*A legtöbb Mac-es alkalmazásnál az alkalmazás ablakainak vagy ablakának bezárása után is tovább fut a program. A teljes kilépéshez a `⌘+Q`-t használhatjuk.*
-
----
-
-### Egér <a id="eger"></a>
-Korábban a Mac-es egerek egygombosak voltak, a `⌃+klikkel` lehetett az alternatív funkciókat elérni (ma is használható: `⌃+balklikk`). Kétgombos egereknél a jobb gomb funkciója megegyezik a `⌃+balklikkel`.
-
-### Unix gyökerek <a id="unix-gyokerek"></a>
-A `macOS` (korábban `OS X`, `Mac OS`) egy Unix (BSD) alapú operációs rendszer. A Unix-os alapokat teljesen elfedi a GUI és az Apple saját alkalmazásai.
-
-Minden felhasználónak (esetünkben a `labor` nevű usernek) van egy home könyvtára (`/Users/labor`). Az itt található `Developer` mappába fogjuk a labor során a projekteket és egyéb fájljainkat tárolni.
-
-<p align="center"> 
-<span align="center" style="color:red; font-size:16pt"> A labor gépeken egy automatizált rendszer minden bejelentkezéskor törli a felhasználóhoz tartozó könyvtárakat, ezért a labor alatt ne indítsuk újra a gépet és ne jelentkezzünk ki, csak a megoldás bemutatása után!</span>
-</p>
-
-Az *Activity Monitor* alkalmazást elindítva láthatjuk a futó alkalmazások process-eit. Itt van lehetőség egy esetleg lefagyott alkalmazás kilövésére is. Alkalmazások bezárásához használhatjuk még a `⌘+⌥+Esc` billentyűkombinációra megnyíló ablakot is.
-
-### Fájlkezelés <a id="fajlkezeles"></a>
-Alap fájlkezelő: *Finder*, hasonlóan működik mint Windows intéző.
-
-| Néhány hasznos *Finder* billentyűkombináció                                     | |
-| ------------- | ----------------------------------------------------------------- |
-| `⌘+Le`        | Belépés egy könyvtárba                                            |
-| `⌘+Fel`       | Kilépés egy könyvtárból                                           |
-| `⌘+Backspace` | Fájl törlése (Kukába helyezése)                                   |
-| `Enter`       | Fájl átnevezése                                                   |
-| `Space`       | *QuickLook*                                                       |
-| `⌘+⇧+G`       | Navigálás egy könyvtárhoz (Go to Folder)                          |
-
-Külső USB eszköz csatlakoztatás után a `/Volumes/` mappába mountolódik automatikusan. A *Finder*ben és bárhol a standard fájlkezelő dialógusoknál a bal szélső gyorsmenüből a `Devices` részben érhetők el, de a `Desktop`on is megjelenik hozzájuk egy-egy ikon. Az USB-s eszközöket a kihúzás előtt unmountolni kell. (*Finder*ben a bal szélső menüben, az USB eszköz előtti kis "eject" ikon, vagy pedig jobb klikk után "Unmount". További lehetőség még az asztalon az USB-s eszközt a `Trash`-be húzni.)
-
-## Terminal alapismeretek <a id="terminal_alapismeretek"></a>
-A Terminal a macOS parancssoros felülete, mely lehetőséget nyújt az operációs rendszer alacsony szintű kezelésére, valamint számos olyan feladat elvégzésére alkalmas, melyhez egyébként külön alkalmazás lenne szükséges. Legtöbb, a fejlesztést nagymértékben segítő, vagy éppen alapvető eszközök is CLI alapúak, így lényeges, hogy a legfontosabb parancsokkal tisztában legyünk, valamint készség szinten tudjuk is alkalmazni azokat.
-
-> A laborok során nem a beépített `Terminal` alkalmazást fogjuk használni, hanem az **`iTerm`**et pár speciális beállítással. A laborok feladatai kivétel nélkül a sima `Terminal` alkalmazással is teljesíthetők, az `iTerm` funkcionalitásai additív jellegűek. Aki a saját gépen szeretne beállítani egy hasonló terminál környezetet, annak jó kiindulás lehet ez a leírás: [KrauseFx/what-terminal-is-felix-using · GitHub](https://github.com/KrauseFx/what-terminal-is-felix-using/blob/master/README.md)
-
-### Unix fájlrendszer <a id="unix-filesystem"></a>
-A macOS (és általában a Unix alapú OS-ek) fájlrendszere hierarchikus felépítésű, fa struktúrát alkot: van a **gyökérkönyvtár** (*root directory*), melyből elérhetjük az összes Mac-hez csatlakoztatott fizikai eszközön (pl. beépített SSD, Pendrive) tárolt mappát és fájlt. Azt a pontot, ahol a felhasználó éppen aktuálisan tartózkodik a fájlrendszerben **munkakönyvtárnak** nevezzük. 
-
-### Mountolás <a id="mountolas"></a>
- A [Fájlkezelés](#fajlkezeles) bekezdésben említett mountoulás során tulajdonképpen a külső eszköz fájlrendszerét képző fát illesztjük bele (csatoljuk fel) a OS fájlrendszerébe, míg unmountolás során az előbb leírtaknak a fordítottja történik. A fa köztes csomópontjai csak könyvtárak, míg a levelei fájlok és könyvtárak is lehetnek egyaránt.
-
-![](img/02_unix_filesystem_and_mounting.png)
-
-### Navigálás a fájlrendszerben <a id="fajlrendszer_navigalas"></a>
-
-Az előbbi bekezdésben megismerhettük a fájlrendszer általános szerkezeti struktúráját, melyben a   `Finder` segítségével egyszerűen tudunk navigálni, azonban a `Terminal` használatával sem kell lemondanunk a fájlkezelésről. A következőkben megismerünk néhány alapvető parancsot, melyet a laborok, valamint a házi feladat készítése során gyakran fogunk használni.
-
-#### `pwd` (print working directory)
-Ahogy a neve is mutatja az aktuális munkakönyvtárat (melyik mappában állunk jelenleg a fában) tudjuk kiíratni.
-```console
-$ pwd
-/Users/labor
-```
-
-#### `ls` (list segments)
-Kilistázza az aktuális mappa tartalmát (gyerekcsomópontjait: fájlokat, további mappákat).
-```console
-$ ls
-Desktop		Documents	Library		Music		Public
-Developer	Downloads	Movies		Pictures
-```
-A parancsnak megadhatunk további kapcsolókat is, mint például:
-
-* Rejtett fájlok listázása: `-a`
-* Fájlok további részleteinek listázása: `-l`
-
-#### `cd` (change directory)
-A parancs segítségével tudunk munkakönyvtárat váltani. A parancs után megadhatunk a jelenlegi munkakönyvtárunkhoz képest relatív útvonalat:
-```console
-$ pwd
-/Users/labor
-
-$ cd Developer/
-$ pwd
-/Users/labor/Developer
-
-$ cd NEPTUN/labor_01/
-$ pwd
-/Users/labor/Developer/NEPTUN/labor_01/
-```
-
-Amennyiben a jelenlegi könyvtárunk szülőjét szeretnénk elérni, akkor a következő parancsra lesz szükségünk:
-```console
-$ cd ..
-```
-
----
-
-*A parancsokat és azok paramétereit a legtöbb esetben **nem szükséges teljes egészében begépelni**: például a `cd` használatakor az útvonal megadásánál kezdjük el pötyögni a célpont első néhány karakterét majd nyomjuk le a `Tab`ot, hogy a Terminal kiegészítse az útvonal többi részét. **Általánosan igaz, hogy a `Tab` segítségével ajánlásokat, kiegészítéseket kaphatunk a Terminal használatakor**, nagyban megkönnyítve ezzel munkánkat.*
-
----
-
-Lehetőségünk van a gyökérkönyvtártól induló abszolút útvonalat is megadni:
-```console
-$ cd /Users/labor/Downloads/
-
-$ pwd
-/Users/labor/Downloads/
-```
-Természetesen ilyenkor nem számít, hogy mi volt a jelenlegi munkakönyvtárunk.
-
-![](img/03_cd.png)
-
-A home könyvtárat az alábbi paranccsal tudjuk elérni:
-```console
-$ cd ~
-```
-
-A jelenlegi munkakönyvtárunkra hivatkozni a `.` szimbólummal tudunk. Ezt például használhatjuk a munkakönyvtár Finderben való megnyitására:
-```console
-$ open .
-```
-
-### Fájlrendszer manipulálása <a id="filesystem_manipulation"></a>
-A fájlrendszer böngészése mellett lehetőségünk van a manipulálására: például új fájlokat, mappákat létrehozni, törölni. A következő szakaszban megnézzük, hogy pontosan hogyan is kell ezeket az egyszerűbb műveleteket végrehajtani.
-
-#### `mkdir` (make directory)
-Új mappát a jelenlegi munkakönyvtárunkba a `mkdir #könyvtárnév#` paranccsal tudunk készíteni. Például:
-```console
-$ mkdir my_own_dir
-$ ls
-my_own_dir
-```
-
-#### `touch`
-A `touch #fájlnév#` használatakor két eset lehetséges:
-1. ha paraméterként kapott **fájl már létezik**, akkor **frissíti az utolsó módosítás dátumát** az aktuális pillanatra,
-2. **amennyiben nem létezik a fájl**, abban az esetben **létrehoz egy üres fájlt a megadott névvel és kiterjesztéssel**.
-
-
----
-*A gyakorlatban legtöbbször új fájl készítésére használjuk.*
-
----
-
-Példa az alkalmazására:
-```console
-$ touch newfile.swift
-```
-
-#### `rm` (remove) és `rmdir` (remove dir)
-Az `rmdir #könyvtárnév#` parancs kiadásával **üres könyvtárakat** törölhetünk. Az `rm #fájlnév/könyvtárnév#` parancs segítségével (ahogy a paraméterein is látszik) fájlokat és könyvtárakat is törölhetünk. 
-
----
-
-Figyelem! Az `rm` parancs eredménye destruktív és vissza nem fordítható. (Nincs köztes `Trash`!)
-
----
-
-Példák a használatára:
-
-1. Üres könyvtár eltávolítása
-    ```console
-    $ rmdir my_own_dir
-    ```
-2. Fájl eltávolítása
-    ```console
-    $ rm newfile.swift
-    ```
-3. Könyvtár eltávolítása a tartalmazott fájlokkal és alkönyvtárakkal együtt (**teljes részfa eltávolítása**)
-    ```console
-    $ rm -rf my_own_dir
-    ```
----
-A kapcsolók jelentés a következő:
-* `-r`: rekurzív módon, tehát az adott könyvtár minden alkönyvtárat és fájljait is,
-* `-f`: (force) minden fájlt, írásvédettséget figyelmen kívül hagyva. Ilyenkor a felhasználótól sem kér semmilyen megerősítést.
-
-A kapcsolókat nem szükséges külön-külön megadni (tehát `-r -f`), gyakori, hogy összevonjuk őket (`-rf`).
-
----
-## Git alapismeretek <a id="git_tutorial"></a>
-A `git` egy nyílt forráskódú **elosztott verziókezelő rendszer**, amely segítségével **az aktuális munkakönyvtár állapotát nyomon tudjuk követni**. 
-
-### Verzió <a id="git_version"></a>
-A **verzió**t, mint fogalmat a következőképp kell elképzelni: az adott könyvtárban lévő fájlokról, valamint a benne lévő további könyvtárakról készítünk egy pillanatképet. Amennyiben tovább dolgozunk a könyvtárban, annak tartalmáról tetszőlegesen készíthetünk újabb snapshotokat. Egy-egy ilyen **elmentett állapot megfelel** a szóban forgó könyvtár és azok fájljainak egy **verziójának**. 
-
-### Verziókezelés <a id="git_version_control"></a>
-A `git` segítségével nyomon követhetjük a munkakönyvtár állapotainak előzményét: megtekinthetjük, hogy az egyes verziók során mely fájlokban és könyvtárakban milyen változások történtek, továbbá lehetővé teszi, hogy könnyedén visszaálljunk valamelyik korábbi verzióra. 
-
-<p align="center"> 
-<img src="img/10_git_parts.png" height="650">
-</p>
-
-### Elosztott rendszer <a id="git_distributed_system"></a>
-
-Egy verziókezelés alatt álló munkakönyvtárat (a továbbiakban: `(git) repository`) lehetőségünk van másokkal is megosztani, ekkor egyszerre több ember is végezhet rajta módosításokat. Ebben az esetben egy távoli szerveren (pl. [GitHub](https://github.com)) található az úgynevezett `remote repository`, melyről a fejlesztésbe újonnan bekapcsolódó felhasználók készítenek egy lokális másolatot (`local repository`). Ilyenkor a repository-ban található fájlokon felül a repository teljes előzménye is mentésre kerül. A felhasználók a saját `local repository`-jukat, a `remote repository` segítségével tarthatják szinkronban. 
-
-### Git felépítése <a id="git_parts"></a>
-
-Egy git projekt 3 fő komponensből áll:
-
-* *munkakönyvtár*,
-* *repository*,
-* *staging area*.
- 
-#### **Munakönyvtár**
-A munkakönyvtár azokat a fájlokat tartalmazza, amelyek módosításait nyomon szeretnénk követni. Ez lehet valamilyen projekt könyvtár (pl. Xcode projekt), de bármely a [Unix Fájlrendszer](#unix-filesystem) szakaszban ismertetett struktúra amin munkát (módosításokat) végzünk.
-
-#### **Repository**
-A projekt fájljainak nyomonkövetésére használt tároló, mely tartalmazza az összes `commit`ot. Egy `commit` tulajdonképpen a [Verzió](#git_version) bekezdésben bemutatott snapshotnak felel meg.
- 
-#### **Staging area**
-Itt készítjük össze egy commit tartalmát, azaz hogy mely változtatásokat szeretnénk egy snapshotba "csomagolni". Ezeket a változásokat automatikusan detektálja a staging area. A módosítások hozzáadását a staging areahoz `stage`-elésnek, eltávolítását `unstage`-elésnek nevezzük. Ha korábban már stage-elt, de nem commitolt fájlon módosítást hajtunk végre, akkor az új módosítás tartalmával a fájl újra `modified (vagy unstage-ed)` állapotba kerül. A stage-elt fájlokat ezután commitolhatjuk, így a változások bekerülnek egy snapshotba és ezzel együtt a lokális repository git előzményébe is. Ezután egy `push` művelettel tudjuk elérni, hogy ez megjelenjen a `remote repository`-ban is.
-
-<p align="center"> 
-<img src="img/04_basic_remote_workflow.png" height="700">
-</p>
-[(Kép forrása)](https://www.git-tower.com/learn/media/pages/git/ebook/en/command-line/remote-repositories/introduction/-1045933932-1566804922/basic-remote-workflow.png)
-
-## Git alapműveletei <a id="git_commands"></a>
-A következő alapvető parancsokat használhatjuk a `git` működtetéséhez valamelyik Terminal (`iTerm` vagy `Terminal`) alkalmazás segítségével. Elérhető több alkalmazás is amellyel parancsírás helyett vizuálisan navigálhatunk, pl.: `GitKraken` vagy `SourceTree`. A laborok során a parancssoros kezelést fogjuk használni, mivel csak az egyszerűbb `git` műveletekre lesz szükségünk.
- 
-#### Konfiguráció
-```console
-$ git config --global user.name <name>
-$ git config --global user.email <email_address>
-```
-> A fenti parancsokkal beállíthatjuk számítógépünkhoz `git` felhasználónkat.
-
-```console
-$ git init
-```
-> Létrehoz egy új *repository*-t.
-
-
-#### Státusz
-```
-git status
-```
-> Ellenőrizhetjük a `git` jelenlegi állapotát: láthatjuk, hogy mely fájlok módosultak, melyek vannak *staging area*-n, stb.
-
-
-#### Fájlok hozzáadása a staging area-hoz
-```console
-$ git add .
-```
-> Minden módosított fájlt hozzáad a *commit*hoz. A pont helyett többféle módon is befejezhető a parancs. Erről hivatalos dokumentációkban könnyen lehet információt találni.
-
-
-#### Commit
-```console
-$ git commit -m "Add comment of changes"
-```
-> A *staging area*-ban lévő változások bekerülnek a lokális repo-ba. Fontos, hogy figyeljünk a helyes komment írására, mivel zavaró lehet a csoportos munka esetén az eltérő kommentelési konvenció. Javasolt például a következő, ahol mentálisan odaképzeljük a commit message elejére, hogy *This commit will...*: *Implement changes of TestViewController*.
-
-#### Push
-```console
-$ git push
-```
->  Lokális változásaink felkerülnek a *remote repository*-ba. Ezután mindenki hozzáfér a módosításokhoz.
-
-
-#### Fetch
-```console
-$ git fetch
-```
->  A remote-ban történt változásokat letölthetjük lokális reponkba. **DE nem alkalmazzuk ezeket még a saját munkakönyvtárunknak, csak a változások tényét és mibenlétét töltjük le!**
-
-
-#### Pull
-```console
-$ git pull
-```
-> A lokális munkakönyvtárba betölti az összes távoli módosítást. Ezután egy `merge commit` jön létre, amely tartalmazza az összes új módosítást.
-
-<p align="center"> 
-<img src="img/11_git_stages.png" height="500">
-</p>
-[(Kép forrása)](http://blog.podrezo.com/wp-content/uploads/2014/09/git-operations.png)
-
-#### Változások ellenőrzése
-```console
-$ git status
-$ git diff <file>
-```
-> Fontos, hogy  `pull` után mindig ellenőrizzük a státuszt, mert `conflict` keletkezhet a fájlok között ha olyat módosítottál lokálisan, amit más is módosított. Az összeütközött fájlokat a `git status` pirossal jelzi és az eltérést `git diff`-fel ellenőrizhetjük. A konfliktust fel kell oldani azzal, hogy kitöröljük a fájlből a nem oda illő részeket. A hibák feloldása után a lehúzott részeket commitolnunk kell (`merge commit`). 
-
-
-#### Clone
-```console
-$ git clone
-```
-> Egy teljes, távoli *repo*-t tölthetünk le. Ezzel tudjuk a `GitHub`-on lévő repository-jainkat lokális repoként hozzáadni a könyvtárainkhoz. 
-
-### További segédletek <a id="git_readings"></a>
-Fontos, hogy minél alaposabban ismerjük a `git `működését, mivel ez elengedhetetlen minden munkahelyi környezetben.
-Az alábbi linkeken további segédletek találhatóak:
-
-* [https://nvie.com/posts/a-successful-git-branching-model](https://nvie.com/posts/a-successful-git-branching-model/)
-* [https://tutorialzine.com/2016/06/learn-git-in-30-minutes](https://tutorialzine.com/2016/06/learn-git-in-30-minutes)
-* [https://www.atlassian.com/git/](https://www.atlassian.com/git/)
-* [https://www.katacoda.com/courses/git](https://www.katacoda.com/courses/git)
-* [https://learngitbranching.js.org](https://learngitbranching.js.org)
-
-## Swift kód fordítása és futtatása Terminalbol <a id="swift_compile_terminal"></a>
-A következő laborok során `Swift` kód fordítására az `Xcode` fejlesztőkörnyeztet fogjuk használni, a lefordított binárisokat `Playgroundban` vagy az `iOS Simulatoron` futtatjuk majd, azonban a mai labor alkalmával a *Terminal* segítségével fogjuk ezt végrehajtani. A `Swift` nyelv nyílt forráskódú, bármilyen operációs rendszerre lehet telepíteni, az iOS alkalmazások fejlesztéséhez szükséges függőségek azonban csak macOS-re érhetők el. 
-
-#### Akutális Swift verzió ellenőrzése
-A gépen telepített aktuális Swift verzióját az alábbi módon tudjuk ellenőrizni:
-```console
-$ swift --version
-```
-
-### Hello world <a id="hello_world"></a>
-**Készítsük el első programunkat, amely egy hello world lesz!** 
-
-Nyissuk meg az `iTerm` alkalmazást, majd navigáljunk a Developer könyvtárba.
-```console
-$ cd Developer
-```
-Készítsünk egy új könyvtárat `lab01` néven és navigáljunk bele.
-```console
-$ mkdir lab01
-$ cd lab01
-```
-Következő lépésben hozzuk létre a `hello.swift` fájlt, majd nyissuk meg:
-```console
-$ touch hello.swift
-$ open hello.swift
-```
-
-A fájlba hozzunk létre egy függvényt, `helloWorld` néven. Swiftben a konzolra a `print()`meghívásával tudunk írni, ezek alapján a függvénytörzs a következőképp alakul:
-```swift
-// hello.swift
-
-func helloWorld() {
-    print("Hello World")
-}
-```
-Mentsük el a fájlt:  ⌘+S,
-
-Hozzunk létre egy újabb fájlt, ami a programunkat fogja reprezentálni, ebben fogjuk meghívni az előbb deklarált függvényt.
-```console
-$ touch main.swift
-$ open main.swift
-```
-
-Először készítünk egy függvényt, ami az alkalmazás indulásakor fog lefutni ez lesz a `start()`, a törzsében meghívjuk a `helloWorld()` függvényt. Végezetül a fájl utolsó sorában, az osztályon kívül meghívjuk a `start`ot.
+> Hozzunk létre egy új, **GameCharacter** nevű osztályt, mely egy *játékos* adatait zárja egységbe.
 
 ```swift
-// main.swift
-
-func start() {
-    helloWorld()
+class GameCharacter {
+  var name: String
+  var level: Int
 }
-start()
 ```
 
-Végezetül mentsük el a fájlt: ⌘+S,
+Hibát kapunk, mert az osztálynak nincs minden property-je inicializálva. A `Swift` fordító kötelezően előírja, hogy az osztály példányosításakor minden property inicializálva legyen. (`struct`ok esetén nem kapnánk hibát a [*memberwise initializer*](https://docs.swift.org/swift-book/LanguageGuide/Initialization.html) miatt.)
 
-### Fordítás menete, futtatás <a id="compiling_running"></a>
-A program futtatásához elsőnek le kell fordítani a Swift fordító használatával a két fájlt.
-```console
-$ swiftc hello.swift main.swift -o lab01_hello_world
-```
-A parancs lefordítja a `hello.swift` és a `main.swift` fájlokat is egyaránt, összelinkeli és a fordítás eredménye a `lab_01_hello_world` futtatható állomány lesz
+> Hozzunk létre egy új inicializálót az osztályban, mely bekéri a karakter nevét és szintjét.
 
-Utolsó lépésként futtassuk a fordítás kimenetét:
-```console
-$ ./lab01_hello_world
-Hello World
+```swift
+init(name: String, level: Int) {
+  self.name = name
+  self.level = level
+}
 ```
+
+Fontos kiemelni, hogy a `self` általában elhagyható, azonban itt most mind az inicializáló paramétereinek, mind az osztály property-jeinek ugyanaz a neve, ezért muszáj kiírni, ha a property-kre szeretnénk hivatkozni!
+
+> Hozzunk létre egy új hőst a `GameCharacter` osztály példányosításával, az osztály scope-ján kívül.
+
+```swift
+let hero1 = GameCharacter(name: "Force Chainer", level: 1)
+```
+
+> Figyeljük meg a következőket.
+
+* inicializálók és függvények hívásánál alapesetben minden paraméter nevét ki kell írni
+* mivel `hero1`-et `let`tel definiáltuk, ez egy _konstans_ és nem változtatható az értéke (azonban a hivatkozott objektumnak ettől még módosíthatjuk a property-jeit)
+* `⌥+Click`kel vizsgáljuk meg `hero1` típusát, láthatjuk, hogy a `type inference`-nek köszönhetően egy `GameCharacter` típusú változót kaptunk
+
+A `Swift` **statikusan típusos nyelv:** minden változónak van típusa és a definiálásuk után ez a típus nem is változhat. A változók típusát azonban a legtöbb esetben nem kötelező explicit megadni, mert a fordító kitalálja a változó/konstans kezdeti értékéből. Ezt a mechanizmust hívjuk **`type inference`**-nek.
+
+### Opcionális értékek (`Optional`ök) és a `failable initializer` <a id="optionals-and-failable-init"></a>
+> Módosítsuk az inicializálót oly módon, hogy ha a megadott szint nem esik értelmes határok közé, akkor ne jöjjön létre az objektum (vagyis térjünk vissza `nil`el). Ezt a mechanizmus (vagyis, hogy `init?`-el definiálunk egy inicializálót) `failable initializer`nek nevezik.
+
+```swift
+init?(name: String, level: Int) {
+  if level < 0 || level >= 100 {
+      return nil
+  }
+
+  self.name = name
+  self.level = level
+}
+```
+
+> Nézzük meg, hogy mi történik, ha rossz értéket adunk meg a példányosításkor!
+
+```swift
+let hero1 = GameCharacter(name: "Force Chainer", level: -2)
+```
+
+- `⌥+Click`el megnézve `hero1` típusa már nem `GameCharacter`, hanem `GameCharacter?` vagyis egy `GameCharacter` **Optional**
+- `nil`t kapunk vissza értékül
+
+> Állítsuk vissza `hero1`-nél az inicializálónál használt "szintet" egy érvényes értékre!
+
+```swift
+let hero1 = GameCharacter(name: "Force Chainer", level: 0)
+```
+
+> Hozzunk létre még egy hőst és próbáljuk meg módosítani egy property-jét!
+
+```swift
+let hero2 = GameCharacter(name: "Wrap Binder", level: 3)
+hero2.level = 30 // HIBA
+```
+
+A hiba oka, hogy opcionális típusokon közvetlenül nem hívhatjuk meg a becsomagolt objektum műveleteit, csak ha előtte "kicsomagoljuk" őket!
+
+Ezt többféleképpen is megtehetjük.
+
+#### `Force unwrap`
+Mindig ellenőrizzük le az `Optional` tartalmát a `!`: `force unwrap` operátor használata előtt!
+
+```swift
+if hero2 != nil {
+  hero2!.level = 30
+}
+```
+
+Ha `nil` értékű `Optional`t próbálunk kicsomagolni, az alkalmazás el fog szállni!
+
+#### `Optional chaining`
+`?`: `Optional chaining`, ha `hero2` `nil`, akkor nem hajtódik végre a művelet.
+
+```swift
+hero2?.level = 30
+```
+
+#### `Optional Binding`
+##### `if let`
+
+```swift
+if let unwrappedHero = hero2 {
+  unwrappedHero.level = 30
+}
+```
+
+##### `guard let`
+
+```swift
+guard let unwrappedHero = hero2 else { return }
+unwrappedHero.level = 30
+```
+
+### Generikus tárolók, metódusok és osztályhierarchiák <a id="gen"></a>
+> Hozzunk létre egy `Team` nevű osztályt, mely egy _csapatnyi játékost_ gyűjt össze!
+
+```swift
+class Team {
+  private var members = [GameCharacter]()
+
+  func add(_ member: GameCharacter) {
+    members.append(member)
+  }
+}
+```
+
+* A csapatba tartozó karaktereket a `members` property tárolja, melynek típusa `[GameCharacter]` vagyis egy tömb, mely `GameCharacter` példányokat tartalmaz. Ennek a property-nek kezdeti értéket adunk: egy üres tömböt.
+* Az `add(_ member:)` metódus felvesz egy új karaktert a csapatba.
+* Ha egy osztály minden változójának adunk egy kezdeti értéket és emellett egyetlen `init` függvényt sem írunk, a `Swift` _default initializer_ t hoz létre.
+
+*A `private` láthatóság `Swift 4`-től kezdve azt jelenti, hogy csak az adott __scope-on belül__ (enclosing declaration) és annak **ugyanabban a fájlban található extensionjeiben** érhető el az így megjelölt elem. (`Swift 2`-ben még az adott __forrásfájlban__, `Swift 3`-ban pedig csak az adott scope-on belül volt érhető. A `Swift 2`-es jelentésre `Swift 3`-ban megjelent az új, `fileprivate` kulcsszó.*)
+
+> Private access restricts the use of an entity to the enclosing declaration, and to extensions of that declaration that are in the same file. Use private access to hide the implementation details of a specific piece of functionality when those details are used only within a single declaration. ([Access Control](https://developer.apple.com/library/content/documentation/Swift/Conceptual/Swift_Programming_Language/AccessControl.html))
+<!--  -->
+
+> Csináljunk egy csapatot és adjuk hozzá a hőseinket! 
+*Figyeljük meg, hogy itt is `optional force unwrap`-et használunk, mivel az `add` metódus nem `optional` paramétert vár.*
+
+```swift
+let heroes = Team()
+heroes.add(hero1!)
+heroes.add(hero2!)
+```
+
+> Készítsünk egy metódust a *Team* osztályban, mely végigiterál a csapaton és kiírja a nevüket!
+
+```swift
+func printMembers() {
+  for member in members {
+    print(member.name)
+  }
+}
+```
+
+```swift
+heroes.printMembers()
+```
+
+A `Swift` funkcionális programozási elemeit kihasználva a fenti függvényt így is írhattuk volna:
+
+```swift
+func printMembers() {
+  members.forEach { print($0.name) }
+}
+```
+
+> Hozzunk létre a `Team`-ben egy új metódus, mely megmondja, hogy egy adott karakter tagja-e a csapatnak!
+
+```swift
+func has(member: GameCharacter) -> Bool {
+  return members.contains { $0 == member }
+}
+```
+
+Fordítási hibát fogunk kapni. A probléma az, hogy a `contains(where:)` függvény működéséhez szükség van arra, hogy a tömb elemeiről el lehessen dönteni, hogy (érték szerint) azonosak-e vagy sem. A `GameCharacter` osztályunk azonban jelenleg erre még nem képes. Azonosság eldöntésére `Swift`ben az `==` (*equal to*) operátort használják a `Swift Standard Library` függvényei (többek között a `contains(where:)` is). Az `==` operátort egy megfelelő szintaktikájú globális függvény megvalósításával lehet definiálni, ezt írja elő az `Equatable` protokoll: `func ==(lhs: GameCharacter, rhs: GameCharacter) -> Bool`
+
+A `===` operátor az azonosság (*identity*) operátor, mely akkor tér vissza igaz értékkel, ha az összehasonlított két érték ténylegesen ugyanaz az objektum.
+
+Esetünkben lényegében referencia szerinti azonosságot szeretnénk vizsgálni (vagyis két játékos akkor azonos, ha tényleges ugyanarról az objektumról beszélünk). Ilyen esetekben az egyik legegyszerűbb megoldás, ha leszármaztatjuk az osztályt `NSObject`ből, mely alapból tartalmazza ezt a viselkedést.
+
+```swift
+class GameCharacter: NSObject {...}
+```
+
+Továbbá az inicializálóban a saját property-k beállítása után hívjuk meg az ősosztály (`NSObject`) konstruktorát is ([two-phase initialization](https://docs.swift.org/swift-book/LanguageGuide/Initialization.html#ID216)).
+
+```swift
+init?(name: String, level: Int) {
+  if level < 0 || level >= 100 {
+    return nil
+  }
+
+  self.name = name
+  self.level = level
+
+  super.init()
+}
+```
+
+Az `NSObject` a `Foundation` framework alaposztálya. `Objective-C`-ben minden osztálynak ebből kell származnia (legalább közvetett módon). `Swift`ben ez már nem kötelező, de később látni fogjuk, hogy sok `API`-nál elvárás, hogy valamilyen `NSObject` leszármazott osztályú objektummal dolgozzon, ezért viszonylag ritkán fogunk olyan osztályokat látni, melyeknek nem kell szerepelniük az `NSObject` öröklési hierarchiájában.
+
+> Most már kipróbálhatjuk, hogy az `has(member:)` metódust!
+
+```swift
+if heroes.has(member: hero1!) {
+  print("\(hero1!.name) a csapatban van!")
+}
+```
+
+> Vegyünk fel egy új property-t a `GameCharacter`hez a karakterek életerejének tárolására és inicializáljuk `100`-ra!
+
+```swift
+var healthPoint = 100
+```
+
+> Ezen felül készítsünk egy **`computed property`**-t, mely gyorsan megadja, hogy a karakter még az élők sorát gazdagítja-e!
+
+```swift
+var isDead: Bool {
+  get {
+    return healthPoint <= 0
+  }
+}
+```
+
+Érdemes megjegyezni, hogy ha csak gettert írunk egy `computed property`-hez, akkor még a `get` is elhagyható.
+
+```swift
+var isDead: Bool {
+  return healthPoint <= 0
+}
+```
+
+> Definiáljunk egy `computed property`-t, mely visszatér a karakter "támadóerejével". Ezt számítsuk a karakter szintje alapján!
+
+```swift
+var power: Int {
+  return level * 10
+}
+```
+
+### Öröklés és Castolás <a id="orokles-es-castolas"></a>
+> Hozzunk létre egy `Hero` nevű osztályt, mely `GameCharacter`ből származik. `Hero` egy olyan *karakter*, akinél __lehet__ egy fegyver (de nem minden esetben van). A fegyvert egy `enum`mal jelképezzük!
+
+```swift
+class Hero: GameCharacter {
+  enum WeaponType {
+    case laserCannon
+    case spoon
+  }
+
+  var weapon: WeaponType?
+}
+```
+
+Nyilván azok a hősök, melyeknél fegyver van, nagyobb támadóerővel rendelkeznek.
+> Definiáljuk felül a `GameCharacter` ősosztály `power` property-jét!
+
+```swift
+override var power: Int {
+  var extraPower = 0
+  if let unwrappedWeapon = weapon {
+    switch unwrappedWeapon {
+    case .laserCannon:
+      extraPower = 100
+    case .spoon:
+      extraPower = 1
+    }
+  }
+  return super.power + extraPower
+}
+```
+
+`Swift`ben a metódusok és a property-k (legyen akár `stored` akár `computed` property) egyaránt felüldefiniáhatók a leszármazott osztályokban (kivéve ha `final`ként vannak megjelölve). Felüldefiniáláskor azonban az `override` kulcsszó kiírása kötelező.
+
+### Protokollok <a id="protokollok"></a>
+> Írjunk egy protokollt (más nyelvekben interfész), mely tartalmazza a "harcoláshoz" szükséges metódus és property sablonokat. Lényegében azt szeretnénk elérni, hogy minden olyan osztály, mely megvalósítja ezt a protokollt, részt vehessen egy csatában. Valamint készítsünk elő egy metódust, amivel a karakternek ki tudjuk írni az aktuális életét.
+
+```swift
+protocol Fightable {
+    var isDead: Bool { get }
+    var power: Int { get }
+    var name: String { get }
+
+    func takeDamage(from enemy: Fightable)
+    func printHealth()
+}
+```
+
+> Valósítsuk meg a `Fightable` protokollt `GameCharacter` osztállyal egy `extension`ben!
+
+```swift
+extension GameCharacter: Fightable {}
+```
+
+Hibát kapunk, mert még nem definiáltuk a protokollban felsorolt összes metódust vagy property-t. Ténylegesen csak a `takeDamage(from:)` és a `printHealth()` metódus hiányzik.
+
+> Implementáljuk a `takeDamage(from:)` metódust!
+
+```swift
+extension GameCharacter: Fightable {
+  func takeDamage(from enemy: Fightable) {
+    print("\(name) took \(enemy.power) damages from \(enemy.name)")
+    healthPoint -= enemy.power
+  }
+}
+```
+
+> Implementáljuk a `printHealth()` metódust!
+
+```swift
+extension GameCharacter: Fightable {
+  
+  ...
+
+  func printHealth() {
+      print("\(name): \(healthPoint) ❤️ \n")
+  }
+}
+```
+
+### A `Swift` erősen típusos (`strongly typed`) nyelv <a id="strongly-typed"></a>
+> Módosítsuk a `takeDamage(from:)` metódust oly módon, hogy kisorsolunk egy véletlen `%` értéket (`10%` és `100%` között) és ezzel megszorozzuk a támadó erejét.
+
+```swift
+func takeDamage(from enemy: Fightable) {
+  print("\(name) took \(enemy.power) damages from \(enemy.name)")
+
+  let attackRating = Double.random(in: 0...10) / 10
+  healthPoint -= Int(Double(enemy.power) * attackRating)
+}
+```
+
+`Swift`ben alapesetben csak azonos típusú objektumokon lehet műveleteket végezni, ezt hívjuk **erős típusosság**nak. Minden olyan esetben, mikor eltérő típusú objektumokat próbálunk kombinálni vagy rajtuk valamilyen operátort használni, explicit konvertálással (pl. `Double(someVar)`) azonos típusra kell hoznunk őket. 
+Mindez még az eltérő bitszámú vagy nemnegatív/előjeles egész számokra is igaz, tehát pl. `UInt32` és `Int` típusok között is konvertálni kell!
+
 ## Önálló feladatok <a id="onallo"></a>
 
-### Git gyakorlás <a id="git_self_test"></a>
-Próbáljuk ki a git alapműveleteit.
-- [init, status, add, commit](https://www.katacoda.com/courses/git/1)
+> Írjunk egy `Arena` nevű osztályt, amivel egy küzdelmet tudunk szimulálni. Az osztály inicializálásakor paraméterként adjuk át a játékosokat, akik később megmérkőznek egymással.
 
-### **1. Feladat** <a id="1st_task"></a>
-Készítsünk Terminal alkalmazást, amely a következő ábrát rajzolja ki:
-```
- 0 
-
- 0  1 
-
- 0  1  2 
-
- 0  1  2  3 
-
- 0  1  2  3  4 
-
- 0  1  2  3  4  5 
-
- 0  1  2  3  4  5  6 
-
- 0  1  2  3  4  5  6  7 
-
- 0  1  2  3  4  5  6  7  8 
-
- 0  1  2  3  4  5  6  7  8  9 
-
- 0  1  2  3  4  5  6  7  8  9  10 
-
- 0  1  2  3  4  5  6  7  8  9  10  11 
-
- 0  1  2  3  4  5  6  7  8  9  10  11  12 
-
- 0  1  2  3  4  5  6  7  8  9  10  11  12  13 
-
- 0  1  2  3  4  5  6  7  8  9  10  11  12  13  14 
-
- 0  1  2  3  4  5  6  7  8  9  10  11  12  13  14  15 
-
- 0  1  2  3  4  5  6  7  8  9  10  11  12  13  14  15  16 
-
- 0  1  2  3  4  5  6  7  8  9  10  11  12  13  14  15  16  17 
-
- 0  1  2  3  4  5  6  7  8  9  10  11  12  13  14  15  16  17  18 
-
- 0  1  2  3  4  5  6  7  8  9  10  11  12  13  14  15  16  17  18  19 
-
- 0  1  2  3  4  5  6  7  8  9  10  11  12  13  14  15  16  17  18  19  20 
-```
-A megoldás során ciklusokat és a `print()` függvényt használjuk.
-
-> Tipp: A `print()` függvénynek megadható, hogy milyen karakter legyen a sor végén. Ez alapból a sortörtés (`\n`), de ez megváltoztatható, és megadható neki paraméterként is a következőképp: `print(#kiírandó szöveg#, terminator: #termináló karakter#)`
-
-A fájl neve legyen: `feladat_01.swift`, a kirajzolást végző függvény neve pedig: `draw()` Hívjuk meg az előbbi feladat során létrehozott, `main.swift` fájl `start()` függvényében:
 ```swift
-// main.swift
-func start(){
-    helloWorld()
-    draw()
-}
+class Arena {
+    var players: [Fightable]
 
-start()
-
-```
-**Ne felejtsük el újra lefordítani az újonnan létrehozott fájlt, valamint az előzőekben készített fájlokat is!**
-
-### **2. Feladat:** Emojifier <a id="2nd_task"></a>
-Készítsünk Terminal alkalmazást, amely beolvas a felhasználótól egy angol szót és ha a szó megegyezik az alábbiak közül bármelyikkel, kicseréli azt a megfelelő emojira, különben pedig visszaadja magát az inputot:
-
-* apple: 🍎
-* dog: 🐶
-* eye: 👀
-* pizza: 🍕
-* bear: 🐻
-
-Az emojivá alakítást végző függvény kerüljön a `feladat_02.swift` fájlba, a függvény fejléce a következőképp nézzen ki:
-```swift
-// feladat_02.swift
-
-func emojify(from: String) -> String
-```
-Kelleni fog még egy függvény, ami a felhasználótól beolvassa a transzformálandó szót és végrehajtja rajta az átalakítást:
-```swift
-// feladat_02.swift
-//...
-func convertInput() {
-    print("Give me the word: ")
-   if let inputWord = readLine() {
-       //TODO: szó átalakítása és kiírása a kimenetre
-   } else {
-       print("Input error! ❌")
-   } 
+    init(with players: [Fightable]) {
+        self.players = players
+    }
 }
 ```
 
-Az első feladathoz hasonlóan hívjuk meg a main.swift fájl `start()` függvényében a `convertInput()` metódust.
+> Írjunk egy `startBrawl()` metódust Az `Arena` osztályban, amivel egy *battle royal* stílusú kört le tudunk játszani, tehát addig tartson, amíg már csak egy ember nem él.
 
 ```swift
-// main.swift
-func start(){
-    helloWorld()
-    draw()
-    convertInput()
-}
+    func startBrawl() {
+        while players.count > 1 {            
+            // Keverjük össze a tömb elemeit, hogy összecsapásonként más legyen az első és utolsó elem.
+            players.shuffle()
+            if let firstPlayer = players.first, let secondPlayer = players.last {
+                // Az egyik játékos kapjon ütést a másiktól és írjuk ki az életét utána.
+                firstPlayer.takeDamage(from: secondPlayer)
+                firstPlayer.printHealth()
 
-start()
+                // Ha az ütést kapott karakter meghalt, akkor töröljük a listából.
+                if firstPlayer.isDead {
+                   print("☠️ \(firstPlayer.name) died. ☠️")
+                   players.removeFirst()
+                }
+            }
+        }
 
+        // Ha már csak a győztes szerepel a játékosok között, akkor írjuk ki a nevét.
+        if players.count == 1, let winner = players.first {
+            print("👑 The winner is \(winner.name)! 👑")
+        }
+    }
 ```
 
-**Ne felejtsük el újra lefordítani az újonnan létrehozott fájlt, valamint az előzőekben készített fájlokat is!**
+Hozzunk létre néhány játékost és arénát, majd indítsunk egy játékot.
 
 ## Szorgalmi feladatok <a id="szorgalmi"></a>
 
-### **Celsius ↔ Fahrenheit** <a id="celsius_task"></a>
-Készítsünk egy folyamatosan futó, interaktív Terminal alkalmazást, amely bemenetén vár egy Celsiusban megadott értéket, átkonvertálja, majd az eredményt kiírja a kimenetre.
-A konverziós logikát, valamint a ciklikus beolvasás megvalósítását a `feladat_03.swift` fájlba implementáljuk, az alábbiak szerint:
+> Hogy lássuk a harc lefolyását lépésenként, tegyünk be egy késleltetést a megfelelő helyre a `sleep(:)` metódus segítségével.
 
-```swift
-// feladat_03.swift
-func startConversion() {
-    // TODO: Ciklikus olvasás + konverzió
-}
+> Írjunk egy `Monster` nevű osztályt, mely megvalósítja a `Fightable` protokollt! A `Monster`rel szemben támasztott elvárásaink a következőek:
 
-func convert(celsius: Double) -> Double {
-    // TODO: Konvertálási logika implementálása
-}
-```
+> * Rendelkezzen egy `name` property-vel.
+> * Rendelkezzen egy egész szám típusú `headCount` property-vel, mely a szörny, még meglévő fejeinek számát reprezentálja.
+> * Támadóereje (`power`) mindig az aktuális fejeinek száma szorozva `20`-al.
+> * Ha támadás éri, akkor 50% eséllyel elveszt egy fejet.
+> * Életpontok kiírása helyett, a fejének számát írjuk ki.
+> * Akkor hal meg a szörny ha már egy feje sem marad.
 
-A `main.swift` fájl tartalma a következőképp alakul:
+---
 
-```swift
-// main.swift
-func start(){
-    helloWorld()
-    draw()
-    convertInput()
-    startConversion()
-}
+*Véletlen számok generálásához használjuk az `T.random(in: Range<T>)` függvényt, mely a [megadott intervallumban](https://developer.apple.com/documentation/swift/range) fog visszaadni véletlen `T` típusú számokat.*
 
-start()
-```
+---
 
-A feladat megoldása során figyeljünk, hogy hibás bemenet esetén ne álljon le a program futása. Ilyen esetben az előző feladattal megegyező módon kezeljük a hibás esetet. 
+> Játsszunk le néhány ütkezetet különböző `Monster` és `Hero` példányok között!
 
-**Ne felejtsük el újra lefordítani az újonnan létrehozott fájlt, valamint az előzőekben készített fájlokat is!**
-
-## Labor feltöltése GitHub-ra <a id="git_upload"></a>
-A labor elvégzése csak akkor lehet sikeres, ha a kész feladatot feltöltöttük `GitHub`ra. Az alábbi leírás ebben fog segíteni.
-
-### Előkészítés
-Nyissuk meg az `iTerm` alkalmazást és navigáljunk el (`cd`) a `/Users/labor/Developer/` mappánkba. *(A mappa drag-and-drop-olása az alkalmazásba automatikusan beírja a könyvtár elérési útvonalát.)*
-
-### Repository klónozása
-Nyissuk meg a `GitHub`ot a `Safari`val majd tegyük vágólapra a repository URL-jét. A megfelelő könyvtárban álló `iTerm`-be írjuk be az alábbi parancsot írásjelek nélkül az előbb vágólapra helyezett URL-el:
-```console
-$ git clone <repository_url>
-```
-> Ezután láthatjuk, hogy a mappánkban megjelentek a *repository*-ban lévő tartalmak. 
-
-### Fájlok hozzáadása
-Nyissuk meg a *repository*-t tartalmazó mappát a `Finder`ben és az órán elkészített feladat fájljait másoljuk be ide a `lab01` mappából.
-
-### Labor feltöltése
-Ha minden fájlt bemásoltunk a megfelelő helyre, akkor váltsunk vissza az `iTerm`re, majd írjuk be az alábbi parancsokat:
-```console
-$ git add .
-```
-> Ezzel tudjuk *stage*-elni a fájlainkat, azaz beállíthatjuk a fájlok elérési útvonalát a következő commitnak.
-
-```console
-$ git commit -m "Upload files of labor 1"
-```
-> Így tudjuk a változtatásokat a *lokális git repository*-nkba feltölteni.
-
-```console
-$ git push
-```
-> A parancs lefutása után felkerülnek a *remote repository*-ba is a lokális változtatások. Ellenőrizzük le, hogy a `GitHub`on látjuk-e a repository-nkban a `labor_01` mappán belül a létrehozott `Swift` fájlokat!
-
-Fontos az előbbi lépések és a `git` kezelésnek alapos ismerete, mert mind a laborok, mind a házi feladat leadása ezen keresztül történik. Nem megfelelő tudás esetén kötelezően ajánlott a fentebb leírt [Git alapismeretek](#git_tutorial) és [ajánlott linkek](#git_readings) tanulmányozása, vagy segítség kérése a laborvezetőktől.
+![](img/01_macskafogo.png)
 
 ## A laborsegédletet összeállította
-
-* Zoller Péter - zoller.peter@autsoft.hu
+* Kántor Tibor
 * Varga Domonkos - varga.domonkos@autsoft.hu
-* Krassay Péter - peter.krassay@autsoft.hu
+* Kelényi Imre
