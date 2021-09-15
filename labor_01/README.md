@@ -74,7 +74,7 @@ Korábban a Mac-es egerek egygombosak voltak, a `⌃+klikkel` lehetett az altern
 ### Unix gyökerek <a id="unix-gyokerek"></a>
 A `macOS` (korábban `OS X`, `Mac OS`) egy Unix (BSD) alapú operációs rendszer. A Unix-os alapokat teljesen elfedi a GUI és az Apple saját alkalmazásai.
 
-Minden felhasználónak (esetünkben a `labor` nevű usernek) van egy home könyvtára (`/Users/labor`). Az itt található `Developer` mappába fogjuk a labor során a projekteket és egyéb fájljainkat tárolni.
+Minden felhasználónak (esetünkben a `student` nevű usernek) van egy home könyvtára (`/Users/student`). Az itt található `Developer` mappába fogjuk a labor során a projekteket és egyéb fájljainkat tárolni.
 
 <p align="center"> 
 <span align="center" style="color:red; font-size:16pt"> A labor gépeken egy automatizált rendszer minden bejelentkezéskor törli a felhasználóhoz tartozó könyvtárakat, ezért a labor alatt ne indítsuk újra a gépet és ne jelentkezzünk ki, csak a megoldás bemutatása után!</span>
@@ -97,7 +97,7 @@ Alap fájlkezelő: *Finder*, hasonlóan működik mint Windows intéző.
 Külső USB eszköz csatlakoztatás után a `/Volumes/` mappába mountolódik automatikusan. A *Finder*ben és bárhol a standard fájlkezelő dialógusoknál a bal szélső gyorsmenüből a `Devices` részben érhetők el, de a `Desktop`on is megjelenik hozzájuk egy-egy ikon. Az USB-s eszközöket a kihúzás előtt unmountolni kell. (*Finder*ben a bal szélső menüben, az USB eszköz előtti kis "eject" ikon, vagy pedig jobb klikk után "Unmount". További lehetőség még az asztalon az USB-s eszközt a `Trash`-be húzni.)
 
 ## `Swift` alapismeretek <a id="swift-alapismeretek"></a>
-> Hozzunk létre egy új `Labor2.playground` fájlt a `labor_02` mappán belül!
+> Hozzunk létre egy új `Labor1.playground` fájlt a `student\Developer\labor_01` mappán belül!
 
 A `playground` egy interaktív fejlesztőkörnyezet, melyben minden sor/kifejezés értéke automatikusan kiértékelődik és megjelenik a jobb szélső panelen. Bár úgy tűnhet mintha egy interpretált nyelvvel dolgoznánk, valójában minden módosítás után újrafordul a teljes `playground`. A stabil futás és gyorsabb teljesítmény érdekében most kapcsoljuk ki az automatikus fordítást, mert ekkor félregépelés vagy hiányos implementáció esetén is elkezdhet fordulni, ami hibát fog eredményezni, valamint lassíthatja az `Xcode`-ot.
 
