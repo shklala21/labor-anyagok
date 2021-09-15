@@ -1,6 +1,12 @@
 # `iOS` alapú szoftverfejlesztés - Labor `01`
 
 ## A labor témája
+- [Bemutatkozás](#bemutatkozas)
+- [`macOS` felhasználói alapismeretek](#mac_knowings)
+    - [Billentyűzet](#billentyuzet)
+    - [Egér](#eger)
+    - [Unix gyökerek](#unix-gyokerek)
+    - [Fájlkezelés](#fajlkezeles)
 * [`Swift` alapismeretek](#swift-alapismeretek)
     * [Osztályok definiálása és példányosítása](#osztalyok-def-es-peld)
     * [`Optional`ök és a `failable initializer`](#optionals-and-failable-init)
@@ -18,6 +24,77 @@
 ### *Style guide*
 * Egy lehetséges *style guide* és kódolólási konvenció szabályzat (nem szentírás!): [The Official raywenderlich.com Swift Style Guide](https://github.com/raywenderlich/swift-style-guide)
 * Folyamatban van egy hivatalos style guide és formatter kidolgozása is, egyelőre még tervezés alatt: [SE-0250](https://github.com/apple/swift-evolution/blob/master/proposals/0250-swift-style-guide-and-formatter.md)
+
+## Bemutatkozás <a id="bemutatkozas"></a>
+* A laborok `60%`-án kötelező a részvétel. (Idén ez `7` labort jelent.) Minden labor végén fel kell tölteni a `GitHub`ra az elkészült laborfeladatot, aki ezt nem teszi meg, annak érvénytelen a laborja. A laborfeladatok végén találhatóak szorgalmi feladatok, amik elvégzésével plusz pontot szerezhető, ami beleszámít az év végi jegybe (+1 pont laboronként).
+* Rendszeresen látogassátok a [tárgy honlapját](https://www.aut.bme.hu/Course/ios), ide kerül fel minden információ. (Van RSS feed is.)
+* A tárgyból a legkönnyebben házi feladat beadásával lehet megszerezni a félév végi jegyet. A beadott házikat a laborvezetők fogják értékelni. A házi feladat beadás rendjéről a tárgy honlapján fogunk a későbbiekben információkat közzétenni.
+* A laborokkal kapcsolatban mindenkitől örömmel fogadunk hibajelentéseket vagy bármilyen egyéb, _építő jellegű_ kritikát.
+
+## `macOS` felhasználói alapismeretek <a id="mac_knowings"></a>
+
+### Billentyűzet <a id="billentyuzet"></a>
+A Macekhez külön Apple billentyűzetek léteznek, melyeken némiképp különbözőek a funkcióbillentyűk, és található rajtuk néhány extra gomb. Ezeken túl azonban a billentyűkiosztás megegyezik a standard PC-s billentyűzetekkel. A laborokban PC-s billentyűzetek vannak rákötve a Mac-ekre, melyeken elérhető minden szükséges gomb, azonban van néhány eltérés a Windows-os használathoz képest.
+
+A legfontosabb különbség, hogy Mac-en `Command` (`⌘`) gomb van Windows gomb helyett. Ez a **PC-s billentyűzeten alapesetben pont a Windows gombra** képződik le. A `Control` (`⌃`), `Alt` és `Alt Gr` (Right Alt), Mac-en is ugyanúgy használatos. Mac-en az `Alt`ot `Option`nek (`⌥`) hívjuk.
+
+---
+
+Az eredeti Mac-es billentyűzetkiosztást használva nem csak a funkcióbillentyűk, hanem a különböző szimbólumok (mint például `{, }, [, ], ...`) billentyűkombinációi nem azonosak a Windows használata során megszokottakkal, azonban a gördülékeny órai munka érdekében **a laborgépeket úgy konfiguráltuk, hogy a kiosztás megegyezzen a Windows-on megszokottal, egyetlen fő különbséggel:** *Mac-en, a Windows rendszerben megszokott billentyűparancsok nem a `Control`, hanem a `Command` billentyűvel válthatók ki, tehát `⌃+C` helyett `⌘+C`-t használunk!* 
+
+---
+
+![](img/01_keyboard.png)
+
+| A legfontosabb általános billentyűkombinációk                 | |
+| --- | --- |
+| `⌘+C`         | Copy                                          |
+| `⌘+V`         | Paste                                         |
+| `⌘+X`         | Cut                                           |
+| `⌘+Z`         | Undo                                          |
+| `⌘+⇧+Z`       | Redo                                          |
+| `⌘+F`         | Keresés szövegben                             |
+| `⌘+G`         | Következő találat kereséskor                  |
+| `⌘+W`         | Ablak bezárása                                |
+| `⌘+Q`         | Kilépés az alkalmazásból                      |
+| `⌘+Space`     | *Spotlight* (gyorskereső, alkalmazásindítás)  |
+| `⌘+→`         | Ugrás a sor végére (`End` helyett)            |
+| `⌘+←`         | Ugrás a sor elejére (`Home` helyett)          |
+| `⌘+↹`         | Futó alkalmazások közötti váltás              |
+
+---
+
+*A legtöbb Mac-es alkalmazásnál az alkalmazás ablakainak vagy ablakának bezárása után is tovább fut a program. A teljes kilépéshez a `⌘+Q`-t használhatjuk.*
+
+---
+
+### Egér <a id="eger"></a>
+Korábban a Mac-es egerek egygombosak voltak, a `⌃+klikkel` lehetett az alternatív funkciókat elérni (ma is használható: `⌃+balklikk`). Kétgombos egereknél a jobb gomb funkciója megegyezik a `⌃+balklikkel`.
+
+### Unix gyökerek <a id="unix-gyokerek"></a>
+A `macOS` (korábban `OS X`, `Mac OS`) egy Unix (BSD) alapú operációs rendszer. A Unix-os alapokat teljesen elfedi a GUI és az Apple saját alkalmazásai.
+
+Minden felhasználónak (esetünkben a `labor` nevű usernek) van egy home könyvtára (`/Users/labor`). Az itt található `Developer` mappába fogjuk a labor során a projekteket és egyéb fájljainkat tárolni.
+
+<p align="center"> 
+<span align="center" style="color:red; font-size:16pt"> A labor gépeken egy automatizált rendszer minden bejelentkezéskor törli a felhasználóhoz tartozó könyvtárakat, ezért a labor alatt ne indítsuk újra a gépet és ne jelentkezzünk ki, csak a megoldás bemutatása után!</span>
+</p>
+
+Az *Activity Monitor* alkalmazást elindítva láthatjuk a futó alkalmazások process-eit. Itt van lehetőség egy esetleg lefagyott alkalmazás kilövésére is. Alkalmazások bezárásához használhatjuk még a `⌘+⌥+Esc` billentyűkombinációra megnyíló ablakot is.
+
+### Fájlkezelés <a id="fajlkezeles"></a>
+Alap fájlkezelő: *Finder*, hasonlóan működik mint Windows intéző.
+
+| Néhány hasznos *Finder* billentyűkombináció                                     | |
+| ------------- | ----------------------------------------------------------------- |
+| `⌘+Le`        | Belépés egy könyvtárba                                            |
+| `⌘+Fel`       | Kilépés egy könyvtárból                                           |
+| `⌘+Backspace` | Fájl törlése (Kukába helyezése)                                   |
+| `Enter`       | Fájl átnevezése                                                   |
+| `Space`       | *QuickLook*                                                       |
+| `⌘+⇧+G`       | Navigálás egy könyvtárhoz (Go to Folder)                          |
+
+Külső USB eszköz csatlakoztatás után a `/Volumes/` mappába mountolódik automatikusan. A *Finder*ben és bárhol a standard fájlkezelő dialógusoknál a bal szélső gyorsmenüből a `Devices` részben érhetők el, de a `Desktop`on is megjelenik hozzájuk egy-egy ikon. Az USB-s eszközöket a kihúzás előtt unmountolni kell. (*Finder*ben a bal szélső menüben, az USB eszköz előtti kis "eject" ikon, vagy pedig jobb klikk után "Unmount". További lehetőség még az asztalon az USB-s eszközt a `Trash`-be húzni.)
 
 ## `Swift` alapismeretek <a id="swift-alapismeretek"></a>
 > Hozzunk létre egy új `Labor2.playground` fájlt a `labor_02` mappán belül!
