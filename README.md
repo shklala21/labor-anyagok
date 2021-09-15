@@ -11,6 +11,7 @@
 ## Laborok
 
 * [1. labor](labor_01/)
+<!-- 
 * [2. labor](labor_02/)
 * [3. labor](labor_03/)
 * [4. labor](labor_04/)
@@ -22,3 +23,4 @@
 * [10. labor](labor_10/)
 * [11. labor](labor_11/)
 * [12. labor](labor_12/)
+-->
